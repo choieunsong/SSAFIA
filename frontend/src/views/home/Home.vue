@@ -38,7 +38,7 @@ export default {
       const token = localStorage.getItem("token");
       if (token) {
         ElMessage({
-          message: "닉네임 설정으로 이동합니다!",
+          message: "방 설정으로 이동합니다!",
           type: "success",
         });
       } else {
@@ -64,6 +64,7 @@ export default {
   }
 };
 </script>
+
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
