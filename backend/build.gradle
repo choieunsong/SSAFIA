@@ -1,6 +1,7 @@
 plugins {
     id 'org.springframework.boot' version '2.5.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'checkstyle'
     id 'java'
 }
 
@@ -16,6 +17,12 @@ configurations {
 
 repositories {
     mavenCentral()
+}
+
+def checkstyleVersion = "8.44"
+checkstyle {
+    toolVersion = checkstyleVersion
+    configFile = file("config/checkstyle/google_checks.xml")
 }
 
 dependencies {
@@ -40,4 +47,8 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+task lint {
+    dependsOn checkstyleMain, checkstyleTest
 }
