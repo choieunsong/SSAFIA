@@ -46,4 +46,6 @@ dist/
 npm-debug.log
 yarn-error.log
 
+### Mac ###
+**/.DS_Store
 # End of https://www.toptal.com/developers/gitignore/api/java,vuejs,vue
