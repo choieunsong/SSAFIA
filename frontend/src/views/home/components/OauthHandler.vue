@@ -21,8 +21,9 @@ export default {
             this.$store.dispatch('token/setIsLogin', true);
             console.log(this.$store.getters['token/getToken']);
             
-            this.$router.push({name: 'Profile'});
+            this.$router.push({name: 'Home'});
         }else{
+            
             this.$router.push('/');
         }
     }

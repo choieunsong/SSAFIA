@@ -1,25 +1,29 @@
 import {createWebHistory, createRouter} from 'vue-router';
 
 const routes = [
-    // {
-    //     path: '/',
-    //     name: 'App',
-    //     component: () => import('@/App')
-    // },
+    {
+        path: '/',
+        redirect: '/home'
+    },
+    {
+        path: '/home',
+        name: 'Home',
+        component: () => import('@/views/home/components/Home'),
+    },
     {
         path: '/login',
         name: 'Login',
-        component: () => import('@/components/Login')
+        component: () => import('@/views/home/components/Login')
     },
     {
         path: '/oauth2/redirect',
         name: 'OauthHandler',
-        component: () => import('@/components/OauthHandler'),
+        component: () => import('@/views/home/components/OauthHandler'),
     },
     {
-        path: '/profile',
-        name: 'Profile',
-        component: () => import('@/components/Profile')
+        path: "/:catchAll(.*)",
+        name: 'NotFound',
+        component: () => import('@/views/error/NotFound')
     }
 ];
 

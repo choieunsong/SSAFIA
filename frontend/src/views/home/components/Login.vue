@@ -11,45 +11,92 @@
             <img class="google-icon" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
         </div>
         <p class="btn-text-login"><b>Sign out</b></p>
+        
+        <div class="box-card">
+            <img 
+                :src="state.user.imageUrl"
+                :alt="state.user.name"
+                width="150"
+                class="rounded-circle"
+            />
+            <h3>{{state.user.email}}</h3>
+            <p>{{state.user.name}}</p>
+        </div>
     </div>
 </div>
 </template>
 <script>
 import {computed} from 'vue';
+import {onMounted} from '@vue/runtime-core'
 import {useStore} from 'vuex';
-import { reactive } from '@vue/reactivity';
-import googleLogo from '.././assets/google-logo.png';
+import {reactive} from '@vue/reactivity';
+import axios from "axios";
 export default {
     name: 'Login',
-    methods:{
-        handleLogout(){
-            localStorage.removeItem("token");
-            this.$store.dispatch('token/setToken', false);
-            this.$router.push("/");
-        }
-    },
     setup(){
         const store = useStore();
         const state = reactive({
             googleUrl: 'http://localhost:8080/oauth2/authorize/google?redirect_uri=http://localhost:8081/oauth2/redirect',
-            googleImage: googleLogo,
-            response: '',
+            user: {
+                name: '',
+                imageUrl: '',
+                email: ''
+            }
         })
 
-        const isLogin = computed(() => store.getters['token/getToken']);
+        const isLogin = computed(() => store.getters['token/getIsLogin']);
         const sendGoogleUrl = () => {
             console.log('sendGoogleUrl');
             location.href=state.googleUrl;
         }
+        const handleLogout = () => {
+            console.log('logout');
+            localStorage.removeItem("token");
+            store.dispatch('token/setIsLogin', false);
+        }
+        
+        onMounted(() => {
+            if(isLogin.value){
+                const Token = store.getters['token/getToken'];
+                console.log('token',Token);
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer '+Token
+                }
+                const url = 'http://localhost:8080/profile';
+                console.log('url',url);
+
+                axios({
+                    method: 'get',
+                    url: url,
+                    headers: headers
+                })
+                .then(({data}) => {
+                    console.log('axios get success', data);
+                    state.user.imageUrl = data.imageUrl;
+                    state.user.name = data.name;
+                    state.user.email = data.email;
+                }).catch((err) =>{
+                    console.log('err',err);
+                })
+            }
+        })
+
         return{
             state,
             isLogin,
             sendGoogleUrl,
+            handleLogout
         }
     }
 };
 </script>
 <style >
+.rounded-circle{
+    border-radius: 50% !important;
+    margin: 30px 0 auto;
+}
+
 .wrap{
     width: 100%;
     height:100%;

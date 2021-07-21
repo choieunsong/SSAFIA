@@ -22,7 +22,3 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
-
-### PORT
-클라이언트 port: 8081  
-서버 port: 8080
