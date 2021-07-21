@@ -8,7 +8,7 @@ const routes = [
     {
         path: '/home',
         name: 'Home',
-        component: () => import('@/views/home/components/Home'),
+        component: () => import('@/views/home/Home'),
     },
     {
         path: '/login',
