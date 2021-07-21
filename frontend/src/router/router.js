@@ -21,6 +21,11 @@ const routes = [
         component: () => import('@/views/home/components/OauthHandler'),
     },
     {
+        path: '/room-setting',
+        name: 'RoomSetting',
+        component: () => import('@/views/room-setting/Room-setting'),
+    },
+    {
         path: "/:catchAll(.*)",
         name: 'NotFound',
         component: () => import('@/views/error/NotFound')

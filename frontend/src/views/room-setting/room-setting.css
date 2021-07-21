@@ -1,0 +1,16 @@
+#room-setting-logo {
+  margin-top: 2%;
+  animation-duration: 3s;
+  animation-name: slide-in-bottom;
+}
+
+@keyframes slide-in-bottom {
+  0% {
+    transform: translateY(30vh);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

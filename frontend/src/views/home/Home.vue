@@ -14,6 +14,7 @@
 
 <script>
 import Login from "@/views/home/components/Login.vue";
+import { router } from "@/router/router.js";
 import { ElMessage } from "element-plus";
 // import { onMounted } from '@vue/runtime-core'
 // import {useStore} from 'vuex';
@@ -37,10 +38,7 @@ export default {
     const moveToNickname = () => {
       const token = localStorage.getItem("token");
       if (token) {
-        ElMessage({
-          message: "방 설정으로 이동합니다!",
-          type: "success",
-        });
+        router.push('room-setting')
       } else {
         ElMessage.error("로그인이 필요합니다!");
       }
