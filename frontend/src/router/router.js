@@ -8,7 +8,7 @@ const routes = [
     {
         path: '/home',
         name: 'Home',
-        component: () => import('@/views/home/components/Home'),
+        component: () => import('@/views/home/Home'),
     },
     {
         path: '/login',
@@ -19,6 +19,11 @@ const routes = [
         path: '/oauth2/redirect',
         name: 'OauthHandler',
         component: () => import('@/views/home/components/OauthHandler'),
+    },
+    {
+        path: '/room-setting',
+        name: 'RoomSetting',
+        component: () => import('@/views/room-setting/Room-setting'),
     },
     {
         path: "/:catchAll(.*)",
