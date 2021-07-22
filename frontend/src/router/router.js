@@ -29,6 +29,11 @@ const routes = [
         path: "/:catchAll(.*)",
         name: 'NotFound',
         component: () => import('@/views/error/NotFound')
+    },
+    {
+        path: "/nickname",
+        name: "Nickname",
+        component: () => import('@/views/nickname/Nickname')
     }
 ];
 
