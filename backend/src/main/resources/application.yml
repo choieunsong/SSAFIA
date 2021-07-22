@@ -25,4 +25,4 @@ app:
   tokenSecret: 926D96C90030DD58429D2751AC1BDBBC
   tokenExpirationMsec: 864000000
   authorizedRedirectUris:
-    - http://localhost:3000/oauth2/redirect
+    - http://localhost:8081/oauth2/redirect
