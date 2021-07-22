@@ -14,13 +14,20 @@
 
 <script>
 import { defineComponent, ref } from "vue";
+import { useRouter } from "vue-router"
 
 export default defineComponent({
   name: 'GameMode',
   setup() {
+    const router = useRouter()
+    const redirectToNickname = function() {
+      console.log('active')
+      router.push('nickname')
+    }
     return {
       accessType: ref("1"),
       roomType: ref("1"),
+      redirectToNickname
     };
   },
 });
