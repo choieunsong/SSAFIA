@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import s05.p12a104.mafia.common.exception.ResourceNotFoundException;
+import s05.p12a104.mafia.common.reponse.ApiResponseDto;
 import s05.p12a104.mafia.domain.entity.User;
 import s05.p12a104.mafia.domain.repository.UserRepository;
 import s05.p12a104.mafia.security.CurrentUser;
@@ -20,8 +21,9 @@ public class UserController {
 
   @GetMapping("/profile")
   @PreAuthorize("hasRole('USER')")
-  public User getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
-    return userRepository.findById(userPrincipal.getId())
+  public ApiResponseDto<User> getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
+    User user = userRepository.findById(userPrincipal.getId())
         .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+    return ApiResponseDto.success(user);
   }
 }
