@@ -53,6 +53,7 @@ export default {
       console.log("logout");
       localStorage.removeItem("token");
       store.dispatch("token/setIsLogin", false);
+      store.disaptch("token/setToken", '')
     };
 
     onMounted(() => {
@@ -63,7 +64,7 @@ export default {
           "Content-Type": "application/json",
           Authorization: "Bearer " + Token,
         };
-        const url = "http://localhost:8080/profile";
+        const url = "http://localhost:8080/api/user/profile";
         console.log("url", url);
 
         axios({

@@ -35,6 +35,16 @@ const routes = [
         name: 'NotFound',
         component: () => import('@/views/error/NotFound')
     },
+    {
+        path: "/nickname/{:roomID}",
+        name: "Nickname",
+        component: () => import('@/views/nickname/Nickname')
+    },
+    {
+        path: "/main/{:roomID}",
+        name: 'name',
+        component: () => import('@/views/main/Main')
+    }
 ];
 
 export const router = createRouter({

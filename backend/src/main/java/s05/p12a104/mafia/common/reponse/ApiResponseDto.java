@@ -8,8 +8,11 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 public class ApiResponseDto<T> {
-  public static final ApiResponseDto<String> DEFAULT_SUCCESS = new ApiResponseDto<>(ApiResponseCode.SUCCESS);
-  public static final ApiResponseDto<String> DEFAULT_UNAUTHORIZED = new ApiResponseDto<>(ApiResponseCode.UNAUTHORIZED);
+
+  public static final ApiResponseDto<String> DEFAULT_SUCCESS = new ApiResponseDto<>(
+      ApiResponseCode.SUCCESS);
+  public static final ApiResponseDto<String> DEFAULT_UNAUTHORIZED = new ApiResponseDto<>(
+      ApiResponseCode.UNAUTHORIZED);
 
   private ApiResponseCode code;
   private T data;
