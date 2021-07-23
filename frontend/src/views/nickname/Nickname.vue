@@ -10,12 +10,11 @@
       <div class="d-flex justify-content-center">
         <el-form class="nickname-form">
             <el-label>닉네임을 입력해주세요</el-label>
-            <div>
-                <el-input placehlder="닉네임을 적어주세요" class="nickname-input" v-model="state.nickname" clearable></el-input>
-            </div>
-            <el-button type="success" >제출</el-button>
+            <el-input placehlder="닉네임을 적어주세요" class="nickname-input" v-model="state.nickname" clearable></el-input>
+            <el-button class="button" type="success" >제출</el-button>
         </el-form>
       </div>
+      <el-alert class="nickname-alert" type="error" :title="state.errorMessage"></el-alert>
   </div>
 </template>
 
@@ -35,7 +34,7 @@ export default {
           nickname: '',
           is404: false,
           isError: false,
-          errorMessage: '',
+          errorMessage: '정원이 초과되었습니다',
           URL: '',
       })
       onBeforeMount(() => {
@@ -66,6 +65,12 @@ export default {
 }
 .nickname-input {
   display: inline;
+}
+.nickname-alert {
+  width: 60vw;
+  height: 5vw;
+  margin-top: 10vw;
+  margin-left: 20vw;
 }
 
 </style>
