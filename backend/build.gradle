@@ -31,6 +31,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'io.jsonwebtoken:jjwt:0.5.1'
+    
+    //swagger
+    implementation("io.springfox:springfox-boot-starter:3.0.0")
+    implementation("com.google.guava:guava:29.0-jre")
+    annotationProcessor("com.google.guava:guava:29.0-jre")
+    
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'mysql:mysql-connector-java'
