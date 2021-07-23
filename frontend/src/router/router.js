@@ -26,15 +26,15 @@ const routes = [
         component: () => import('@/views/room-setting/Room-setting'),
     },
     {
+        path: "/nickname",
+        name: "Nickname",
+        component: () => import('@/views/nickname/Nickname')
+    },
+    {
         path: "/:catchAll(.*)",
         name: 'NotFound',
         component: () => import('@/views/error/NotFound')
     },
-    {
-        path: "/nickname",
-        name: "Nickname",
-        component: () => import('@/views/nickname/Nickname')
-    }
 ];
 
 export const router = createRouter({
