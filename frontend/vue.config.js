@@ -1,7 +1,6 @@
 module.exports = {
     devServer: {
-        // 사용자 정의 환경 변수에서 VUE_APP_PORT가 있으면 사용하고
-        // 없으면 3000 포트로 개발서버를 실행합니다.
+        // 백엔드 서버가 8080을 쓰기로 했으므로 충돌이 나지 않게 프론트는 8081포트로 고정되어서 실행됩니다
         port: process.env.VUE_APP_PORT
     }
 }

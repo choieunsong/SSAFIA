@@ -31,9 +31,14 @@ const routes = [
         component: () => import('@/views/error/NotFound')
     },
     {
-        path: "/nickname",
+        path: "/nickname/{:roomID}",
         name: "Nickname",
         component: () => import('@/views/nickname/Nickname')
+    },
+    {
+        path: "/main/{:roomID}",
+        name: 'name',
+        component: () => import('@/views/main/Main')
     }
 ];
 
