@@ -9,24 +9,24 @@ import s05.p12a104.mafia.common.util.EnumType;
 @RequiredArgsConstructor
 public enum ApiResponseCode implements EnumType {
 
-    SUCCESS("success"),
-    FAIL("fail"),
-    UNAUTHORIZED("unauthorized");
+  SUCCESS("success"),
+  FAIL("fail"),
+  UNAUTHORIZED("unauthorized");
 
-    private final String message;
+  private final String message;
 
-    @Override
-    public String getId() {
-        return this.name();
-    }
+  @Override
+  public String getId() {
+    return this.name();
+  }
 
-    @Override
-    public String getText() {
-        return message;
-    }
+  @Override
+  public String getText() {
+    return message;
+  }
 
-    @JsonValue
-    public String toJson() {
-        return this.name().toLowerCase();
-    }
+  @JsonValue
+  public String toJson() {
+    return this.name().toLowerCase();
+  }
 }
