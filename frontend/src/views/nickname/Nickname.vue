@@ -14,7 +14,7 @@
             <el-button class="button" type="success" >제출</el-button>
         </el-form>
       </div>
-      <el-alert type="error nickname-alert" :title="state.errorMessage"></el-alert>
+      <el-alert class="nickname-alert" type="error" :title="state.errorMessage"></el-alert>
   </div>
 </template>
 
