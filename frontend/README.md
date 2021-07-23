@@ -30,25 +30,19 @@ npm i
 - 개발자 모드 실행
 
 ```
-npm run serve_dev
+npm run dev
 ```
 
 - 사용자 모드 실행
 
 ```
-npm run serve_prod
+npm run prod
 ```
 
-- 빌드 파일(dist) 개발자 환경 변수로 생성
+- 빌드 파일(dist) 생성
 
 ```
-npm run build_dev
-```
-
-- 빌드 파일(dist) 사용자 환경 변수로 생성
-
-```
-npm run build_prod
+npm run build
 ```
 
 <br>
