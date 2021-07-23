@@ -1,0 +1,48 @@
+version: "3.4"
+services:
+  mysql:
+    image: mariadb:10.4.20
+    restart: always
+    ports:
+      - "32000:3306"
+    volumes:
+      - ./mysql/mysql-data:/var/lib/mysql
+      - ./mysql/initdb.d/:/docker-entrypoint-initdb.d/
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_USER: a104
+      MYSQL_PASSWORD: a1041234
+      MYSQL_DATABASE: mafia
+      TZ: "Asia/Seoul"
+    privileged: true
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+  redis:
+    image: redis:6.2.4-alpine
+    restart: always
+    volumes:
+      - ./redis/redis-data:/data
+    ports:
+      - "32001:6379"
+  kurento:
+    image: kurento/kurento-media-server:latest
+    restart: always
+    ports:
+      - "8888:8888"
+    environment:
+      TZ: "Asia/Seoul"
+  backend:
+    build:
+      dockerfile: Dockerfile
+      context: ./backend
+    environment:
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      TZ: "Asia/Seoul"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/mafia?useUnicode=yes&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true"
+      SPRING_DATASOURCE_USERNAME: a104
+      SPRING_DATASOURCE_PASSWORD: a1041234
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - redis
+
