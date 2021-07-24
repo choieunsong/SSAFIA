@@ -1,0 +1,47 @@
+#nickname-logo {
+  margin-top: 5rem;
+  animation-duration: 1.2s;
+  animation-name: slide-in-bottom;
+  width: 20rem;
+}
+
+#nickname-logo:hover {
+  cursor: pointer;
+}
+
+#nickname-form {
+  width: 30rem;
+  color: snow;
+  margin-top: 7rem;
+  animation-duration: 1s;
+  animation-name: fade-in;
+  display: inline-block;
+  border-radius: 3%;
+}
+
+.nickname-alert {
+  width: 60vw;
+  height: 5vw;
+  margin-top: 10vw;
+  margin-left: 20vw;
+}
+
+@keyframes slide-in-bottom {
+  0% {
+    transform: translateY(15vh);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

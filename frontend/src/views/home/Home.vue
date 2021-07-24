@@ -1,17 +1,17 @@
 <template>
   <div class="wrap">
-    <div>
-      <img src="@/assets/image/logo.png" alt="logo image">
+    <div class="py-4">
+      <img src="@/assets/image/logo.png" alt="logo image" />
     </div>
-    <div class="my-4">
+    <div class="mt-5 mb-4">
       <el-button
-        type="primary"
+        type="success"
         size="medium"
         round
         @click="moveToNickname"
-        class="font-jua"
+        class="home-btn"
       >
-        방 만들기
+        <span class="font-jua">방 만들기</span>
       </el-button>
     </div>
     <Login />
@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import "@/common/css/common.css";
+import "./home.css";
 import Login from "@/views/home/components/Login.vue";
 import { router } from "@/router/router.js";
 import { ElMessage } from "element-plus";
@@ -70,18 +70,4 @@ export default {
 };
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-.wrap {
-  width: 100vw;
-  height: 100vh;
-  background-image: url("../../assets/image/background.png");
-  background-size: cover;
-}
-</style>
+<style></style>

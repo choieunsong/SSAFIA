@@ -6,6 +6,7 @@
       v-if="!isLogin"
       @click="sendGoogleUrl"
       round
+      class="home-btn"
     >
       <img
         class="google-icon"
@@ -13,8 +14,15 @@
       />
       <span class="font-jua">Google로 로그인</span>
     </el-button>
-    <el-button type="primary" size="medium" v-else @click="handleLogout">
-      로그 아웃
+    <el-button
+      type="danger"
+      size="medium"
+      v-else
+      round
+      @click="handleLogout"
+      class="home-btn"
+    >
+      <span class="font-jua">로그아웃</span>
     </el-button>
   </div>
 </template>
@@ -24,6 +32,7 @@ import { computed } from "vue";
 import { onMounted } from "@vue/runtime-core";
 import { useStore } from "vuex";
 import { reactive } from "@vue/reactivity";
+import { ElNotification } from "element-plus";
 import axios from "axios";
 
 export default {
@@ -46,8 +55,14 @@ export default {
       location.href = state.googleUrl;
     };
     const handleLogout = () => {
-      console.log("logout");
+      ElNotification({
+        title: "Good Bye!",
+        message: "로그아웃 되었습니다. 감사합니다!",
+        type: "info",
+        duration: "2500",
+      });
       localStorage.removeItem("token");
+      // 이부분에서 상태관리 측면에서 뭔가 에러나는듯
       store.dispatch("token/setIsLogin", false);
       store.disaptch("token/setToken", "");
     };
@@ -90,10 +105,4 @@ export default {
 };
 </script>
 
-<style>
-.google-icon {
-  width: 20px;
-  height: 20px;
-  margin-right: 1rem;
-}
-</style>
+<style></style>

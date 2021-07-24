@@ -1,0 +1,16 @@
+.google-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 1rem;
+}
+
+.home-btn {
+  width: 15rem;
+  height: 3rem;
+}
+
+.home-btn:hover {
+  animation-duration: 0.5s;
+  animation-name: pulsate-bck;
+  animation-iteration-count: infinite;
+}
