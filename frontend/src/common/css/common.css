@@ -1,0 +1,11 @@
+@font-face {
+  font-family: "Jua";
+  font-style: normal;
+  src: url("../../assets/fonts/BMJUA_otf.otf");
+  src: url("../../assets/fonts/BMJUA_ttf.ttf");
+}
+
+.font-jua {
+  font-family: "Jua";
+  font-size: large;
+}

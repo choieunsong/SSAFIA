@@ -1,10 +1,16 @@
 <template>
   <div class="wrap">
     <div>
-      <img class="bg-image" src="@/assets/image/mafia.png" alt="mafia image" />
+      <img src="@/assets/image/logo.png" alt="logo image">
     </div>
     <div class="my-4">
-      <el-button type="primary" size="medium" @click="moveToNickname">
+      <el-button
+        type="primary"
+        size="medium"
+        round
+        @click="moveToNickname"
+        class="font-jua"
+      >
         방 만들기
       </el-button>
     </div>
@@ -13,6 +19,7 @@
 </template>
 
 <script>
+import "@/common/css/common.css";
 import Login from "@/views/home/components/Login.vue";
 import { router } from "@/router/router.js";
 import { ElMessage } from "element-plus";
@@ -34,11 +41,11 @@ export default {
       this.$store.dispatch("token/setIsLogin", false);
     }
   },
-  setup(){
+  setup() {
     const moveToNickname = () => {
       const token = localStorage.getItem("token");
       if (token) {
-        router.push('room-setting')
+        router.push("room-setting");
       } else {
         ElMessage.error("로그인이 필요합니다!");
       }
@@ -46,7 +53,7 @@ export default {
 
     return {
       moveToNickname,
-    }
+    };
     // const store = useStore();
 
     // onMounted(() => {
@@ -59,7 +66,7 @@ export default {
     //         store.dispatch('token/setIsLogin', false);
     //     }
     // })
-  }
+  },
 };
 </script>
 
@@ -74,9 +81,7 @@ export default {
 .wrap {
   width: 100vw;
   height: 100vh;
-  background-color: black;
-}
-.bg-image {
-  width: 40%;
+  background-image: url("../../assets/image/background.png");
+  background-size: cover;
 }
 </style>

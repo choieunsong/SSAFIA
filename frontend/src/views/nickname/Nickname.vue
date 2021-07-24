@@ -3,8 +3,8 @@
       <div class="d-flex justify-content-center">
         <img
             id="room-setting-logo"
-            src="@/assets/image/mafia-logo.png"
-            alt="mafia logo image"
+            src="@/assets/image/logo.png"
+            alt="logo image"
         />
       </div>
       <div class="d-flex justify-content-center">

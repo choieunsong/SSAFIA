@@ -5,19 +5,15 @@
       size="medium"
       v-if="!isLogin"
       @click="sendGoogleUrl"
+      round
     >
       <img
         class="google-icon"
         src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
       />
-      <span>Google로 로그인</span>
+      <span class="font-jua">Google로 로그인</span>
     </el-button>
-    <el-button
-      type="primary"
-      size="medium"
-      v-else
-      @click="handleLogout"
-    >
+    <el-button type="primary" size="medium" v-else @click="handleLogout">
       로그 아웃
     </el-button>
   </div>
@@ -53,7 +49,7 @@ export default {
       console.log("logout");
       localStorage.removeItem("token");
       store.dispatch("token/setIsLogin", false);
-      store.disaptch("token/setToken", '')
+      store.disaptch("token/setToken", "");
     };
 
     onMounted(() => {

@@ -3,8 +3,8 @@
     <div>
       <img
         id="room-setting-logo"
-        src="@/assets/image/mafia-logo.png"
-        alt="mafia logo image"
+        src="@/assets/image/logo.png"
+        alt="logo image"
       />
     </div>
     <GameMode id="gamemode" v-show="isShow" />
