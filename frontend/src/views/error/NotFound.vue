@@ -3,24 +3,24 @@
     <div>
       <img class="bg-image" src="@/assets/image/404.png" alt="404 image" />
     </div>
-    <div class="my-4">
-      <el-button type="primary" size="medium" @click="goHome">
-        메인 화면으로
+    <div class="mt-5">
+      <el-button type="info" round @click="goHome">
+        <span class="font-jua">홈으로</span>
       </el-button>
     </div>
   </div>
 </template>
 
 <script>
-import { router } from "@/router/router.js";
+import { useRouter } from "vue-router";
 
 export default {
   name: "NotFound",
   setup() {
+    const router = useRouter();
     const goHome = () => {
       router.push("home");
     };
-
     return {
       goHome,
     };
@@ -29,13 +29,8 @@ export default {
 </script>
 
 <style>
-.wrap {
-  width: 100vw;
-  height: 100vh;
-  background-color: black;
-  text-align: center;
-}
 .bg-image {
-  width: 40%;
+  margin-top: 5rem;
+  width: 50rem;
 }
 </style>

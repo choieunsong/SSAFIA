@@ -1,76 +1,76 @@
 <template>
   <div class="wrap">
-      <div class="d-flex justify-content-center">
-        <img
-            id="room-setting-logo"
-            src="@/assets/image/logo.png"
-            alt="logo image"
-        />
-      </div>
-      <div class="d-flex justify-content-center">
-        <el-form class="nickname-form">
-            <el-label>닉네임을 입력해주세요</el-label>
-            <el-input placehlder="닉네임을 적어주세요" class="nickname-input" v-model="state.nickname" clearable></el-input>
-            <el-button class="button" type="success" >제출</el-button>
-        </el-form>
-      </div>
-      <el-alert class="nickname-alert" type="error" :title="state.errorMessage"></el-alert>
+    <div>
+      <img
+        id="nickname-logo"
+        src="@/assets/image/logo-name.png"
+        alt="logo name"
+        @click="goHome"
+      />
+    </div>
+
+    <div id="nickname-form" v-show="isShow">
+      <el-input
+        placeholder="게임에서 사용할 닉네임을 입력하세요."
+        class="font-jua mb-4"
+        v-model="state.nickname"
+        maxlength="15"
+        show-word-limit
+        clearable
+        @keyup.enter="redirectToGame"
+      ></el-input>
+      <el-button type="success" size="small" @click="redirectToGame">
+        <span class="font-jua">입장</span>
+      </el-button>
+    </div>
+
+    <!-- <el-alert
+      class="nickname-alert"
+      type="error"
+      :title="state.errorMessage"
+    ></el-alert> -->
   </div>
 </template>
 
 <script>
-import { onBeforeMount, reactive } from 'vue'
-import { useStore } from 'vuex'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
-
+import "./nickname.css";
+import { onMounted, reactive, ref } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import axios from "axios";
 
 export default {
   name: "Nickname",
   setup() {
-      const store = useStore()
-      const router = useRouter()
-      const state = reactive({
-          nickname: '',
-          is404: false,
-          isError: false,
-          errorMessage: '정원이 초과되었습니다',
-          URL: '',
-      })
-      onBeforeMount(() => {
-
-      })
-      const redirectTo404 = function() {
-          router.push('notfound')
-      }
-      const redirectToMain = function() {
-          router.push({name:"main", params:{}})
-      }
-    return { state, redirectTo404, redirectToMain } 
-  }
+    const store = useStore();
+    const router = useRouter();
+    let isShow = ref(false);
+    const state = reactive({
+      nickname: "",
+      isError: false,
+      errorMessage: "정원이 초과되었습니다",
+      URL: "",
+    });
+    onMounted(() => {
+      setTimeout(() => {
+        isShow.value = true;
+      }, 1000);
+    });
+    const redirectToGame = () => {
+      // nickname validation 필요함
+      router.push({ name: "Game", params: {} });
+    };
+    const goHome = () => {
+      router.push("home");
+    };
+    return {
+      isShow,
+      state,
+      redirectToGame,
+      goHome,
+    };
+  },
 };
 </script>
 
-<style>
-.wrap {
-  width: 100vw;
-  height: 100vh;
-  background-color: black;
-  text-align: center;
-}
-.nickname-form {
-  width: 40vw;
-  margin-top: 5vw;
-  color: white;
-}
-.nickname-input {
-  display: inline;
-}
-.nickname-alert {
-  width: 60vw;
-  height: 5vw;
-  margin-top: 10vw;
-  margin-left: 20vw;
-}
-
-</style>
+<style></style>

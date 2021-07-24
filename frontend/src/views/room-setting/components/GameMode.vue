@@ -1,26 +1,52 @@
 <template>
-  <div class="mt-5 bg-white my-5">
-    <div>
-      <div v-if="!state.isLast">
-        <div class="my-1">
-          <el-radio v-model="state.accessType" label="private" border class="radio-btn">Private</el-radio>
-        </div>
-        <div class="my=1">
-          <el-radio v-model="state.accessType" label="public" border class="radio-btn" disabled >Public</el-radio>
-        </div>
-        <el-button @click="goLast">다음</el-button>
+  <div>
+    <div v-if="!state.isLast" class="mt-4">
+      <span class="font-jua">누구와 게임을 하시겠어요?</span>
+      <div class="mt-5 mb-4">
+        <el-button
+          class="gamemode-btn1"
+          round
+          @click="chooseAccessType('private')"
+        >
+          <span class="font-jua">친구와 함께 플레이!</span>
+        </el-button>
       </div>
-      <div v-else class="my-5">
-        <div class="my-1">
-          <el-radio v-model="state.roomType" label="basic" border class="radio-btn">Basic</el-radio>
-        </div>
-        <div class="my-1">
-          <el-radio v-model="state.roomType" label="custom" border class="radio-btn" disabled>Custom</el-radio>
-        </div>
-        <el-button class="my-3" @click="goBefore">이전</el-button>
-        <footer>
-          <el-button type="success" plain>방 설정</el-button>
-        </footer>
+      <div>
+        <el-button
+          class="gamemode-btn2"
+          round
+          @click="chooseAccessType('public')"
+        >
+          <span class="font-jua">모르는 사람과 플레이!</span>
+        </el-button>
+      </div>
+      <div class="mt-5">
+        <el-button size="medium" round @click="goHome">
+          <span class="font-jua">이전 페이지로</span>
+        </el-button>
+      </div>
+    </div>
+
+    <div v-else class="mt-4">
+      <span class="font-jua">어떤 모드를 플레이 하시겠어요?</span>
+      <div class="mt-5 mb-4">
+        <el-button class="gamemode-btn1" round @click="chooseRoomType('basic')">
+          <span class="font-jua">기본 모드</span>
+        </el-button>
+      </div>
+      <div>
+        <el-button
+          class="gamemode-btn2"
+          round
+          @click="chooseRoomType('custom')"
+        >
+          <span class="font-jua">커스텀 모드</span>
+        </el-button>
+      </div>
+      <div class="mt-5">
+        <el-button size="medium" round @click="goBack">
+          <span class="font-jua">이전 페이지로</span>
+        </el-button>
       </div>
     </div>
   </div>
@@ -28,40 +54,40 @@
 
 <script>
 import { defineComponent, reactive, ref } from "vue";
-import { useRouter } from "vue-router"
+import { useRouter } from "vue-router";
 
 export default defineComponent({
-  name: 'GameMode',
+  name: "GameMode",
   setup() {
-    const router = useRouter()
+    const router = useRouter();
     const state = reactive({
-      accessType: 'private',
-      roomType: 'basic',
+      accessType: "private",
+      roomType: "basic",
       isLast: false,
-    })
-    const redirectToNickname = function() {
-      router.push('nickname')
-    }
-    const goLast = function() {
-      state.isLast = true
-      console.log(state.isLast)
-    }
-    const goBefore = function() {
-      state.isLast = false
-      console.log(state.isLast)
-    }
+    });
+    const chooseAccessType = (type) => {
+      state.accessType = type;
+      state.isLast = true;
+    };
+    const chooseRoomType = (type) => {
+      state.roomType = type;
+      router.push("nickname");
+    };
+    const goBack = () => {
+      state.isLast = false;
+    };
+    const goHome = () => {
+      router.push("home");
+    };
     return {
       state,
-      redirectToNickname,
-      goLast,
-      goBefore
+      chooseAccessType,
+      chooseRoomType,
+      goBack,
+      goHome,
     };
   },
 });
 </script>
 
-<style>
-.radio-btn {
-  width: 10rem;
-}
-</style>
+<style></style>
