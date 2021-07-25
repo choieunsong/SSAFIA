@@ -56,6 +56,7 @@ export default {
         isShow.value = true;
       }, 1000);
     });
+
     const redirectToGame = () => {
       // nickname validation 필요함
       router.push({ name: "Game", params: {} });

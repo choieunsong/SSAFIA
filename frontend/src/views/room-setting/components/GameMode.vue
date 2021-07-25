@@ -20,6 +20,7 @@
           <span class="font-jua">모르는 사람과 플레이!</span>
         </el-button>
       </div>
+      <!-- -->
       <div class="mt-5">
         <el-button size="medium" round @click="goHome">
           <span class="font-jua">이전 페이지로</span>
@@ -55,11 +56,14 @@
 <script>
 import { defineComponent, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
+import axios from "axios";
+import { useStore } from "vuex";
 
 export default defineComponent({
   name: "GameMode",
   setup() {
     const router = useRouter();
+    const store = useStore();
     const state = reactive({
       accessType: "private",
       roomType: "basic",
@@ -69,9 +73,15 @@ export default defineComponent({
       state.accessType = type;
       state.isLast = true;
     };
+    const roomId = "E817ds";  //나중에 backend에서 받아올 부분
+
+    const getRoomIdFromServer = () => {
+      let token = this.$store.getters9['token/getToken'];
+      
+    }
     const chooseRoomType = (type) => {
       state.roomType = type;
-      router.push("nickname");
+      // router.push("nickname");
     };
     const goBack = () => {
       state.isLast = false;
@@ -85,6 +95,7 @@ export default defineComponent({
       chooseRoomType,
       goBack,
       goHome,
+      getRoomIdFromServer,
     };
   },
 });
