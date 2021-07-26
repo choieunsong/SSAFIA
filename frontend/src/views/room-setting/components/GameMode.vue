@@ -1,33 +1,114 @@
 <template>
-  <div class="mt-5">
-    <div>
-      <el-radio v-model="accessType" label="1" border class="radio-btn">Private</el-radio>
-      <el-radio v-model="accessType" label="2" border class="radio-btn" disabled>Public</el-radio>
+  <div>
+    <div v-if="!state.isLast" class="mt-4">
+      <span class="font-jua">누구와 게임을 하시겠어요?</span>
+      <div class="mt-5 mb-4">
+        <el-button
+          class="gamemode-btn1"
+          round
+          @click="chooseAccessType('private')"
+        >
+          <span class="font-jua">친구와 함께 플레이!</span>
+        </el-button>
+      </div>
+      <div>
+        <el-button
+          class="gamemode-btn2"
+          round
+          @click="chooseAccessType('public')"
+        >
+          <span class="font-jua">모르는 사람과 플레이!</span>
+        </el-button>
+      </div>
     </div>
-    <div class="my-5">
-      <el-radio v-model="roomType" label="1" border class="radio-btn">Basic</el-radio>
-      <el-radio v-model="roomType" label="2" border class="radio-btn" disabled>Custom</el-radio>
+
+    <div v-else class="mt-4">
+      <span class="font-jua">어떤 모드를 플레이 하시겠어요?</span>
+      <div class="mt-5 mb-4">
+        <el-button class="gamemode-btn1" round @click="chooseRoomType('basic')">
+          <span class="font-jua">기본 모드</span>
+        </el-button>
+      </div>
+      <div>
+        <el-button
+          class="gamemode-btn2"
+          round
+          @click="chooseRoomType('custom')"
+        >
+          <span class="font-jua">커스텀 모드</span>
+        </el-button>
+      </div>
+      <div class="mt-5">
+        <el-button size="medium" round @click="goBack">
+          <span class="font-jua">이전 선택으로</span>
+        </el-button>
+      </div>
     </div>
-    <el-button type="success" plain>방 설정</el-button>
   </div>
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, reactive } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
+import { useStore } from "vuex";
+import { API_BASE_URL} from "@/constant/index";
 
 export default defineComponent({
-  name: 'GameMode',
+  name: "GameMode",
   setup() {
+    const router = useRouter();
+    const store = useStore();
+    const state = reactive({
+      accessType: "private",
+      roomType: "basic",
+      isLast: false,
+      roomId: "E817ds"    //나중에 backend에서 받아올 부분
+    });
+    const chooseAccessType = (type) => {
+      state.accessType = type;
+      state.isLast = true;
+    };
+
+    const getRoomIdFromServer = () => {
+      axios({
+        method: "post",
+        url: API_BASE_URL + "/api/gamesessions",
+        headers: store.getters["token/getHeaders"],
+        data: {
+          accessType: state.accessType,
+          roomType: state.roomType
+        }
+      })
+      .then(({data}) => {
+        if(data.code == "success"){
+          // state.roomId = data.roomId;
+        }else if(data.code == "fail"){
+          // 방을 너무 많이 만들었습니다.
+          // 방 정원이 찼습니다.
+        }
+      })
+      .catch((err) => {
+        console.log("err",err);
+        router.push("NotFound");
+      })
+    }
+    const chooseRoomType = (type) => {
+      state.roomType = type;
+      // getRoomIdFromServer();
+      router.push({ name: 'Nickname', params: { roomId: state.roomId  } });
+    };
+    const goBack = () => {
+      state.isLast = false;
+    };
     return {
-      accessType: ref("1"),
-      roomType: ref("1"),
+      state,
+      chooseAccessType,
+      chooseRoomType,
+      goBack,
     };
   },
 });
 </script>
 
-<style>
-.radio-btn {
-  width: 10rem;
-}
-</style>
+<style></style>
