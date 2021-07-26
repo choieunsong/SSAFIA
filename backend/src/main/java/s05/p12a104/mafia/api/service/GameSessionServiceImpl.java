@@ -2,7 +2,6 @@ package s05.p12a104.mafia.api.service;
 
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import s05.p12a104.mafia.common.exception.GameSessionException;
@@ -15,40 +14,35 @@ import s05.p12a104.mafia.domain.repository.GameSessionRedisRepository;
 @RequiredArgsConstructor
 public class GameSessionServiceImpl implements GameSessionService {
 
-  @Autowired
   private final GameSessionRedisRepository gameSessionRedisRepository;
 
   @Override
   public GameSession makeGame(User user, Map<String, String> type) {
-    String Id = "";
+    String id = "";
 
     while (true) {
-      Id = RandomRoomIdUtils.randomRoomId(type.get("accessType"));
-      if (gameSessionRedisRepository.findById(Id).equals(Optional.empty()))
+      id = RandomRoomIdUtils.randomRoomId(type.get("accessType"));
+      if (gameSessionRedisRepository.findById(id).equals(Optional.empty())) {
         break;
+      }
     }
-
-    int cnt = 0;
-    for (GameSession g : gameSessionRedisRepository.findAll()) {
-      if (g.getCreator().getId().equals(user.getId()))
-        cnt++;
-      if (cnt > 2)
-        throw new GameSessionException("´õ ÀÌ»ó ¹æÀ» ¸¸µé ¼ö ¾ø½À´Ï´Ù");
+    
+    if (gameSessionRedisRepository.findByCreator(user.getEmail()).size() >= 2) {
+      throw new GameSessionException("ë” ì´ìƒ ë°©ì„ ë§Œë“¤ ìˆ˜ ì—†ìŠµë‹ˆë‹¤");
     }
-
     gameSessionRedisRepository
-        .save(new GameSession(Id, user, type.get("accessType"), type.get("roomType")));
+        .save(new GameSession(id, user.getEmail(), type.get("accessType"), type.get("roomType")));
 
-    GameSession maked = gameSessionRedisRepository.findById(Id)
-        .orElseThrow(() -> new GameSessionException("¹æÁ¤º¸¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù"));
+    GameSession maked = gameSessionRedisRepository.findById(id)
+        .orElseThrow(() -> new GameSessionException("ë°©ì •ë³´ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤"));
 
     return maked;
   }
 
   @Override
-  public GameSession enterGame(String Id) {
-    GameSession enter = gameSessionRedisRepository.findById(Id)
-        .orElseThrow(() -> new GameSessionException("¹æÁ¤º¸¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù"));
+  public GameSession enterGame(String id) {
+    GameSession enter = gameSessionRedisRepository.findById(id)
+        .orElseThrow(() -> new GameSessionException("ë°©ì •ë³´ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤"));
     return enter;
   }
 }

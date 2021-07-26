@@ -13,19 +13,19 @@ import lombok.RequiredArgsConstructor;
 import s05.p12a104.mafia.api.service.GameSessionService;
 import s05.p12a104.mafia.common.exception.ResourceNotFoundException;
 import s05.p12a104.mafia.domain.entity.GameSession;
+import s05.p12a104.mafia.domain.repository.GameSessionRedisRepository;
 import s05.p12a104.mafia.domain.repository.UserRepository;
 import s05.p12a104.mafia.security.CurrentUser;
 import s05.p12a104.mafia.security.UserPrincipal;
 
 @RequestMapping("/api/gamesession")
 @RestController
+@RequiredArgsConstructor
 public class GameSessionController {
   
-  @Autowired
-  UserRepository userRepository;
+  private final UserRepository userRepository;
 
-  @Autowired
-  GameSessionService gameSessionService;
+  private final GameSessionService gameSessionService;
 
   @PostMapping("")
   @PreAuthorize("hasRole('USER')")

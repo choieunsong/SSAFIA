@@ -4,15 +4,15 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 public class RandomRoomIdUtils {
   public static String randomRoomId(String type) {
-    String Id;
-    
-    if (type.equals("private"))
-      Id = "V";
-    else
-      Id = "B";
-    
-    Id += RandomStringUtils.randomAlphanumeric(6);
-    
-    return Id;
+    String id;
+
+    if (type.equals("private")) {
+      id = "V";
+    } else {
+      id = "B";
+    }
+    id += RandomStringUtils.randomAlphanumeric(6);
+
+    return id;
   }
 }

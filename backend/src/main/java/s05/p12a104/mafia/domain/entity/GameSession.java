@@ -7,6 +7,7 @@ import javax.persistence.Enumerated;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +26,8 @@ public class GameSession {
 
   private boolean night;
 
-  private User creator;
+  @Indexed
+  private String creator;
 
   private List<Player> players;
 
@@ -47,7 +49,7 @@ public class GameSession {
   private Timestamp lastenter;
 
   @Builder
-  public GameSession(String roomId, User creator, String accessType, String roomType) {
+  public GameSession(String roomId, String creator, String accessType, String roomType) {
     this.roomId = roomId;
     this.creator = creator;
     this.accessType = accessType;
