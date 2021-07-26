@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve_dev" : "vue-cli-service serve --mode dev",
-    "serve_prod" : "vue-cli-service  serve --mode prod",
+    "serve_dev": "vue-cli-service serve --mode dev",
+    "serve_prod": "vue-cli-service  serve --mode prod",
     "build_dev": "vue-cli-service build --mode dev",
     "build_prod": "vue-cli-service build --mode prod",
     "lint": "vue-cli-service lint"
@@ -20,7 +20,8 @@
     "vue-axios": "^3.2.4",
     "vue-google-login": "^2.0.5",
     "vue-router": "^4.0.10",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "vuex-persistedstate": "^4.0.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
@@ -44,7 +45,7 @@
       "parser": "babel-eslint"
     },
     "rules": {
-      "no-unused-vars":"off"
+      "no-unused-vars": "off"
     }
   },
   "browserslist": [

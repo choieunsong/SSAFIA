@@ -23,29 +23,29 @@ import "./home.css";
 import Login from "@/views/home/components/Login.vue";
 import { router } from "@/router/router.js";
 import { ElMessage } from "element-plus";
-import { onMounted } from '@vue/runtime-core';
-// import { onMounted } from '@vue/runtime-core'
-// import {useStore} from 'vuex';
+import {useStore} from 'vuex';
+import { computed } from "vue";
+// import { onMounted } from '@vue/runtime-core';
 
 export default {
   name: "Home",
   components: {
     Login,
   },
-  created() {
-    const Token = localStorage.getItem("token");
-    console.log("Token", Token);
-    if (Token) {
-      this.$store.dispatch("token/setIsLogin", true);
-      this.$store.dispatch("token/setToken", Token);
-    } else {
-      this.$store.dispatch("token/setIsLogin", false);
-    }
-  },
+  // created() {
+  //   const token = localStorage.getItem("token");
+  //   if (token) {
+  //     this.$store.dispatch("token/setIsLogin", true);
+  //     this.$store.dispatch("token/setToken", token);
+  //   } else {
+  //     this.$store.dispatch("token/setIsLogin", false);
+  //   }
+  // },
   setup() {
+    const store = useStore();
+    const isLogin = computed(() => store.getters["token/getIsLogin"])
     const moveToNickname = () => {
-      const token = localStorage.getItem("token");
-      if (token) {
+      if (isLogin.value) {
         router.push("room-setting");
       } else {
         ElMessage.error("로그인이 필요합니다!");
