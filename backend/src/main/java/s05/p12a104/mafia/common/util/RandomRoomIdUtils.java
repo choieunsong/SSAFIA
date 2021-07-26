@@ -6,7 +6,7 @@ public class RandomRoomIdUtils {
   public static String randomRoomId(String type) {
     String Id;
     
-    if (type.equals("Private"))
+    if (type.equals("private"))
       Id = "V";
     else
       Id = "B";
