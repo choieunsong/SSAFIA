@@ -47,3 +47,19 @@ export const router = createRouter({
   history: createWebHistory(),
   routes,
 });
+
+router.beforeEach((to, from, next) => {
+  let vuex = localStorage.getItem("vuex");
+  vuex = JSON.parse(vuex);
+  if (to.name === "RoomSetting") {
+    if (vuex === null) {
+      next({ name: "Home" });
+    } else if (vuex.token.isLogin === false) {
+      next({ name: "Home" });
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
+});
