@@ -20,12 +20,6 @@
           <span class="font-jua">모르는 사람과 플레이!</span>
         </el-button>
       </div>
-      <!-- -->
-      <div class="mt-5">
-        <el-button size="medium" round @click="goHome">
-          <span class="font-jua">이전 페이지로</span>
-        </el-button>
-      </div>
     </div>
 
     <div v-else class="mt-4">
@@ -46,7 +40,7 @@
       </div>
       <div class="mt-5">
         <el-button size="medium" round @click="goBack">
-          <span class="font-jua">이전 페이지로</span>
+          <span class="font-jua">이전 선택으로</span>
         </el-button>
       </div>
     </div>
@@ -54,7 +48,7 @@
 </template>
 
 <script>
-import { defineComponent, reactive, ref } from "vue";
+import { defineComponent, reactive } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { useStore } from "vuex";
@@ -107,16 +101,11 @@ export default defineComponent({
     const goBack = () => {
       state.isLast = false;
     };
-    const goHome = () => {
-      router.push("home");
-    };
     return {
       state,
       chooseAccessType,
       chooseRoomType,
       goBack,
-      goHome,
-      getRoomIdFromServer,
     };
   },
 });

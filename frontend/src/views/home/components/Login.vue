@@ -63,9 +63,8 @@ export default {
         duration: "2500",
       });
       localStorage.removeItem("token");
-      // 이부분에서 상태관리 측면에서 뭔가 에러나는듯
       store.dispatch("token/setIsLogin", false);
-      store.disaptch("token/setToken", "");
+      store.dispatch("token/setToken", "");
     };
 
     onMounted(() => {
