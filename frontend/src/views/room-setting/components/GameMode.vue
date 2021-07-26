@@ -20,6 +20,7 @@
           <span class="font-jua">모르는 사람과 플레이!</span>
         </el-button>
       </div>
+      <!-- -->
       <div class="mt-5">
         <el-button size="medium" round @click="goHome">
           <span class="font-jua">이전 페이지로</span>
@@ -55,22 +56,52 @@
 <script>
 import { defineComponent, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
+import axios from "axios";
+import { useStore } from "vuex";
+import { API_BASE_URL} from "@/constant/index";
 
 export default defineComponent({
   name: "GameMode",
   setup() {
     const router = useRouter();
+    const store = useStore();
     const state = reactive({
       accessType: "private",
       roomType: "basic",
       isLast: false,
+      roomId: "E817ds"    //나중에 backend에서 받아올 부분
     });
     const chooseAccessType = (type) => {
       state.accessType = type;
       state.isLast = true;
     };
+
+    const getRoomIdFromServer = () => {
+      axios({
+        method: "post",
+        url: API_BASE_URL + "/api/gamesessions",
+        headers: store.getters["token/getHeaders"],
+        data: {
+          accessType: state.accessType,
+          roomType: state.roomType
+        }
+      })
+      .then(({data}) => {
+        if(data.code == "success"){
+          // state.roomId = data.roomId;
+        }else if(data.code == "fail"){
+          // 방을 너무 많이 만들었습니다.
+          // 방 정원이 찼습니다.
+        }
+      })
+      .catch((err) => {
+        console.log("err",err);
+        router.push("NotFound");
+      })
+    }
     const chooseRoomType = (type) => {
       state.roomType = type;
+      getRoomIdFromServer();
       router.push("nickname");
     };
     const goBack = () => {
@@ -85,6 +116,7 @@ export default defineComponent({
       chooseRoomType,
       goBack,
       goHome,
+      getRoomIdFromServer,
     };
   },
 });
