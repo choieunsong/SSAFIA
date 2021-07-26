@@ -101,8 +101,8 @@ export default defineComponent({
     }
     const chooseRoomType = (type) => {
       state.roomType = type;
-      getRoomIdFromServer();
-      router.push("nickname");
+      // getRoomIdFromServer();
+      router.push({name: "Nickname", params: {roomId: state.roomId}});
     };
     const goBack = () => {
       state.isLast = false;

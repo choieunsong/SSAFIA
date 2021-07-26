@@ -10,19 +10,20 @@
     </div>
 
     <div id="nickname-form" v-show="isShow">
-      <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">      
-        
-        <el-input
-        placeholder="게임에서 사용할 닉네임을 입력하세요."
-        class="font-jua mb-4"
-        v-model="ruleForm.nickname"
-        maxlength="15"
-        show-word-limit
-        clearable
-        @keyup.enter="redirectToGame"
-        ></el-input>
-        
-        <el-button type="success" size="small" @click="submitForm('nicknameValidateForm')">
+      <el-form :model="state.form" status-icon :rules="state.rules" ref="nickname" label-width="100px" class="demo-ruleForm">      
+        <el-form-item prop="nickname" label-width="50px">
+          <el-input
+          placeholder="게임에서 사용할 닉네임을 입력하세요."
+          class="font-jua"
+          v-model.trim="state.form.nickname"
+          autocomplete="off"
+          maxlength="15"
+          show-word-limit
+          clearable
+          @keyup.enter="redirectToGame"
+          ></el-input>
+        </el-form-item>
+        <el-button type="success" size="small" @click="redirectToGame">
           <span class="font-jua">입장</span>
         </el-button>
       </el-form>
@@ -41,68 +42,73 @@ import "./nickname.css";
 import { onMounted, reactive, ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import { API_BASE_URL} from "@/constant/index";
 import axios from "axios";
 
 export default {
   name: "Nickname",
-  props: {
-    roomId: String
-  },
   data(){
-    var validateNickname = (rule, value, callback) => {
-      console.log('hello');
-      if(value.length > 15){
-        callback(new Error('닉네임은 15자 이하로 입력해주세요.'));
-      }else if(value == ''){
-        callback(new Error('닉네임을 입력해 주세요'));
-      }else if(value.test(/[~!@#$%^&*()_+|<>?:{}]/)){
-        callback(new Error('닉네임에는 특수문자가 포함될 수 없습니다.')); 
-      }else{
-        callback();
-      }
-    };
     return {
-      ruleForm:{
-        nickname: '',
-      },
-      rules: {
-        nickname: [
-          {validator: validateNickname, trigger: 'blur'}
-        ]
-      }
+      roomId: '',
+      URL: ''
     }
   },
-  methods: {   
-    submitForm(formName) {
-      console.log('submit form');
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          alert('submit!');
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
-    },
+  created(){
+    //roomId 세팅
+    this.roomId = this.$route.params.roomId;
+    console.log(this.roomId);
+    //url 세팅 
+    this.URL = API_BASE_URL + '/' + this.roomId;
+    console.log(this.URL);
   },
   setup() {
     const store = useStore();
     const router = useRouter();
+
     let isShow = ref(false);
+
+    const nickname = ref(null)
+
+    const validateNickname = (rule, value, callback) => {
+      console.log(rule.message);
+      if(value == '' || value.length < 3){
+        // rule.message = '닉네임은 3자 이상 15자 이하여야 합니다';
+        callback(new Error('Please input nickname'));
+      }else{
+        callback();
+      }
+    }
+
     const state = reactive({
       isError: false,
       errorMessage: "정원이 초과되었습니다",
-      URL: "",
+
+      form: {
+        nickname: ''
+      },
+      rules: {
+        nickname: [
+          {required: true, validator: validateNickname, trigger: 'blur', message: '닉네임은 3자 이상 15자 이하여야 합니다'}
+        ]
+      }
     });
+
     onMounted(() => {
       setTimeout(() => {
         isShow.value = true;
       }, 1000);
     });
     
-    const redirectToGame = () => {
-      // nickname validation 필요함
-      router.push({ name: "Game", params: {} });
+    const redirectToGame = (formName) => {
+      // nickname validation
+      nickname.value.validate((valid) => {
+        if(valid){
+          console.log('nickname:',state.form.nickname);
+        }else{
+          //  alert('Validate error');
+        }
+      })
+      // router.push({ name: "Game", params: {} });
     };
     const goHome = () => {
       router.push("home");
@@ -112,9 +118,12 @@ export default {
       state,
       redirectToGame,
       goHome,
+      nickname,
+      validateNickname
     };
   },
 };
 </script>
 
-<style></style>
+<style>
+</style>
