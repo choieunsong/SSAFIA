@@ -34,8 +34,9 @@ services:
     build:
       dockerfile: Dockerfile
       context: ./backend
+      target: local
+    env_file: local.env
     environment:
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       TZ: "Asia/Seoul"
       SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/mafia?useUnicode=yes&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true"
       SPRING_DATASOURCE_USERNAME: a104
