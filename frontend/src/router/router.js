@@ -28,19 +28,14 @@ const routes = [
     {
         path: "/nickname/:roomId",
         name: "Nickname",
+        props: true,
         component: () => import('@/views/nickname/Nickname')
     },
     {
         path: "/:catchAll(.*)",
         name: 'NotFound',
-        props: true,
         component: () => import('@/views/error/NotFound')
     },
-    // {
-    //     path: "/nickname",
-    //     name: "Nickname",
-    //     component: () => import('@/views/nickname/Nickname')
-    // },
     {
         path: "/game",
         name: 'Game',

@@ -26,6 +26,15 @@
   margin-left: 20vw;
 }
 
+.el-form-item__error{
+  color: #fff;
+  font-family: "Jua";
+}
+
+.el-button--success{
+  margin: 20px 0 0 0;
+}
+
 @keyframes slide-in-bottom {
   0% {
     transform: translateY(15vh);
