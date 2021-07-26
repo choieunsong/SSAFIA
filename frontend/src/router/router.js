@@ -36,11 +36,6 @@ const routes = [
         props: true,
         component: () => import('@/views/error/NotFound')
     },
-    // {
-    //     path: "/nickname",
-    //     name: "Nickname",
-    //     component: () => import('@/views/nickname/Nickname')
-    // },
     {
         path: "/game",
         name: 'Game',
@@ -51,4 +46,14 @@ const routes = [
 export const router = createRouter({
     history: createWebHistory(),
     routes
-});
+})
+router.beforeEach((to, from, next) => {
+    if (to.name === "RoomSetting" && from.name === "Home") {
+        next()
+    } else  if (to.name === "RoomSetting" && from.name !== "Home") {
+        next( {name: "Home"})
+    } else {
+        next()
+    }
+})
+
