@@ -20,7 +20,7 @@ spring:
             redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
             scope:
               - email
-              - profile0
+              - profile
   redis:
     port: 6379
     host: localhost
