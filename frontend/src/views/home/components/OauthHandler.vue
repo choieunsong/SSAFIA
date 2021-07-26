@@ -3,13 +3,14 @@
 </template>
 <script>
 import { ElNotification } from "element-plus";
-// import { onMounted } from '@vue/runtime-core'
-// import useRoute from 'vue-router'
-// import {useStore} from "vuex"
+import { useStore } from "vuex";
+import { API_BASE_URL } from "@/constant/index";
+import axios from "axios";
 
 export default {
   name: "OauthHandler",
   mounted() {
+    const store = useStore();
     const url = this.$route.fullPath;
     const slice = url.split("token=");
     const token = slice[1];
@@ -17,49 +18,38 @@ export default {
     // token 존재 => /profile
     // error 존재 => /
     if (token) {
-      this.$store.dispatch("token/setToken", token);
-      localStorage.setItem("token", token);
-      this.$store.dispatch("token/setIsLogin", true);
-      // console.log(this.$store.getters["token/getToken"]);
-      ElNotification({
-        title: "Login Success!",
-        message: "환영합니다!",
-        type: "success",
-        duration: "2500",
-      });
-      this.$router.push({ name: "Home" });
+      store.dispatch("token/setToken", token);
+      store.dispatch("token/setLogin");
+
+      axios({
+        method: "get",
+        url: API_BASE_URL + "/api/user/profile",
+        headers: store.getters["token/getHeaders"],
+      })
+        .then(({ data }) => {
+          return {
+            name: data.data.name,
+            imageUrl: data.data.imageUrl,
+            email: data.data.email,
+          };
+        })
+        .then((profile) => {
+          store.dispatch("token/setProfile", profile);
+          ElNotification({
+            title: "Login Success!",
+            message: `환영합니다! ${profile.name}님!`,
+            type: "success",
+            duration: "2500",
+            customClass: "font-jua",
+          });
+          this.$router.push({ name: "Home" });
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
     } else {
       this.$router.push("/");
     }
   },
-
-  // setup() {
-  //     const router = useRoute();
-  //     const store = useStore();
-
-  //     onMounted(() => {
-  //         const url = router.fullPath;
-  //         const slice = url.split("token=");
-  //         const token = slice[1];
-
-  //         // 분기처리
-  //         // token 존재 => /profile
-  //         // error 존재 => /
-  //         if(token){
-  //             store.dispatch('token/setToken', token);
-  //             localStorage.setItem('token', token);
-  //             store.dispatch('token/setIsLogin', true);
-  //             console.log(store.getters['token/getToken']);
-
-  //             router.replace('/profile');
-  //         }else{
-  //             router.replace('/');
-  //         }
-  //     })
-  //     return{
-  //         router,
-  //         store
-  //     }
-  // },
 };
 </script>
