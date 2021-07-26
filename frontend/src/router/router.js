@@ -1,4 +1,5 @@
 import {createWebHistory, createRouter} from 'vue-router';
+import { computed} from 'vue'
 
 const routes = [
     {
@@ -47,11 +48,13 @@ export const router = createRouter({
     history: createWebHistory(),
     routes
 })
-router.beforeEach((to, from, next) => {
-    if (to.name === "RoomSetting" && from.name === "Home") {
+router.beforeEach((to, from, next) => { 
+    const isLogin = (localStorage.getItem('token') === null ? false : true)
+    console.log(isLogin)
+    if (to.name === "RoomSetting" && isLogin) {
         next()
-    } else  if (to.name === "RoomSetting" && from.name !== "Home") {
-        next( {name: "Home"})
+    } else if (to.name === "RoomSetting" && !isLogin) {
+        next({ name: "Home"})
     } else {
         next()
     }
