@@ -26,20 +26,21 @@ const routes = [
         component: () => import('@/views/room-setting/Room-setting'),
     },
     {
-        path: "/nickname",
+        path: "/nickname/:roomId",
         name: "Nickname",
         component: () => import('@/views/nickname/Nickname')
     },
     {
         path: "/:catchAll(.*)",
         name: 'NotFound',
+        props: true,
         component: () => import('@/views/error/NotFound')
     },
-    {
-        path: "/nickname",
-        name: "Nickname",
-        component: () => import('@/views/nickname/Nickname')
-    },
+    // {
+    //     path: "/nickname",
+    //     name: "Nickname",
+    //     component: () => import('@/views/nickname/Nickname')
+    // },
     {
         path: "/game",
         name: 'Game',

@@ -42,7 +42,6 @@ export default {
     const store = useStore();
     const state = reactive({
       googleUrl:
-        // "http://localhost:8080/oauth2/authorize/google?redirect_uri=http://localhost:8081/oauth2/redirect"
         GOOGLE_AUTH_URL,
       user: {
         name: "",
@@ -70,22 +69,16 @@ export default {
     };
 
     onMounted(() => {
-      console.log("google url",GOOGLE_AUTH_URL);
-      console.log("base api", API_BASE_URL);
       if (isLogin.value) {
         const Token = store.getters["token/getToken"];
         console.log("token", Token);
-        const headers = {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + Token,
-        };
+        
         const url =  API_BASE_URL + "/api/user/profile";
         console.log("url", url);
-
         axios({
           method: "get",
           url: url,
-          headers: headers,
+          headers: store.getters["token/getHeaders"],
         })
           .then(({ data }) => {
             console.log("axios get success", data);

@@ -11,6 +11,12 @@ const getters = {
     },
     getIsLogin: (state) => {
         return state.isLogin;
+    },
+    getHeaders: (state) => {
+        return {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + state.token,
+        };
     }
 }
 
