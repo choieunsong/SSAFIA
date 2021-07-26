@@ -22,7 +22,7 @@ public class GameSession {
 
   private int day;
 
-  private int phasecount;
+  private int phaseCount;
 
   private boolean night;
 
@@ -46,7 +46,7 @@ public class GameSession {
   @CreationTimestamp
   private Timestamp createtime;
 
-  private Timestamp lastenter;
+  private Timestamp lastEnter;
 
   @Builder
   public GameSession(String roomId, String creator, String accessType, String roomType) {

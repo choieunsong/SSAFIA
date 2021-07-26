@@ -13,7 +13,7 @@ public class Player {
   
   private String nickname;
   
-  private String gamerole;
+  private String gameRole;
   
   private boolean alive;
 }
