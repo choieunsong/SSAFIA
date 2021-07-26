@@ -23,6 +23,7 @@ import "./home.css";
 import Login from "@/views/home/components/Login.vue";
 import { router } from "@/router/router.js";
 import { ElMessage } from "element-plus";
+import { onMounted } from '@vue/runtime-core';
 // import { onMounted } from '@vue/runtime-core'
 // import {useStore} from 'vuex';
 
@@ -50,7 +51,7 @@ export default {
         ElMessage.error("로그인이 필요합니다!");
       }
     };
-
+    
     return {
       moveToNickname,
     };

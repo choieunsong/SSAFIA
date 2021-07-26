@@ -33,6 +33,7 @@ import { onMounted } from "@vue/runtime-core";
 import { useStore } from "vuex";
 import { reactive } from "@vue/reactivity";
 import { ElNotification } from "element-plus";
+import { GOOGLE_AUTH_URL, API_BASE_URL} from "@/constant/index";
 import axios from "axios";
 
 export default {
@@ -41,7 +42,7 @@ export default {
     const store = useStore();
     const state = reactive({
       googleUrl:
-        "http://localhost:8080/oauth2/authorize/google?redirect_uri=http://localhost:8081/oauth2/redirect",
+        GOOGLE_AUTH_URL,
       user: {
         name: "",
         imageUrl: "",
@@ -70,17 +71,13 @@ export default {
       if (isLogin.value) {
         const Token = store.getters["token/getToken"];
         console.log("token", Token);
-        const headers = {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + Token,
-        };
-        const url = "http://localhost:8080/api/user/profile";
+        
+        const url =  API_BASE_URL + "/api/user/profile";
         console.log("url", url);
-
         axios({
           method: "get",
           url: url,
-          headers: headers,
+          headers: store.getters["token/getHeaders"],
         })
           .then(({ data }) => {
             console.log("axios get success", data);
