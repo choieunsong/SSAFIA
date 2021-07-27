@@ -7,5 +7,5 @@ import s05.p12a104.mafia.domain.entity.GameSession;
 
 @Repository
 public interface GameSessionRedisRepository extends CrudRepository<GameSession, String> {
-  List<GameSession> findByCreator(String creator);
+  List<GameSession> findByCreatorEmail(String email);
 }

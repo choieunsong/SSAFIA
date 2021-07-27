@@ -27,7 +27,7 @@ public class GameSession {
   private boolean night;
 
   @Indexed
-  private String creator;
+  private String creatorEmail;
 
   private List<Player> players;
 
@@ -43,15 +43,14 @@ public class GameSession {
   @Enumerated(EnumType.STRING)
   private GamePhase phase;
 
-  @CreationTimestamp
   private Timestamp createtime;
 
   private Timestamp lastEnter;
 
   @Builder
-  public GameSession(String roomId, String creator, String accessType, String roomType) {
+  public GameSession(String roomId, String creatorEmail, String accessType, String roomType) {
     this.roomId = roomId;
-    this.creator = creator;
+    this.creatorEmail = creatorEmail;
     this.accessType = accessType;
     this.roomType = roomType;
     this.state = GameState.wait;

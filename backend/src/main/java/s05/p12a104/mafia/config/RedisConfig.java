@@ -1,8 +1,9 @@
 package s05.p12a104.mafia.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -12,15 +13,17 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 @EnableRedisRepositories
 public class RedisConfig {
 
-  @Value("${spring.redis.host}")
-  private String redisHost;
-
-  @Value("${spring.redis.port}")
-  private int redisPort;
+  @Bean
+  @Primary
+  public RedisProperties redisProperties() {
+    return new RedisProperties();
+  }
 
   @Bean
   public RedisConnectionFactory redisConnectionFactory() {
-    return new LettuceConnectionFactory("localhost", 6379);
+    RedisProperties properties = redisProperties();
+    System.out.println(properties.getHost() + ", " + properties.getPort());
+    return new LettuceConnectionFactory(properties.getHost(), properties.getPort());
   }
 
   @Bean
