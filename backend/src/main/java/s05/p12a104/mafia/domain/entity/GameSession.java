@@ -1,10 +1,8 @@
 package s05.p12a104.mafia.domain.entity;
 
-import java.security.Timestamp;
 import java.util.List;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
@@ -31,8 +29,6 @@ public class GameSession {
 
   private List<Player> players;
 
-  private String url;
-
   private String accessType;
 
   private String roomType;
@@ -43,9 +39,9 @@ public class GameSession {
   @Enumerated(EnumType.STRING)
   private GamePhase phase;
 
-  private Timestamp createtime;
+  private String createtime;
 
-  private Timestamp lastEnter;
+  private String lastEnter;
 
   @Builder
   public GameSession(String roomId, String creatorEmail, String accessType, String roomType) {

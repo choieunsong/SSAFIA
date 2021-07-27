@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import s05.p12a104.mafia.api.requset.GameSessionPostReq;
+import s05.p12a104.mafia.api.response.GameSessionRes;
 import s05.p12a104.mafia.api.service.GameSessionService;
 import s05.p12a104.mafia.common.exception.ResourceNotFoundException;
 import s05.p12a104.mafia.common.reponse.ApiResponseDto;
@@ -37,15 +38,15 @@ public class GameSessionController {
       @ApiResponse(code = 500, message = "서버 오류")})
   @PostMapping
   @PreAuthorize("hasRole('USER')")
-  public ApiResponseDto<GameSession> makeRoom(@ApiIgnore @CurrentUser UserPrincipal userPrincipal,
+  public ApiResponseDto<GameSessionRes> makeRoom(@ApiIgnore @CurrentUser UserPrincipal userPrincipal,
       @RequestBody @ApiParam GameSessionPostReq typeInfo) {
 
-    GameSession gamesession =
+    GameSession gameSession =
         gameSessionService.makeGame(
             userRepository.findById(userPrincipal.getId()).orElseThrow(
                 () -> new ResourceNotFoundException("User", "id", userPrincipal.getId())),
             typeInfo);
-    return ApiResponseDto.success(gamesession);
+    return ApiResponseDto.success(GameSessionRes.of(gameSession));
   }
 
   @ApiOperation(value = "방 정보", notes = "들어가는 방의 정보를 반환합니다.", response = ApiResponseDto.class)
@@ -53,9 +54,9 @@ public class GameSessionController {
       @ApiResponse(code = 401, message = "인증 실패"), @ApiResponse(code = 404, message = "페이지 없음"),
       @ApiResponse(code = 500, message = "서버 오류")})
   @GetMapping("/{roomId}")
-  public ApiResponseDto<GameSession> enterRoom(@PathVariable("roomId") String roomId) {
+  public ApiResponseDto<GameSessionRes> enterRoom(@PathVariable("roomId") String roomId) {
 
-    GameSession gamesession = gameSessionService.enterGame(roomId);
-    return ApiResponseDto.success(gamesession);
+    GameSession gameSession = gameSessionService.enterGame(roomId);
+    return ApiResponseDto.success(GameSessionRes.of(gameSession));
   }
 }
