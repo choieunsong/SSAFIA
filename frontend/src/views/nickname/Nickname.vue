@@ -10,17 +10,24 @@
     </div>
 
     <div id="nickname-form" v-show="isShow">
-      <el-form :model="state.form" status-icon :rules="state.rules" ref="nickname" label-width="100px" class="demo-ruleForm">      
+      <el-form
+        :model="state.form"
+        status-icon
+        :rules="state.rules"
+        ref="nickname"
+        label-width="100px"
+        class="demo-ruleForm"
+      >
         <el-form-item prop="nickname" label-width="50px">
           <el-input
-          placeholder="게임에서 사용할 닉네임을 입력하세요."
-          class="font-jua"
-          v-model.trim="state.form.nickname"
-          autocomplete="off"
-          maxlength="15"
-          show-word-limit
-          clearable
-          @keyup.enter="redirectToGame"
+            placeholder="게임에서 사용할 닉네임을 입력하세요."
+            class="font-jua"
+            v-model.trim="state.form.nickname"
+            autocomplete="off"
+            maxlength="15"
+            show-word-limit
+            clearable
+            @keyup.enter="redirectToGame"
           ></el-input>
         </el-form-item>
         <el-button type="success" size="small" @click="redirectToGame">
@@ -42,23 +49,23 @@ import "./nickname.css";
 import { onMounted, reactive, ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import { API_BASE_URL} from "@/constant/index";
+import { API_BASE_URL } from "@/constant/index";
 import axios from "axios";
 
 export default {
   name: "Nickname",
-  data(){
+  data() {
     return {
-      roomId: '',
-      URL: ''
-    }
+      roomId: "",
+      URL: "",
+    };
   },
-  created(){
+  created() {
     //roomId 세팅
     this.roomId = this.$route.params.roomId;
     console.log(this.roomId);
-    //url 세팅 
-    this.URL = API_BASE_URL + '/' + this.roomId;
+    //url 세팅
+    this.URL = API_BASE_URL + "/" + this.roomId;
     console.log(this.URL);
   },
   setup() {
@@ -67,30 +74,35 @@ export default {
 
     let isShow = ref(false);
 
-    const nickname = ref(null)
+    const nickname = ref(null);
 
     const validateNickname = (rule, value, callback) => {
       console.log(rule.message);
-      if(value == '' || value.length < 3){
+      if (value == "" || value.length < 3) {
         // rule.message = '닉네임은 3자 이상 15자 이하여야 합니다';
-        callback(new Error('Please input nickname'));
-      }else{
+        callback(new Error("Please input nickname"));
+      } else {
         callback();
       }
-    }
+    };
 
     const state = reactive({
       isError: false,
       errorMessage: "정원이 초과되었습니다",
 
       form: {
-        nickname: ''
+        nickname: "",
       },
       rules: {
         nickname: [
-          {required: true, validator: validateNickname, trigger: 'blur', message: '닉네임은 3자 이상 15자 이하여야 합니다'}
-        ]
-      }
+          {
+            required: true,
+            validator: validateNickname,
+            trigger: "blur",
+            message: "닉네임은 3자 이상 15자 이하여야 합니다",
+          },
+        ],
+      },
     });
 
     onMounted(() => {
@@ -98,17 +110,17 @@ export default {
         isShow.value = true;
       }, 1000);
     });
-    
+
     const redirectToGame = (formName) => {
       // nickname validation
       nickname.value.validate((valid) => {
-        if(valid){
-          console.log('nickname:',state.form.nickname);
-        }else{
+        if (valid) {
+          console.log("nickname:", state.form.nickname);
+          router.push({ name: "Game", params: { roomId: state.roomId } });
+        } else {
           //  alert('Validate error');
         }
-      })
-      // router.push({ name: "Game", params: {} });
+      });
     };
     const goHome = () => {
       router.push("home");
@@ -119,11 +131,10 @@ export default {
       redirectToGame,
       goHome,
       nickname,
-      validateNickname
+      validateNickname,
     };
   },
 };
 </script>
 
-<style>
-</style>
+<style></style>
