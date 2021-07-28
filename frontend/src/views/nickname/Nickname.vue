@@ -1,12 +1,7 @@
 <template>
   <div class="wrap">
     <div>
-      <img
-        id="nickname-logo"
-        src="@/assets/image/logo-name.png"
-        alt="logo name"
-        @click="goHome"
-      />
+      <img id="nickname-logo" src="@/assets/image/logo-name.png" alt="logo name" @click="goHome" />
     </div>
 
     <div id="nickname-form" v-show="isShow">
@@ -106,6 +101,8 @@ export default {
     });
 
     onMounted(() => {
+      // 게임이 시작됐는지 아닌지 확인
+      // 풀방일
       setTimeout(() => {
         isShow.value = true;
       }, 1000);
