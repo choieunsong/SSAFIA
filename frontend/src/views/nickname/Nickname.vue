@@ -10,17 +10,24 @@
     </div>
 
     <div id="nickname-form" v-show="isShow">
-      <el-form :model="state.form" status-icon :rules="state.rules" ref="nickname" label-width="100px" class="demo-ruleForm">      
+      <el-form
+        :model="state.form"
+        status-icon
+        :rules="state.rules"
+        ref="nickname"
+        label-width="100px"
+        class="demo-ruleForm"
+      >
         <el-form-item prop="nickname" label-width="50px">
           <el-input
-          placeholder="게임에서 사용할 닉네임을 입력하세요."
-          class="font-jua"
-          v-model.trim="state.form.nickname"
-          autocomplete="off"
-          maxlength="15"
-          show-word-limit
-          clearable
-          @keyup.enter="redirectToGame"
+            placeholder="게임에서 사용할 닉네임을 입력하세요."
+            class="font-jua"
+            v-model.trim="state.form.nickname"
+            autocomplete="off"
+            maxlength="15"
+            show-word-limit
+            clearable
+            @keyup.enter="redirectToGame"
           ></el-input>
         </el-form-item>
         <el-button type="success" size="small" @click="redirectToGame">
@@ -29,11 +36,12 @@
       </el-form>
     </div>
 
-    <!-- <el-alert
+    <el-alert
       class="nickname-alert"
       type="error"
       :title="state.errorMessage"
-    ></el-alert> -->
+      v-if="state.isError"
+    ></el-alert>
   </div>
 </template>
 
@@ -41,73 +49,114 @@
 import "./nickname.css";
 import { onMounted, reactive, ref } from "vue";
 import { useStore } from "vuex";
-import { useRouter } from "vue-router";
-import { API_BASE_URL} from "@/constant/index";
+import { useRouter, useRoute } from "vue-router";
+import { API_BASE_URL } from "@/constant/index";
 import axios from "axios";
 
 export default {
   name: "Nickname",
-  data(){
+  data() {
     return {
-      roomId: '',
-      URL: ''
-    }
+      roomId: "",
+      URL: "",
+    };
   },
-  created(){
-    //roomId 세팅
-    this.roomId = this.$route.params.roomId;
-    console.log(this.roomId);
-    //url 세팅 
-    this.URL = API_BASE_URL + '/' + this.roomId;
-    console.log(this.URL);
-  },
+  // created(){
+  //   //roomId 세팅
+  //   this.roomId = this.$route.params.roomId;
+  //   console.log(this.roomId);
+  //   //url 세팅
+  //   this.URL = API_BASE_URL + '/api/gamsession' + this.roomId;
+  //   console.log(this.URL);
+  // },
   setup() {
     const store = useStore();
     const router = useRouter();
+    const route = useRoute();
 
     let isShow = ref(false);
 
-    const nickname = ref(null)
+    const nickname = ref(null);
 
     const validateNickname = (rule, value, callback) => {
       console.log(rule.message);
-      if(value == '' || value.length < 3){
+      if (value == "" || value.length < 3) {
         // rule.message = '닉네임은 3자 이상 15자 이하여야 합니다';
-        callback(new Error('Please input nickname'));
-      }else{
+        callback(new Error("Please input nickname"));
+      } else {
         callback();
       }
-    }
+    };
 
     const state = reactive({
       isError: false,
-      errorMessage: "정원이 초과되었습니다",
-
+      roomId: "",
+      errorMessage: "",
       form: {
-        nickname: ''
+        nickname: "",
       },
       rules: {
         nickname: [
-          {required: true, validator: validateNickname, trigger: 'blur', message: '닉네임은 3자 이상 15자 이하여야 합니다'}
-        ]
-      }
+          {
+            required: true,
+            validator: validateNickname,
+            trigger: "blur",
+            message: "닉네임은 3자 이상 15자 이하여야 합니다",
+          },
+        ],
+      },
     });
 
     onMounted(() => {
+      state.roomId = route.params.roomId;
+      axios({
+        method: "GET",
+        url: API_BASE_URL + "/api/gamesessioons/" + route.params.roomId,
+        headers: store.getters["token/getHeaders"],
+      })
+        .then(({ data }) => {
+          if (data.data.code === "fail") {
+            state.errorMessage = data.data.message;
+            state.isError = true;
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       setTimeout(() => {
         isShow.value = true;
       }, 1000);
     });
-    
+
     const redirectToGame = (formName) => {
       // nickname validation
       nickname.value.validate((valid) => {
-        if(valid){
-          console.log('nickname:',state.form.nickname);
-        }else{
+        if (valid) {
+          console.log("nickname:", state.form.nickname);
+          axios({
+            method: "POST",
+            url: API_BASE_URL + "/api/gamesessioons/" + route.params.roomId,
+            headers: store.getters["token/getHeaders"],
+            body: {
+              nickname: state.form.nickname
+            },
+          })
+            .then(({ data }) => {
+              if (data.data.code === "fail") {
+                state.errorMessage = data.data.message;
+                state.isError = true;
+              } else {
+                store.dispatch('token/playerId', data.date.playerId)
+                router.push({ name: 'Game', params: route.params.roomId})
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else {
           //  alert('Validate error');
         }
-      })
+      });
       // router.push({ name: "Game", params: {} });
     };
     const goHome = () => {
@@ -119,11 +168,10 @@ export default {
       redirectToGame,
       goHome,
       nickname,
-      validateNickname
+      validateNickname,
     };
   },
 };
 </script>
 
-<style>
-</style>
+<style></style>
