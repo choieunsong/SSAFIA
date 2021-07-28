@@ -28,6 +28,8 @@ const getters = {
     return {
       "Content-Type": "application/json",
       Authorization: "Bearer " + state.token,
+      RoomId: state.roomId,
+      PlayerId: state.playerId,
     };
   },
   getRoomId: (state) => {
