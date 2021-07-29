@@ -8,6 +8,7 @@ const state = {
   isLogin: false,
   roomId: "",
   playerId: "",
+  nickname: ""
 };
 
 const getters = {
@@ -38,6 +39,9 @@ const getters = {
   getPlayerId: (state) => {
     return state.playerId
   },
+  getNickname: (state) => {
+    return state.nickname
+  },
 };
 
 const actions = {
@@ -58,6 +62,15 @@ const actions = {
   },
   setPlayerId({ commit }) {
     commit(TOKEN.SET_PLAYERID)
+  },
+  setNickname({ commit }, nickname) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        console.log(nickname);
+        commit(TOKEN.SET_NICKNAME, nickname);
+        resolve();
+      }, 100)
+    })
   }
 };
 
@@ -81,7 +94,10 @@ const mutations = {
   },
   [TOKEN.SET_PLAYERID](state, playerId) {
     state.playerId = playerId
-  }
+  },
+  [TOKEN.SET_NICKNAME](state, nickname) {
+    state.nickname = nickname;
+  },
 };
 
 export default {

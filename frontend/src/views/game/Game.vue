@@ -1,21 +1,7 @@
 <template>
   <div id="container">
     <div id="wrapper">
-      <div id="join" class="animate join">
-        <h1>Join a Room</h1>
-        <form v-on:submit.prevent="register" accept-charset="UTF-8">
-          <p>
-            <input type="text" name="name" value="" id="name" placeholder="Username" required />
-          </p>
-          <p>
-            <input type="text" name="room" value="" id="roomName" placeholder="Room" required />
-          </p>
-          <p class="submit">
-            <input type="submit" name="commit" value="Join!" />
-          </p>
-        </form>
-      </div>
-      <div id="room" style="display: none;">
+      <div id="room">
         <h2 id="room-header"></h2>
 
         <div id="participants"></div>
@@ -27,6 +13,8 @@
 
 <script>
 import { onMounted, onDeactivated, reactive } from "vue";
+import { useRoute } from "vue-router";
+import { useStore } from "vuex";
 import kurentoUtils from "kurento-utils";
 import webRtcPeer from "webrtc-adapter";
 import "./Game.css";
@@ -38,10 +26,15 @@ export default {
     var ws = {};
     const state = reactive({});
 
+    const store = useStore();
+    const route = useRoute();
+
     const PARTICIPANT_MAIN_CLASS = "participant main";
     const PARTICIPANT_CLASS = "participant";
-    var name = "";
-    var room = "";
+
+    var name = store.getters["token/getNickname"];
+    var room = route.params.roomId;
+    console.log(name, room);
     ///////////////////// participant /////////////////
     function Participant(name) {
       this.name = name;
@@ -187,9 +180,6 @@ export default {
         participants[key].dispose();
       }
 
-      document.getElementById("join").style.display = "block";
-      document.getElementById("room").style.display = "none";
-
       ws.close();
     }
 
@@ -220,22 +210,6 @@ export default {
       delete participants[request.name];
     }
 
-    function register() {
-      name = document.getElementById("name").value;
-      var room = document.getElementById("roomName").value;
-
-      document.getElementById("room-header").innerText = "ROOM " + room;
-      document.getElementById("join").style.display = "none";
-      document.getElementById("room").style.display = "block";
-
-      var message = {
-        id: "joinRoom",
-        name: name,
-        room: room,
-      };
-      sendMessage(message);
-    }
-
     //sendMessage
     const sendMessage = function(message) {
       var jsonMessage = JSON.stringify(message);
@@ -249,12 +223,18 @@ export default {
 
       // 서버와 연결.
       // ws = new WebSocket("wss://18.223.72.42:8443/groupcall");
-      // ws = new WebSocket("wss://18.223.72.42:8080/groupcall");
       ws = new WebSocket("wss://localhost:8080/groupcall");
 
       ws.onopen = (event) => {
         console.log(event);
         console.log("Successfully connected to the echo websocket server...");
+
+        var message = {
+          id: "joinRoom",
+          name: name,
+          room: room,
+        };
+        sendMessage(message);
       };
 
       ws.onmessage = function(message) {
@@ -294,7 +274,6 @@ export default {
     return {
       state,
       participants,
-      register,
       leaveRoom,
     };
   },

@@ -12,11 +12,27 @@
 #nickname-form {
   width: 30rem;
   color: snow;
-  margin-top: 7rem;
+  margin-top: 0.5rem;
   animation-duration: 1s;
   animation-name: fade-in;
   display: inline-block;
   border-radius: 3%;
+}
+
+#nickname-roomid > * {
+  font-family: "Jua";
+  color: #fff21a;
+  font-size: 2.5rem;
+  margin-top: 3rem;
+}
+
+#nickname-roomid span {
+  font-weight: 900;
+  text-shadow: #a6036d 5px 5px 10px;
+}
+
+#nickname-roomid p {
+  text-shadow: 0 0 5px #a6036d;
 }
 
 .nickname-alert {
@@ -26,12 +42,12 @@
   margin-left: 20vw;
 }
 
-.el-form-item__error{
+.el-form-item__error {
   color: #fff;
   font-family: "Jua";
 }
 
-.el-button--success{
+.el-button--success {
   margin: 20px 0 0 0;
 }
 

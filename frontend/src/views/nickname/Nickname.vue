@@ -4,6 +4,12 @@
       <img id="nickname-logo" src="@/assets/image/logo-name.png" alt="logo name" @click="goHome" />
     </div>
 
+    <div id="nickname-roomid">
+      <p>
+        ROOM ID: <span>{{ roomId }}</span>
+      </p>
+    </div>
+
     <div id="nickname-form" v-show="isShow">
       <el-form
         :model="state.form"
@@ -12,6 +18,7 @@
         ref="nickname"
         label-width="100px"
         class="demo-ruleForm"
+        @submit.prevent
       >
         <el-form-item prop="nickname" label-width="50px">
           <el-input
@@ -50,26 +57,14 @@ import axios from "axios";
 
 export default {
   name: "Nickname",
-  data() {
-    return {
-      roomId: "",
-      URL: "",
-    };
-  },
-  // created(){
-  //   //roomId 세팅
-  //   this.roomId = this.$route.params.roomId;
-  //   console.log(this.roomId);
-  //   //url 세팅
-  //   this.URL = API_BASE_URL + '/api/gamsession' + this.roomId;
-  //   console.log(this.URL);
-  // },
   setup() {
     const store = useStore();
     const router = useRouter();
     const route = useRoute();
 
     let isShow = ref(false);
+    const roomId = route.params.roomId;
+    const url = API_BASE_URL + roomId;
 
     const nickname = ref(null);
 
@@ -85,7 +80,6 @@ export default {
 
     const state = reactive({
       isError: false,
-      roomId: "",
       errorMessage: "",
       form: {
         nickname: "",
@@ -103,21 +97,20 @@ export default {
     });
 
     onMounted(() => {
-      state.roomId = route.params.roomId;
-      axios({
-        method: "GET",
-        url: API_BASE_URL + "/api/gamesessioons/" + route.params.roomId,
-        headers: store.getters["token/getHeaders"],
-      })
-        .then(({ data }) => {
-          if (data.data.code === "fail") {
-            state.errorMessage = data.data.message;
-            state.isError = true;
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      // axios({
+      //   method: "GET",
+      //   url: API_BASE_URL + "/api/gamesessioons/" + roomId,
+      //   headers: store.getters["token/getHeaders"],
+      // })
+      //   .then(({ data }) => {
+      //     if (data.data.code === "fail") {
+      //       state.errorMessage = data.data.message;
+      //       state.isError = true;
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //   });
       setTimeout(() => {
         isShow.value = true;
       }, 1000);
@@ -128,31 +121,33 @@ export default {
       nickname.value.validate((valid) => {
         if (valid) {
           console.log("nickname:", state.form.nickname);
-          axios({
-            method: "POST",
-            url: API_BASE_URL + "/api/gamesessioons/" + route.params.roomId,
-            headers: store.getters["token/getHeaders"],
-            body: {
-              nickname: state.form.nickname
-            },
-          })
-            .then(({ data }) => {
-              if (data.data.code === "fail") {
-                state.errorMessage = data.data.message;
-                state.isError = true;
-              } else {
-                store.dispatch('token/playerId', data.date.playerId)
-                router.push({ name: 'Game', params: route.params.roomId})
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+          // axios({
+          //   method: "POST",
+          //   url: API_BASE_URL + "/api/gamesessioons/" + route.params.roomId,
+          //   headers: store.getters["token/getHeaders"],
+          //   body: {
+          //     nickname: state.form.nickname,
+          //   },
+          // })
+          //   .then(({ data }) => {
+          //     if (data.data.code === "fail") {
+          //       state.errorMessage = data.data.message;
+          //       state.isError = true;
+          //     } else {
+          //       store.dispatch("token/playerId", data.date.playerId);
+          store.dispatch("token/setNickname", state.form.nickname).then(() => {
+            console.log(store.getters["token/getNickname"]);
+            router.push({ name: "Game", params: route.params.roomId });
+          });
+          //     }
+          //   })
+          //   .catch((err) => {
+          //     console.log(err);
+          //   });
         } else {
           //  alert('Validate error');
         }
       });
-      // router.push({ name: "Game", params: {} });
     };
     const goHome = () => {
       router.push("home");
@@ -160,6 +155,7 @@ export default {
     return {
       isShow,
       state,
+      roomId,
       redirectToGame,
       goHome,
       nickname,
