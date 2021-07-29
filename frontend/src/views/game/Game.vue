@@ -248,7 +248,10 @@ export default {
       window.addEventListener("beforeunload", unLoadEvent);
 
       // 서버와 연결.
-      ws = new WebSocket("wss://18.223.72.42:8443/groupcall");
+      // ws = new WebSocket("wss://18.223.72.42:8443/groupcall");
+      // ws = new WebSocket("wss://18.223.72.42:8080/groupcall");
+      ws = new WebSocket("wss://localhost:8080/groupcall");
+
       ws.onopen = (event) => {
         console.log(event);
         console.log("Successfully connected to the echo websocket server...");
