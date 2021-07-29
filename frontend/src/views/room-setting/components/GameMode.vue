@@ -3,20 +3,12 @@
     <div v-if="!state.isLast" class="mt-4">
       <span class="font-jua">누구와 게임을 하시겠어요?</span>
       <div class="mt-5 mb-4">
-        <el-button
-          class="gamemode-btn1"
-          round
-          @click="chooseAccessType('private')"
-        >
+        <el-button class="gamemode-btn1" round @click="chooseAccessType('private')">
           <span class="font-jua">친구와 함께 플레이!</span>
         </el-button>
       </div>
       <div>
-        <el-button
-          class="gamemode-btn2"
-          round
-          @click="chooseAccessType('public')"
-        >
+        <el-button class="gamemode-btn2" round @click="chooseAccessType('public')">
           <span class="font-jua">모르는 사람과 플레이!</span>
         </el-button>
       </div>
@@ -30,11 +22,7 @@
         </el-button>
       </div>
       <div>
-        <el-button
-          class="gamemode-btn2"
-          round
-          @click="chooseRoomType('custom')"
-        >
+        <el-button class="gamemode-btn2" round @click="chooseRoomType('custom')">
           <span class="font-jua">커스텀 모드</span>
         </el-button>
       </div>
@@ -63,7 +51,7 @@ export default defineComponent({
       accessType: "private",
       roomType: "basic",
       isLast: false,
-      roomId: "", //나중에 backend에서 받아올 부분
+      roomId: "Es14g5f", //나중에 backend에서 받아올 부분
     });
     const chooseAccessType = (type) => {
       state.accessType = type;
