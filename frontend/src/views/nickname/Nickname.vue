@@ -31,11 +31,12 @@
       </el-form>
     </div>
 
-    <!-- <el-alert
+    <el-alert
       class="nickname-alert"
       type="error"
       :title="state.errorMessage"
-    ></el-alert> -->
+      v-if="state.isError"
+    ></el-alert>
   </div>
 </template>
 
@@ -43,7 +44,7 @@
 import "./nickname.css";
 import { onMounted, reactive, ref } from "vue";
 import { useStore } from "vuex";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { API_BASE_URL } from "@/constant/index";
 import axios from "axios";
 
@@ -55,17 +56,18 @@ export default {
       URL: "",
     };
   },
-  created() {
-    //roomId 세팅
-    this.roomId = this.$route.params.roomId;
-    console.log(this.roomId);
-    //url 세팅
-    this.URL = API_BASE_URL + "/" + this.roomId;
-    console.log(this.URL);
-  },
+  // created(){
+  //   //roomId 세팅
+  //   this.roomId = this.$route.params.roomId;
+  //   console.log(this.roomId);
+  //   //url 세팅
+  //   this.URL = API_BASE_URL + '/api/gamsession' + this.roomId;
+  //   console.log(this.URL);
+  // },
   setup() {
     const store = useStore();
     const router = useRouter();
+    const route = useRoute();
 
     let isShow = ref(false);
 
@@ -83,8 +85,8 @@ export default {
 
     const state = reactive({
       isError: false,
-      errorMessage: "정원이 초과되었습니다",
-
+      roomId: "",
+      errorMessage: "",
       form: {
         nickname: "",
       },
@@ -101,8 +103,21 @@ export default {
     });
 
     onMounted(() => {
-      // 게임이 시작됐는지 아닌지 확인
-      // 풀방일
+      state.roomId = route.params.roomId;
+      axios({
+        method: "GET",
+        url: API_BASE_URL + "/api/gamesessioons/" + route.params.roomId,
+        headers: store.getters["token/getHeaders"],
+      })
+        .then(({ data }) => {
+          if (data.data.code === "fail") {
+            state.errorMessage = data.data.message;
+            state.isError = true;
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       setTimeout(() => {
         isShow.value = true;
       }, 1000);
@@ -113,11 +128,31 @@ export default {
       nickname.value.validate((valid) => {
         if (valid) {
           console.log("nickname:", state.form.nickname);
-          router.push({ name: "Game", params: { roomId: state.roomId } });
+          axios({
+            method: "POST",
+            url: API_BASE_URL + "/api/gamesessioons/" + route.params.roomId,
+            headers: store.getters["token/getHeaders"],
+            body: {
+              nickname: state.form.nickname
+            },
+          })
+            .then(({ data }) => {
+              if (data.data.code === "fail") {
+                state.errorMessage = data.data.message;
+                state.isError = true;
+              } else {
+                store.dispatch('token/playerId', data.date.playerId)
+                router.push({ name: 'Game', params: route.params.roomId})
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         } else {
           //  alert('Validate error');
         }
       });
+      // router.push({ name: "Game", params: {} });
     };
     const goHome = () => {
       router.push("home");
