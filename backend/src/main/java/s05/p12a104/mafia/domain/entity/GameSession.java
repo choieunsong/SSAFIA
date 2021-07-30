@@ -1,55 +1,79 @@
 package s05.p12a104.mafia.domain.entity;
 
-import java.util.List;
+import io.openvidu.java.client.OpenViduRole;
+import io.openvidu.java.client.Session;
+import java.time.LocalDateTime;
+import java.util.Map;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
-import org.springframework.data.redis.core.index.Indexed;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
-@Getter
 @Setter
-@RedisHash("GameSession")
+@Getter
+@Builder
+@Slf4j
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class GameSession {
 
-  @Id
-  private String roomId;
+  @NonNull
+  private final String roomId;
 
   private int day;
 
   private int phaseCount;
 
-  private boolean night;
+  private boolean isNight;
 
-  @Indexed
-  private String creatorEmail;
+  @NonNull
+  private final String creatorEmail;
 
-  private List<Player> players;
+//  private List<Player> players;
 
-  private String accessType;
+  @NonNull
+  private final String accessType;
 
+  @NonNull
   private String roomType;
 
+  @NonNull
   @Enumerated(EnumType.STRING)
-  private GameState state;
+  private GameState state = GameState.wait;
 
   @Enumerated(EnumType.STRING)
   private GamePhase phase;
 
-  private String createtime;
+  @NonNull
+  private final LocalDateTime createdTime;
+
+  @NonNull
+  private LocalDateTime finishedTime;
 
   private String lastEnter;
 
-  @Builder
-  public GameSession(String roomId, String creatorEmail, String accessType, String roomType) {
-    this.roomId = roomId;
-    this.creatorEmail = creatorEmail;
-    this.accessType = accessType;
-    this.roomType = roomType;
-    this.state = GameState.wait;
-  }
+  @NonNull
+  private final Session session;
 
+  private String masterId;
+
+  private final Map<String, OpenViduRole> mapSessionNamesTokens;
+
+  public static GameSessionBuilder builder(String roomId, String creatorEmail, String accessType,
+      String roomType, LocalDateTime createdTime, Session session,
+      Map<String, OpenViduRole> mapSessionNamesTokens) {
+    return new GameSessionBuilder()
+        .roomId(roomId)
+        .creatorEmail(creatorEmail)
+        .accessType(accessType)
+        .roomType(roomType)
+        .createdTime(createdTime)
+        .session(session)
+        .state(GameState.wait)
+        .mapSessionNamesTokens(mapSessionNamesTokens);
+  }
 }

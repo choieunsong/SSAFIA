@@ -22,8 +22,21 @@ spring:
             scope:
               - email
               - profile
+
+# EMBEDDED SERVER CONFIGURATION
+server:
+  ssl:
+    key-store: classpath:keystore.jks
+    key-store-password: kurento
+    key-store-type: JKS
+    key-alias: kurento-selfsigned
+
 app:
   tokenSecret: 926D96C90030DD58429D2751AC1BDBBC
   tokenExpirationMsec: 864000000
   authorizedRedirectUris:
-    - http://localhost:8081/oauth2/redirect
+    - https://localhost:8081/oauth2/redirect
+
+openvidu:
+  url: https://localhost:4443/
+  secret: MY_SECRET
