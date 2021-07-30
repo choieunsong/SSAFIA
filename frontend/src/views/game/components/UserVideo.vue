@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import OvVideo from './OvVideo';
+import OvVideo from './Video';
 
 export default {
 	name: 'UserVideo',
