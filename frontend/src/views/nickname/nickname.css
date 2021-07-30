@@ -1,0 +1,72 @@
+#nickname-logo {
+  margin-top: 5rem;
+  animation-duration: 1.2s;
+  animation-name: slide-in-bottom;
+  width: 20rem;
+}
+
+#nickname-logo:hover {
+  cursor: pointer;
+}
+
+#nickname-form {
+  width: 30rem;
+  color: snow;
+  margin-top: 0.5rem;
+  animation-duration: 1s;
+  animation-name: fade-in;
+  display: inline-block;
+  border-radius: 3%;
+}
+
+#nickname-roomid > * {
+  font-family: "Jua";
+  color: #fff21a;
+  font-size: 2.5rem;
+  margin-top: 3rem;
+}
+
+#nickname-roomid span {
+  font-weight: 900;
+  text-shadow: #a6036d 5px 5px 10px;
+}
+
+#nickname-roomid p {
+  text-shadow: 0 0 5px #a6036d;
+}
+
+.nickname-alert {
+  width: 60vw;
+  height: 5vw;
+  margin-top: 10vw;
+  margin-left: 20vw;
+}
+
+.el-form-item__error {
+  color: #fff;
+  font-family: "Jua";
+}
+
+.el-button--success {
+  margin: 20px 0 0 0;
+}
+
+@keyframes slide-in-bottom {
+  0% {
+    transform: translateY(15vh);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

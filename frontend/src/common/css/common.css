@@ -1,0 +1,38 @@
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
+
+.font-jua {
+  font-family: "Jua";
+  font-size: large;
+}
+
+.wrap {
+  width: 100vw;
+  height: 100vh;
+  background-image: url("../../assets/image/background.png");
+  background-size: cover;
+}
+
+@font-face {
+  font-family: "Jua";
+  font-style: normal;
+  src: url("../../assets/fonts/BMJUA_otf.otf");
+  src: url("../../assets/fonts/BMJUA_ttf.ttf");
+}
+
+@keyframes pulsate-bck {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

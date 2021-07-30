@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/mafia?serverTimezone=UTC
+    username: a104
+    password: a1041234
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 915040847446-v3f5466gv83qmc9ro5tjh18eaud0rcfl.apps.googleusercontent.com
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirectUri: "{baseUrl}/oauth2/callback/{registrationId}"
+            scope:
+              - email
+              - profile
+app:
+  tokenSecret: 926D96C90030DD58429D2751AC1BDBBC
+  tokenExpirationMsec: 864000000
+  authorizedRedirectUris:
+    - http://localhost:8081/oauth2/redirect

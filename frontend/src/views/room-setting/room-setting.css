@@ -1,0 +1,67 @@
+#room-setting-logo {
+  margin-top: 5rem;
+  animation-duration: 1.2s;
+  animation-name: slide-in-bottom;
+  width: 20rem;
+}
+
+#room-setting-logo:hover {
+  cursor: pointer;
+}
+
+#gamemode {
+  margin-top: 3rem;
+  animation-duration: 1s;
+  animation-name: fade-in;
+  width: 20rem;
+  height: 20rem;
+  display: inline-block;
+  background-color: snow;
+  border-radius: 3%;
+}
+
+.gamemode-btn1 {
+  width: 15rem;
+  height: 3rem;
+  color: white;
+  background-color: #FF0E79;
+}
+
+.gamemode-btn2 {
+  width: 15rem;
+  height: 3rem;
+  color: white;
+  background-color: #6945FF;
+}
+
+.gamemode-btn1:hover {
+  animation-duration: 0.5s;
+  animation-name: pulsate-bck;
+  animation-iteration-count: infinite;
+}
+
+.gamemode-btn2:hover {
+  animation-duration: 0.5s;
+  animation-name: pulsate-bck;
+  animation-iteration-count: infinite;
+}
+
+@keyframes slide-in-bottom {
+  0% {
+    transform: translateY(15vh);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,18 @@
+const TOKEN = {
+    SET_TOKEN: 'SET_TOKEN',
+    SET_LOGIN: 'SET_LOGIN',
+    SET_LOGOUT: 'SET_LOGOUT',
+    SET_PROFILE: 'SET_PROFILE',
+    SET_ROOMID: 'SET_ROOMID',
+    SET_PLAYERID: 'SET_PLAYERID',
+    SET_NICKNAME: 'SET_NICKNAME'
+}
+
+const INGAME = {
+    
+}
+
+export {
+    TOKEN,
+    INGAME
+} 
