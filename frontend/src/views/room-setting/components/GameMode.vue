@@ -8,7 +8,7 @@
         </el-button>
       </div>
       <div>
-        <el-button class="gamemode-btn2" round @click="chooseAccessType('public')">
+        <el-button class="gamemode-btn2" round @click="chooseAccessType('public')" disabled>
           <span class="font-jua">모르는 사람과 플레이!</span>
         </el-button>
       </div>
@@ -22,7 +22,7 @@
         </el-button>
       </div>
       <div>
-        <el-button class="gamemode-btn2" round @click="chooseRoomType('custom')">
+        <el-button class="gamemode-btn2" round @click="chooseRoomType('custom')" disabled>
           <span class="font-jua">커스텀 모드</span>
         </el-button>
       </div>
@@ -61,19 +61,21 @@ export default defineComponent({
     const getRoomIdFromServer = () => {
       axios({
         method: "post",
-        url: API_BASE_URL + "/api/gamesessions",
+        url: API_BASE_URL + "/api/gamesession",
         headers: store.getters["token/getHeaders"],
         data: {
           accessType: state.accessType,
           roomType: state.roomType,
         },
       })
-        .then(({ data }) => {
-          if (data.data.code == "success") {
-            state.roomId = data.roomId;
+        .then(({ response }) => {
+          console.log(response)
+          if (response.data.code === "success") {
+            state.roomId = response.data.id;
+            store.dispatch(['token/roomId'], state.roomId)
             router.push({ name: "Nickname", params: { roomId: state.roomId } });
-          } else if (data.code == "fail") {
-            alert(data.message);
+          } else if (response.data.code === "fail") {
+            alert(response.message);
           }
         })
         .catch((err) => {
@@ -82,8 +84,8 @@ export default defineComponent({
     };
     const chooseRoomType = (type) => {
       state.roomType = type;
-      // getRoomIdFromServer();
-      router.push({ name: "Nickname", params: { roomId: state.roomId } });
+      getRoomIdFromServer();
+      // router.push({ name: "Nickname", params: { roomId: state.roomId } });
     };
     const goBack = () => {
       state.isLast = false;
