@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Player implements Serializable{
+public class Player implements Serializable {
 
   @Id
   private String id;

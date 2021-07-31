@@ -22,7 +22,6 @@ public class RedisConfig {
   @Bean
   public RedisConnectionFactory redisConnectionFactory() {
     RedisProperties properties = redisProperties();
-    System.out.println(properties.getHost() + ", " + properties.getPort());
     return new LettuceConnectionFactory(properties.getHost(), properties.getPort());
   }
 

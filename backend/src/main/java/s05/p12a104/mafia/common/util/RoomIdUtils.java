@@ -2,17 +2,16 @@ package s05.p12a104.mafia.common.util;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
-public class RandomRoomIdUtils {
+public class RoomIdUtils {
   public static String randomRoomId(String type) {
-    String id;
+    return getIdPrefix(type) + RandomStringUtils.randomAlphanumeric(6);
+  }
 
+  public static String getIdPrefix(String type) {
     if (type.equals("private")) {
-      id = "V";
+      return "V";
     } else {
-      id = "B";
+      return "B";
     }
-    id += RandomStringUtils.randomAlphanumeric(6);
-
-    return id;
   }
 }
