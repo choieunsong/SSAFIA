@@ -69,13 +69,13 @@ export default defineComponent({
         }
       })
         .then(( { data } ) => {
-          console.log(response)
+          console.log(data)
           if (data.data.code === "success") {
             state.roomId = data.data.data.id;
             store.dispatch(['token/roomId'], state.roomId)
             router.push({ name: "Nickname", params: { roomId: state.roomId } });
           } else if (data.data.code === "fail") {
-            alert(response.message);
+            alert(data.data.message);
           }
         })
         .catch((err) => {
