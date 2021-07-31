@@ -107,12 +107,12 @@ export default {
         method: "GET",
         url: API_BASE_URL + "/api/gamesessioons/" + roomId,
       })
-        .then(({ response }) => {
-          if (response.code === "fail") {
-            if (response.message === "없는 리소스입니다") {
+        .then(({ data }) => {
+          if (data.data.code === "fail") {
+            if (data.data.message === "없는 리소스입니다") {
               router.push({ name: "NotFound"})
             } else {
-              state.errorMessage = response.message;
+              state.errorMessage = data.data.message;
               state.isError = true;
             }
           }
@@ -137,13 +137,13 @@ export default {
               nickname: state.form.nickname,
             },
           })
-            .then(( response ) => {
-              if (response.code === "fail") {
-                state.errorMessage = response.data.message;
+            .then(({ data }) => {
+              if (data.data.code === "fail") {
+                state.errorMessage = data.data.message;
                 state.isError = true;
               } else {
-                store.dispatch("token/playerId", response.date.userId);
-                store.dispatch("token/openviduToken", response.data.token);
+                store.dispatch("token/playerId", data.data.data.userId);
+                store.dispatch("token/openviduToken", data.data.data.token);
                 store
                   .dispatch("token/setNickname", state.form.nickname)
                   .then(() => {
