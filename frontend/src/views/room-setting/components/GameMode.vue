@@ -66,9 +66,9 @@ export default defineComponent({
         data: {
           accessType: state.accessType,
           roomType: state.roomType,
-        },
+        }
       })
-        .then(({ response }) => {
+        .then(( response ) => {
           console.log(response)
           if (response.data.code === "success") {
             state.roomId = response.data.id;

@@ -89,8 +89,8 @@ export default {
       myUserName: store.getters["token/nickname"],
       openviduToken: store.getters["token/openviduToken"],
     });
-    console.log(myUserName);
-    console.log(openviduToken);
+    console.log(state.myUserName);
+    console.log(state.openviduToken);
 
     var leaveSession = function() {
       // --- Leave the session by calling 'disconnect' method over the Session object ---

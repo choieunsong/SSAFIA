@@ -71,7 +71,6 @@ export default {
 
     let isShow = ref(false);
     const roomId = route.params.roomId;
-    const url = API_BASE_URL + roomId;
 
     const nickname = ref(null);
 
@@ -138,7 +137,7 @@ export default {
               nickname: state.form.nickname,
             },
           })
-            .then(({ response }) => {
+            .then(( response ) => {
               if (response.code === "fail") {
                 state.errorMessage = response.data.message;
                 state.isError = true;

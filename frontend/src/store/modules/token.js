@@ -86,7 +86,7 @@ const actions = {
       }, 100)
     })
   },
-  setNickname({ commit }, openviduToken) {
+  setOpenviduToken({ commit }, openviduToken) {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         console.log(openviduToken);
