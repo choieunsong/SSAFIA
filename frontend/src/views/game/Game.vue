@@ -26,11 +26,11 @@
 				<input class="btn btn-large btn-danger" type="button" id="buttonLeaveSession" @click="leaveSession" value="Leave session">
 			</div>
 			<div id="main-video" class="col-md-6">
-				<user-video :stream-manager="state.mainStreamManager"/>
+				<user-video :stream-manager="state.mainStreamManager" title="title"/>
 			</div>
 			<div id="video-container" class="col-md-6">
-				<user-video :stream-manager="state.publisher" @click="updateMainVideoStreamManager(state.publisher)"/>
-				<user-video v-for="sub in state.subscribers" :key="sub.stream.connection.connectionId" :stream-manager="sub" @click="updateMainVideoStreamManager(sub)"/>
+				<user-video :stream-manager="state.publisher" @click="updateMainVideoStreamManager(state.publisher)" title="title"/>
+				<user-video v-for="sub in state.subscribers" :key="sub.stream.connection.connectionId" :stream-manager="sub" @click="updateMainVideoStreamManager(sub)" title="title"/>
 			</div>
 		</div>
 	</div>

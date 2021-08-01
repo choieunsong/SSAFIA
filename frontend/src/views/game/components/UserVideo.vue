@@ -1,16 +1,15 @@
 <template>
   <div v-if="streamManager">
     <ov-video :stream-manager="streamManager" />
-    <div>
+    <!-- <div>
       <p>{{ state.clientData }}</p>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
 import OvVideo from "@/views/game/components/OvVideo";
-import { reactive, onBeforeMount, onMounted } from "vue";
-import { useStore } from 'vuex'
+import { reactive } from "vue";
 
 export default {
   name: "UserVideo",
@@ -21,16 +20,7 @@ export default {
 
   props: {
     streamManager: Object,
-  },
-  setup(props) {
-    const state = reactive({
-      clientData: undefined,
-    });
-    const store = useStore()
-	state.clientData = store.getters['token/getNickname']
-    return {
-      state,
-    };
+    title: String,
   },
 
   // computed: {
