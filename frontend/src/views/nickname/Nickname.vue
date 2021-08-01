@@ -105,14 +105,14 @@ export default {
     onMounted(() => {
       axios({
         method: "GET",
-        url: API_BASE_URL + "/api/gamesessioons/" + roomId,
+        url: API_BASE_URL + "/api/gamesession/" + roomId,
       })
         .then(({ data }) => {
-          if (data.data.code === "fail") {
-            if (data.data.message === "없는 리소스입니다") {
+          if (data.code === "fail") {
+            if (data.message === "없는 리소스입니다") {
               router.push({ name: "NotFound"})
             } else {
-              state.errorMessage = data.data.message;
+              state.errorMessage = data.message;
               state.isError = true;
             }
           }
@@ -132,18 +132,18 @@ export default {
           console.log("nickname:", state.form.nickname);
           axios({
             method: "POST",
-            url: API_BASE_URL + "/api/gamesessioons/" + roomId,
-            body: {
+            url: API_BASE_URL + "/api/gamesession/" + roomId,
+            data: {
               nickname: state.form.nickname,
             },
           })
             .then(({ data }) => {
-              if (data.data.code === "fail") {
-                state.errorMessage = data.data.message;
+              if (data.code === "fail") {
+                state.errorMessage = data.message;
                 state.isError = true;
               } else {
-                store.dispatch("token/playerId", data.data.data.userId);
-                store.dispatch("token/openviduToken", data.data.data.token);
+                store.dispatch("token/setPlayerId", data.data.userId);
+                store.dispatch("token/setOpenviduToken", data.data.token);
                 store
                   .dispatch("token/setNickname", state.form.nickname)
                   .then(() => {

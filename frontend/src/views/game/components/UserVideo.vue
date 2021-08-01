@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import OvVideo from './Video';
+import OvVideo from '@/views/game/components/OvVideo';
 
 export default {
 	name: 'UserVideo',

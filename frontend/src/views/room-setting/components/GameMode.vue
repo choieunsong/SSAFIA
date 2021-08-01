@@ -68,18 +68,16 @@ export default defineComponent({
           roomType: state.roomType,
         }
       })
-        .then(( { data } ) => {
-          console.log(data)
-          if (data.data.code === "success") {
-            state.roomId = data.data.data.id;
-            store.dispatch(['token/roomId'], state.roomId)
-            router.push({ name: "Nickname", params: { roomId: state.roomId } });
-          } else if (data.data.code === "fail") {
+        .then(({ data }) => {
+          if (data.code === "success") {
+            store.dispatch("token/setRoomId", data.data.id);
+            router.push({ name: "Nickname", params: { roomId: data.data.id } });
+          } else if (data.code === "fail") {
             alert(data.data.message);
           }
         })
         .catch((err) => {
-          console.log("err", err);
+          console.log(err);
         });
     };
     const chooseRoomType = (type) => {
