@@ -166,7 +166,7 @@ export default {
     state.openviduToken = store.getters['token/getOpenviduToken']
     state.myUserName = store.getters['token/getNickname']
     joinSession()
-    window.addEventListener("beforeunload", leaveSession);
+    // window.addEventListener("beforeunload", leaveSession);
     return {
       state,
       joinSession,
