@@ -1,36 +1,13 @@
 <template>
   <div id="main-container" class="container">
-		<div id="join" v-if="!state.session">
-			<div id="img-div"><img src="resources/images/openvidu_grey_bg_transp_cropped.png" /></div>
-			<div id="join-dialog" class="jumbotron vertical-center">
-				<h1>Join a video session</h1>
-				<div class="form-group">
-					<p>
-						<label>Participant</label>
-						<input v-model="state.myUserName" class="form-control" type="text" required>
-					</p>
-					<p>
-						<label>Session</label>
-						<input v-model="state.mySessionId" class="form-control" type="text" required>
-					</p>
-					<p class="text-center">
-						<button class="btn btn-lg btn-success" @click="joinSession">Join!</button>
-					</p>
-				</div>
-			</div>
-		</div>
-
 		<div id="session" v-if="state.session">
 			<div id="session-header">
 				<h1 id="session-title">{{ state.mySessionId }}</h1>
 				<input class="btn btn-large btn-danger" type="button" id="buttonLeaveSession" @click="leaveSession" value="Leave session">
 			</div>
-			<div id="main-video" class="col-md-6">
-				<user-video :stream-manager="state.mainStreamManager" title="title"/>
-			</div>
-			<div id="video-container" class="col-md-6">
-				<user-video :stream-manager="state.publisher" @click="updateMainVideoStreamManager(state.publisher)" title="title"/>
-				<user-video v-for="sub in state.subscribers" :key="sub.stream.connection.connectionId" :stream-manager="sub" @click="updateMainVideoStreamManager(sub)" title="title"/>
+			<div id="video-container" class="col-md-12">
+				<user-video :stream-manager="state.publisher" />
+				<user-video v-for="sub in state.subscribers" :key="sub.stream.connection.connectionId" :stream-manager="sub" />
 			</div>
 		</div>
 	</div>
@@ -43,10 +20,9 @@ import UserVideo from "@/views/game/components/UserVideo";
 import { reactive } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
-import { API_BASE_URL } from "@/constant/index";
+
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
-const OPENVIDU_SERVER_URL = API_BASE_URL + ":4443";
 
 export default {
   name: "Game",
@@ -166,10 +142,11 @@ export default {
     state.openviduToken = store.getters['token/getOpenviduToken']
     state.myUserName = store.getters['token/getNickname']
     joinSession()
+    console.log('state.subscribers')
+    console.log(state.subscribers)
     // window.addEventListener("beforeunload", leaveSession);
     return {
       state,
-      joinSession,
       updateMainVideoStreamManager,
       leaveSession,
     };
