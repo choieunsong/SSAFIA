@@ -1,7 +1,12 @@
 <template>
   <div class="wrap">
     <div>
-      <img id="nickname-logo" src="@/assets/image/logo-name.png" alt="logo name" @click="goHome" />
+      <img
+        id="nickname-logo"
+        src="@/assets/image/logo-name.png"
+        alt="logo name"
+        @click="goHome"
+      />
     </div>
 
     <div id="nickname-roomid">
@@ -55,6 +60,8 @@ import { useRouter, useRoute } from "vue-router";
 import { API_BASE_URL } from "@/constant/index";
 import axios from "axios";
 
+axios.defaults.headers.post["Content-Type"] = "application/json";
+
 export default {
   name: "Nickname",
   setup() {
@@ -64,7 +71,6 @@ export default {
 
     let isShow = ref(false);
     const roomId = route.params.roomId;
-    const url = API_BASE_URL + roomId;
 
     const nickname = ref(null);
 
@@ -97,20 +103,23 @@ export default {
     });
 
     onMounted(() => {
-      // axios({
-      //   method: "GET",
-      //   url: API_BASE_URL + "/api/gamesessioons/" + roomId,
-      //   headers: store.getters["token/getHeaders"],
-      // })
-      //   .then(({ data }) => {
-      //     if (data.data.code === "fail") {
-      //       state.errorMessage = data.data.message;
-      //       state.isError = true;
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //   });
+      axios({
+        method: "GET",
+        url: API_BASE_URL + "/api/gamesession/" + roomId,
+      })
+        .then(({ data }) => {
+          if (data.code === "fail") {
+            if (data.message === "없는 리소스입니다") {
+              router.push({ name: "NotFound"})
+            } else {
+              state.errorMessage = data.message;
+              state.isError = true;
+            }
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       setTimeout(() => {
         isShow.value = true;
       }, 1000);
@@ -121,31 +130,33 @@ export default {
       nickname.value.validate((valid) => {
         if (valid) {
           console.log("nickname:", state.form.nickname);
-          // axios({
-          //   method: "POST",
-          //   url: API_BASE_URL + "/api/gamesessioons/" + route.params.roomId,
-          //   headers: store.getters["token/getHeaders"],
-          //   body: {
-          //     nickname: state.form.nickname,
-          //   },
-          // })
-          //   .then(({ data }) => {
-          //     if (data.data.code === "fail") {
-          //       state.errorMessage = data.data.message;
-          //       state.isError = true;
-          //     } else {
-          //       store.dispatch("token/playerId", data.date.playerId);
-          store.dispatch("token/setNickname", state.form.nickname).then(() => {
-            console.log(store.getters["token/getNickname"]);
-            router.push({ name: "Game", params: route.params.roomId });
-          });
-          //     }
-          //   })
-          //   .catch((err) => {
-          //     console.log(err);
-          //   });
+          axios({
+            method: "POST",
+            url: API_BASE_URL + "/api/gamesession/" + roomId,
+            data: {
+              nickname: state.form.nickname,
+            },
+          })
+            .then(({ data }) => {
+              if (data.code === "fail") {
+                state.errorMessage = data.message;
+                state.isError = true;
+              } else {
+                store.dispatch("token/setPlayerId", data.data.userId);
+                store.dispatch("token/setOpenviduToken", data.data.token);
+                store
+                  .dispatch("token/setNickname", state.form.nickname)
+                  .then(() => {
+                    console.log(store.getters["token/getNickname"]);
+                    router.push({ name: "Game", params: route.params.roomId });
+                  });
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         } else {
-          //  alert('Validate error');
+          alert("Validate error");
         }
       });
     };

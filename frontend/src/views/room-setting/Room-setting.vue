@@ -17,7 +17,6 @@ import "./room-setting.css";
 import GameMode from "@/views/room-setting/components/GameMode.vue";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import axios from 'axios';
 
 export default {
   name: "Room-setting",

@@ -16,6 +16,7 @@
     "element-plus": "^1.0.2-beta.55",
     "jquery": "^3.6.0",
     "kurento-utils": "^6.16.0",
+    "openvidu-browser": "^2.19.0",
     "popper.js": "^1.16.1",
     "sockjs-client": "^1.5.1",
     "vue": "^3.1.5",

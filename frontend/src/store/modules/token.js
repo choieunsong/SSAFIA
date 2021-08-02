@@ -8,7 +8,8 @@ const state = {
   isLogin: false,
   roomId: "",
   playerId: "",
-  nickname: ""
+  nickname: "",
+  openviduToken: "",
 };
 
 const getters = {
@@ -28,9 +29,7 @@ const getters = {
   getHeaders: (state) => {
     return {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + state.token,
-      RoomId: state.roomId,
-      PlayerId: state.playerId,
+      "Authorization" : "Bearer " + state.token,
     };
   },
   getRoomId: (state) => {
@@ -42,6 +41,9 @@ const getters = {
   getNickname: (state) => {
     return state.nickname
   },
+  getOpenviduToken: (state) => {
+    return state.openviduToken
+  }
 };
 
 const actions = {
@@ -57,17 +59,38 @@ const actions = {
   setLogout({ commit }) {
     commit(TOKEN.SET_LOGOUT);
   },
-  setRoomId({ commit }) {
-    commit(TOKEN.SET_ROOMID)
+  setRoomId({ commit }, roomId) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        console.log(roomId);
+        commit(TOKEN.SET_ROOMID, roomId);
+        resolve();
+      }, 100)
+    })
   },
-  setPlayerId({ commit }) {
-    commit(TOKEN.SET_PLAYERID)
+  setPlayerId({ commit }, playerId) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        console.log(playerId);
+        commit(TOKEN.SET_PLAYERID, playerId);
+        resolve();
+      }, 100)
+    })
   },
   setNickname({ commit }, nickname) {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         console.log(nickname);
         commit(TOKEN.SET_NICKNAME, nickname);
+        resolve();
+      }, 100)
+    })
+  },
+  setOpenviduToken({ commit }, openviduToken) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        console.log(openviduToken);
+        commit(TOKEN.SET_OPENVIDUTOKEN, openviduToken);
         resolve();
       }, 100)
     })
@@ -98,6 +121,9 @@ const mutations = {
   [TOKEN.SET_NICKNAME](state, nickname) {
     state.nickname = nickname;
   },
+  [TOKEN.SET_OPENVIDUTOKEN](state, openviduToken) {
+    state.openviduToken = openviduToken
+  }
 };
 
 export default {
