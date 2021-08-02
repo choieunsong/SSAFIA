@@ -61,7 +61,7 @@ export default {
       role: undefined,
       gameStatus: {
         date: 0,
-        phase: 'ready',
+        phase: "ready",
         timer: 0,
         aliveMafia: 0,
         victim: undefined,
@@ -70,6 +70,7 @@ export default {
       },
       players: undefined,
       stompClient: undefined,
+      jonClient: undefined,
     });
 
     // 화상 채팅 관련
@@ -199,19 +200,45 @@ export default {
     function onMessageReceived(payload) {
       var message = JSON.parse(payload.body);
       if (message.type === "JOIN") {
-        console.log(message.type)
+        state.players = message.players;
       } else if (message.type === "LEAVE") {
-        console.log(message.type)
+        state.players = message.players;
       } else if (message.type === "HOSTCHANGED") {
-        state.host = message.host
+        state.host = message.host;
         if (state.host === state.playerId) {
-          state.isHost = true
+          state.isHost = true;
         } else {
-          state.isHost = false
+          state.isHost = false;
         }
       } else if (message.type === "GAMESESSION") {
-        console.log(message.type)
-      } 
+        state.gameStatus = message.gameStatus;
+        state.players = message.players;
+        if (state.players[state.playerId].alive === true) {
+          switch (message.phase) {
+            case "START":
+              break;
+            case "DAYTALK":
+              break;
+            case "DAYTOKILL":
+              break;
+            case "DAYVOTEKILL":
+              break;
+            case "DAYTONIGHT":
+              break;
+            case "NIGHTVOTE":
+              break;
+            case "NIGHTTODAY":
+              break;
+            case "END":
+              state.jobClient.unsubscribe()
+              break;
+            default:
+              console.log(
+                `sorry, something go wrong, this is what i've got ${message.phase}`
+              );
+          }
+        }
+      }
     }
 
     function onPersonalMessageReceived(payload) {
@@ -219,12 +246,13 @@ export default {
 
       if (message.type === "start") {
         state.role = message.role;
-        state.stompClient.subscribe(`/sub/${state.role}`, onJobMessageReceived)
+        state.jobClient = state.stompClient.subscribe(`/sub/${state.role}`, onJobMessageReceived);
       }
     }
-    
+
     function onJobMessageReceived(payload) {
       const message = JSON.parse(payload.body);
+      state.players = message.players;
     }
 
     state.openviduToken = store.getters["token/getOpenviduToken"];
