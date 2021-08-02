@@ -122,6 +122,10 @@ local.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/eclipse
 
-
+# data directory
 mysql/mysql-data
 redis/redis-data
+
+
+# env file
+local.env
