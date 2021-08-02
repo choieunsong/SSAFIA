@@ -1,9 +1,9 @@
 <template>
   <div v-if="streamManager">
     <ov-video :stream-manager="streamManager" />
-    <div>
+    <!-- <div>
       <p>{{ state.clientData }}</p>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -22,17 +22,7 @@ export default {
     streamManager: Object,
   },
   setup(props) {
-    const state = reactive({
-      clientData: undefined,
-    })
-    const tmp = computed(() => { return props.streamManager.stream.connection.data})
-    const array = tmp.value.split('"')
-    console.log(array)
-    state.clientData = array[3]
-    console.log(state.clientData)
-    return {
-      state
-    }
+  
   }
 
   // computed: {
