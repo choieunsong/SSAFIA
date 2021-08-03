@@ -13,7 +13,7 @@ public interface GameSessionService {
   GameSession makeGame(User user, GameSessionPostReq typeInfo)
       throws GameSessionException, OpenViduJavaClientException, OpenViduHttpException;
 
-  GameState getGameSessionState(String roomInfo) throws GameSessionException;
+  GameState getGameSessionState(String roomId) throws GameSessionException;
 
   void removeGameSession(GameSession gameSession);
 
