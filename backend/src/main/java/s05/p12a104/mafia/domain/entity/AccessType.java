@@ -1,9 +1,13 @@
 package s05.p12a104.mafia.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import s05.p12a104.mafia.common.util.EnumType;
 
-public enum AuthProvider implements EnumType {
-  google;
+public enum AccessType implements EnumType {
+  @JsonProperty("private")
+  PRIVATE,
+  @JsonProperty("public")
+  PUBLIC;
 
   @Override
   public String getId() {
