@@ -10,7 +10,8 @@ const TOKEN = {
 }
 
 const INGAME = {
-    
+    SET_GAMESTATUS: 'SET_GAMESTATUS',
+    SET_ROLE: 'SET_ROLE',    
 }
 
 export {
