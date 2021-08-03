@@ -40,7 +40,9 @@ dependencies {
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
+    // websocket
     implementation 'org.springframework:spring-websocket'
+    implementation 'org.webjars:stomp-websocket:2.3.3-1'
 
     implementation 'org.mapstruct:mapstruct:1.4.1.Final'
     implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
