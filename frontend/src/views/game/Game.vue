@@ -315,7 +315,7 @@ export default {
             break;
         }
           case "DAY_TO_NIGHT": {
-            if (state.gaemStatus === "DAY_DISCUSSION") {
+            if (state.gameStatus === "DAY_DISCUSSION") {
               state.message =
                 "최다 득표자가 너무 많거나 또는 무효투표자가 너무 많은 관계로,\n  최종 투표를 스킵하고 밤으로 넘어갑니다.";
             } else {
