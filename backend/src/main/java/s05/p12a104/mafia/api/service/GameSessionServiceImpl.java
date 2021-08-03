@@ -10,19 +10,25 @@ import io.openvidu.java.client.Session;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import lombok.RequiredArgsConstructor;
 import s05.p12a104.mafia.api.requset.GameSessionPostReq;
 import s05.p12a104.mafia.api.response.GameSessionJoinRes;
-import s05.p12a104.mafia.common.exception.GameSessionException;
+import s05.p12a104.mafia.common.exception.AlreadyGameStartedException;
+import s05.p12a104.mafia.common.exception.GameSessionNotFoundException;
+import s05.p12a104.mafia.common.exception.OpenViduRuntimeException;
+import s05.p12a104.mafia.common.exception.OpenViduSessionNotFoundException;
+import s05.p12a104.mafia.common.exception.OverMaxIndividualRoomCountException;
+import s05.p12a104.mafia.common.exception.OverMaxPlayerCountException;
+import s05.p12a104.mafia.common.exception.OverMaxTotalRoomCountException;
 import s05.p12a104.mafia.common.util.RoomIdUtils;
 import s05.p12a104.mafia.common.util.UrlUtils;
-import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.dao.GameSessionDao;
-import s05.p12a104.mafia.domain.mapper.GameSessionDaoMapper;
+import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.entity.GameState;
 import s05.p12a104.mafia.domain.entity.User;
+import s05.p12a104.mafia.domain.mapper.GameSessionDaoMapper;
 import s05.p12a104.mafia.domain.repository.GameSessionRedisRepository;
 
 @Service
@@ -34,13 +40,21 @@ public class GameSessionServiceImpl implements GameSessionService {
 
   private final OpenVidu openVidu;
 
+  private static final int MAX_TOTAL_ROOM_COUNT = 200;
+  private static final int MAX_INDIVIDUAL_ROOM_COUNT = 2;
+  private static final int MAX_PLAYER_COUNT = 10;
 
   @Override
   public GameSession makeGame(User user, GameSessionPostReq typeInfo)
       throws OpenViduJavaClientException, OpenViduHttpException {
 
-    if (gameSessionRedisRepository.findByCreatorEmail(user.getEmail()).size() >= 2) {
-      throw new GameSessionException("더 이상 방을 만들 수 없습니다");
+    if (gameSessionRedisRepository.findAll().size() >= MAX_TOTAL_ROOM_COUNT) {
+      throw new OverMaxTotalRoomCountException();
+    }
+
+    if (gameSessionRedisRepository.findByCreatorEmail(user.getEmail()).size()
+        >= MAX_INDIVIDUAL_ROOM_COUNT) {
+      throw new OverMaxIndividualRoomCountException();
     }
 
     Session newSession = openVidu.createSession();
@@ -60,13 +74,11 @@ public class GameSessionServiceImpl implements GameSessionService {
   }
 
   @Override
-  public GameSession getGameSessionStatus(String roomId) {
+  public GameState getGameSessionState(String roomId) {
     GameSession gameSession = findById(roomId);
-    if (gameSession.getState() != GameState.wait) {
-      throw new GameSessionException("게임이 이미 시작되었습니다.");
-    }
+    validateToBePossibleToJoin(gameSession);
 
-    return gameSession;
+    return gameSession.getState();
   }
 
   @Override
@@ -78,7 +90,7 @@ public class GameSessionServiceImpl implements GameSessionService {
   @Override
   public GameSession findById(String id) {
     GameSessionDao gameSessionDao = gameSessionRedisRepository.findById(id)
-        .orElseThrow(() -> new GameSessionException("방 정보를 찾을 수 없습니다"));
+        .orElseThrow(GameSessionNotFoundException::new);
 
     return toEntity(gameSessionDao);
   }
@@ -91,6 +103,9 @@ public class GameSessionServiceImpl implements GameSessionService {
 
   @Override
   public GameSessionJoinRes addUser(String roomId, String nickname) {
+    GameSession gameSession = findById(roomId);
+    validateToBePossibleToJoin(gameSession);
+
     OpenViduRole role = OpenViduRole.PUBLISHER;
 
     String serverData = "{\"serverData\": \"" + nickname + "\"}";
@@ -99,14 +114,13 @@ public class GameSessionServiceImpl implements GameSessionService {
     ConnectionProperties connectionProperties = new ConnectionProperties.Builder()
         .type(ConnectionType.WEBRTC).data(serverData).role(role).build();
 
-    GameSession gameSession = findById(roomId);
     try {
       // ex> wss://localhost:4443?sessionId=ses_Ogize1yQIj&token=tok_A1c0pNsLJFwVJTeb
       String token = gameSession.getSession().createConnection(connectionProperties).getToken();
 
       // ex> tok_A1c0pNsLJFwVJTeb
       String userId = UrlUtils.getUrlQueryParam(token, "token")
-          .orElseThrow(() -> new GameSessionException(""))
+          .orElseThrow(OpenViduSessionNotFoundException::new)
           .substring(4);
 
       gameSession.getMapSessionNamesTokens().put(token, role);
@@ -119,12 +133,12 @@ public class GameSessionServiceImpl implements GameSessionService {
       return new GameSessionJoinRes(token, userId);
     } catch (OpenViduJavaClientException e1) {
       // If internal error generate an error message and return it to client
-      return new GameSessionJoinRes("", "");
+      throw new OpenViduRuntimeException(e1.getMessage());
     } catch (OpenViduHttpException e2) {
       if (404 == e2.getStatus()) {
         removeGameSession(gameSession);
       }
-      return new GameSessionJoinRes("", "");
+      throw new OpenViduRuntimeException(e2.getMessage());
     }
   }
 
@@ -136,14 +150,12 @@ public class GameSessionServiceImpl implements GameSessionService {
 
     // If the session exists ("TUTORIAL" in this case)
     if (session == null || mapSessionNamesTokens == null) {
-      // The SESSION does not exist
-      System.out.println("Problems in the app server: the SESSION does not exist");
-      return false;
+      log.info("Problems in the app server: the SESSION does not exist");
+      return true;
     }
     if (mapSessionNamesTokens.remove(token) == null) {
-      // The TOKEN wasn't valid
-      System.out.println("Problems in the app server: the TOKEN wasn't valid");
-      return false;
+      log.info("Problems in the app server: the TOKEN - {} wasn't valid", token);
+      return true;
     }
     // User left the session
     if (mapSessionNamesTokens.isEmpty()) {
@@ -161,7 +173,7 @@ public class GameSessionServiceImpl implements GameSessionService {
       }
     }
     if (entitySession == null) {
-      throw new GameSessionException("session을 찾을 수 없습니다");
+      throw new OpenViduSessionNotFoundException();
     }
 
     Map<String, OpenViduRole> sessionNamesTokens = dao.getMapSessionNamesTokens();
@@ -184,5 +196,14 @@ public class GameSessionServiceImpl implements GameSessionService {
     return gameSession;
   }
 
+  public void validateToBePossibleToJoin(GameSession gameSession) {
+    if (gameSession.getState() == GameState.started) {
+      throw new AlreadyGameStartedException();
+    }
+
+    if (gameSession.getMapSessionNamesTokens().size() >= MAX_PLAYER_COUNT) {
+      throw new OverMaxPlayerCountException();
+    }
+  }
 
 }

@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @ApiModel
 public class GameSessionPostReq {
-  @ApiModelProperty(name = "Room Type", example = "custom")
+  @ApiModelProperty(name = "Room Type", example = "basic")
   String roomType;
 
   @ApiModelProperty(name = "Access Type", example = "private")
