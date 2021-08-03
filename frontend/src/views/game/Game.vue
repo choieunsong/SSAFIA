@@ -57,12 +57,17 @@ export default {
 
       // socket 연결 게임 데이터 관련
       isHost: undefined,
+<<<<<<< HEAD
+=======
+      Host: undefined,
+>>>>>>> 53d32f3ebef8cd464647a7b8a0cb7696c0c85c27
       role: undefined,
       gameStatus: {
         date: 0,
         phase: "ready",
         timer: 0,
         aliveMafia: 0,
+<<<<<<< HEAD
       },
       playerMap: undefined,
       stompClient: undefined,
@@ -70,6 +75,15 @@ export default {
       mafias: undefined,
       message: undefined,
       submessage: '',
+=======
+        victim: undefined,
+        victimIsMafia: undefined,
+        suspects: undefined,
+      },
+      players: undefined,
+      stompClient: undefined,
+      jonClient: undefined,
+>>>>>>> 53d32f3ebef8cd464647a7b8a0cb7696c0c85c27
     });
 
     // 화상 채팅 관련
@@ -97,10 +111,17 @@ export default {
       // On every new Stream received...
       state.session.on("streamCreated", ({ stream }) => {
         const subscriber = state.session.subscribe(stream);
+<<<<<<< HEAD
         const array = subscriber.stream.connection.data.split('"');
         const tmp = array[3].split(",");
         subscriber.nickname = tmp[0];
         subscriber.playerId = tmp[1];
+=======
+        console.log("subscriber");
+        console.log(subscriber);
+        const array = subscriber.stream.connection.data.split('"');
+        subscriber.playerId = array[3];
+>>>>>>> 53d32f3ebef8cd464647a7b8a0cb7696c0c85c27
         state.subscribers.push(subscriber);
       });
 
@@ -119,9 +140,13 @@ export default {
 
       console.log(state.openviduToken);
       state.session
+<<<<<<< HEAD
         .connect(state.openviduToken, {
           clientData: `${state.myUserName},${state.playerId}`,
         })
+=======
+        .connect(state.openviduToken, { clientData: state.playerId })
+>>>>>>> 53d32f3ebef8cd464647a7b8a0cb7696c0c85c27
         .then(() => {
           // --- Get your own camera stream with the desired properties ---
 
