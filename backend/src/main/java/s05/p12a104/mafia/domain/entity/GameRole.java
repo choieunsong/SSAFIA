@@ -4,5 +4,6 @@ public enum GameRole {
   CIVILIAN,
   MAFIA,
   DOCTOR,
-  POLICE
+  POLICE,
+  OBSERVER
 }
