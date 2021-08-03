@@ -3,6 +3,7 @@ package s05.p12a104.mafia.domain.entity;
 import io.openvidu.java.client.OpenViduRole;
 import io.openvidu.java.client.Session;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -36,14 +37,16 @@ public class GameSession {
 //  private List<Player> players;
 
   @NonNull
-  private final String accessType;
-
-  @NonNull
-  private String roomType;
+  @Enumerated(EnumType.STRING)
+  private final AccessType accessType;
 
   @NonNull
   @Enumerated(EnumType.STRING)
-  private GameState state = GameState.wait;
+  private RoomType roomType;
+
+  @NonNull
+  @Enumerated(EnumType.STRING)
+  private GameState state;
 
   @Enumerated(EnumType.STRING)
   private GamePhase phase;
@@ -59,12 +62,12 @@ public class GameSession {
   @NonNull
   private final Session session;
 
-  private String masterId;
+  private String hostId;
 
   private final Map<String, OpenViduRole> mapSessionNamesTokens;
 
-  public static GameSessionBuilder builder(String roomId, String creatorEmail, String accessType,
-      String roomType, LocalDateTime createdTime, Session session,
+  public static GameSessionBuilder builder(String roomId, String creatorEmail, AccessType accessType,
+      RoomType roomType, LocalDateTime createdTime, Session session,
       Map<String, OpenViduRole> mapSessionNamesTokens) {
     return new GameSessionBuilder()
         .roomId(roomId)
@@ -73,7 +76,7 @@ public class GameSession {
         .roomType(roomType)
         .createdTime(createdTime)
         .session(session)
-        .state(GameState.wait)
+        .state(GameState.WAIT)
         .mapSessionNamesTokens(mapSessionNamesTokens);
   }
 }

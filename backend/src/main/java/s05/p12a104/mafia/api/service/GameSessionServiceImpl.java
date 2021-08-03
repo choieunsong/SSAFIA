@@ -126,7 +126,7 @@ public class GameSessionServiceImpl implements GameSessionService {
       gameSession.getMapSessionNamesTokens().put(token, role);
 
       if (gameSession.getMapSessionNamesTokens().size() == 1) {
-        gameSession.setMasterId(userId);
+        gameSession.setHostId(userId);
       }
       update(gameSession);
 
@@ -190,14 +190,14 @@ public class GameSessionServiceImpl implements GameSessionService {
         .phase(dao.getPhase())
         .lastEnter(dao.getLastEnter())
         .state(dao.getState())
-        .masterId(dao.getMasterId())
+        .hostId(dao.getHostId())
         .build();
 
     return gameSession;
   }
 
   public void validateToBePossibleToJoin(GameSession gameSession) {
-    if (gameSession.getState() == GameState.started) {
+    if (gameSession.getState() == GameState.STARTED) {
       throw new AlreadyGameStartedException();
     }
 

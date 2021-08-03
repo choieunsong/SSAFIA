@@ -11,10 +11,13 @@ public class Player implements Serializable {
 
   @Id
   private String id;
-  
+
   private String nickname;
-  
-  private String gameRole;
-  
+
+  private GameRole role;
+
   private boolean alive;
+
+  private Color color;
+
 }

@@ -11,8 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
+import s05.p12a104.mafia.domain.entity.AccessType;
 import s05.p12a104.mafia.domain.entity.GamePhase;
 import s05.p12a104.mafia.domain.entity.GameState;
+import s05.p12a104.mafia.domain.entity.RoomType;
 
 @Getter
 @Slf4j
@@ -34,9 +36,9 @@ public class GameSessionDao {
 
 //  private final Map<String, String> playerId;
 
-  private final String accessType;
+  private final AccessType accessType;
 
-  private final String roomType;
+  private final RoomType roomType;
 
   @Enumerated(EnumType.STRING)
   private final GameState state;
@@ -52,7 +54,7 @@ public class GameSessionDao {
 
   private final String sessionId;
 
-  private final String masterId;
+  private final String hostId;
 
   private final Map<String, OpenViduRole> mapSessionNamesTokens;
 
