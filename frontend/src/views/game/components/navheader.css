@@ -1,0 +1,80 @@
+.navbar {
+    height: 90px;
+    background-image: url("../../../assets/image/background.png");
+    background-size: cover;
+}
+
+#sun-logo {
+    width: 50px;
+}
+
+#sun-logo-title {
+    align-items: center;
+    font-size: 2rem;
+    position: relative;
+    top: 7px;
+    left: 15px;
+}
+
+#alive-mafia-num {
+    font-size: 2rem;
+    position: relative;
+    top: 7px;
+    left: 15px;
+}
+
+#start-button {
+    position: absolute;
+    width: 244px;
+    height: 68%;
+    left: 45%;
+    text-align: center;
+    font-size: larger;
+    margin: 0 auto;
+
+    background-color: #ff0081;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    color: white;
+    border: none;
+    border-radius: 25px;
+
+    cursor: pointer;
+}
+
+#start-button:hover {
+    box-shadow: 0 5px 30px rgba(255, 0, 130, 0.5);
+}
+
+#start-button:active {
+    transform: scale(0.9);
+    background-color: darken(#ff0081, 5%);
+    box-shadow: 0 2px 25px rgba(255, 0, 130, 0.2);
+}
+
+#timer {
+    font-size: 2.5rem;
+    top: 13px;
+    position: absolute;
+    right: 90px;
+}
+
+#rule-book {
+    top: 28px;
+    position: absolute;
+    right: 30px;
+}
+
+#rule-book:hover {
+    color: gray;
+}
+
+.progress {
+    height: 20px;
+    background: #484949;
+    position: relative;
+    margin: auto;
+}
+
+.progress-bar {
+    background-image: linear-gradient(to right, #152fc0, #9c16a8);
+}

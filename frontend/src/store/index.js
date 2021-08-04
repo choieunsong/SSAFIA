@@ -6,6 +6,6 @@ import createPersistedState from "vuex-persistedstate";
 export default createStore({
     modules: { token, ingame },
     plugins: [createPersistedState({
-        paths: ['token']
+        paths: ['token', 'ingame']
     })],
 });

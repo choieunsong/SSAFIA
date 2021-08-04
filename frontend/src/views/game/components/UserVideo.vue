@@ -1,42 +1,36 @@
 <template>
-  <div v-if="streamManager">
-    <ov-video :stream-manager="streamManager" />
-    <!-- <div>
-      <p>{{ state.clientData }}</p>
-    </div> -->
-  </div>
+    <div v-if="streamManager" class="cell-box col-md-3">
+        <div class="cell col-md-12" :style="'background-color: ' + this.playerInfo.color">
+            <ov-video :stream-manager="streamManager" />
+            <span id="nickname" class="font-jua">
+                {{ this.playerInfo.nickname }}
+            </span>
+        </div>
+    </div>
 </template>
 
 <script>
-import OvVideo from "@/views/game/components/OvVideo";
-import { reactive, computed } from 'vue'
-
+import OvVideo from "./OvVideo";
+import "./uservideo.css";
 export default {
-  name: "UserVideo",
+    name: "UserVideo",
 
-  components: {
-    OvVideo,
-  },
+    components: {
+        OvVideo,
+    },
 
-  props: {
-    streamManager: Object,
-  },
-  setup(props) {
-  
-  }
+    props: {
+        streamManager: Object,
+        playerInfo: Object,
+    },
 
-  // computed: {
-  // 	clientData () {
-  // 		const { clientData } = this.getConnectionData();
-  // 		return clientData;
-  // 	},
-  // },
+    computed: {},
 
-  // methods: {
-  // 	getConnectionData () {
-  // 		const { connection } = this.streamManager.stream;
-  // 		return JSON.parse(connection.data);
-  // 	},
-  // },
+    methods: {
+        getConnectionData() {
+            const { connection } = this.streamManager.stream;
+            return JSON.parse(connection.data);
+        },
+    },
 };
 </script>
