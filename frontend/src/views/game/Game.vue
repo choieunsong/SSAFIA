@@ -14,25 +14,25 @@
         <div class="container-fluid">
             <div class="card-box-parent">
                 <!--첫번째 줄-->
-                <div class="card-box row gx-5 d-flex" :class="this.getJustifyClassFirstRow">
+                <div class="card-box row gx-5 d-flex" :class="getJustifyClassFirstRow">
                     <user-video
-                        :stream-manager="state.subscriber2"
-                        :playerInfo="state.player2"
+                        :stream-manager="state.subscribers[0]"
+                        :playerInfo="state.playersGameInfo[0]"
                         @setVoteData="state.setVoteData;"
                     ></user-video>
                     <user-video
-                        :stream-manager="state.subscriber3"
-                        :playerInfo="state.player3"
+                        :stream-manager="state.subscribers[1]"
+                        :playerInfo="state.playersGameInfo[1]"
                         @setVoteData="state.setVoteData"
                     ></user-video>
                     <user-video
-                        :stream-manager="state.subscriber6"
-                        :playerInfo="state.player6"
+                        :stream-manager="state.subscribers[4]"
+                        :playerInfo="state.playersGameInfo[4]"
                         @setVoteData="state.setVoteData"
                     ></user-video>
                     <user-video
-                        :stream-manager="state.subscriber7"
-                        :playerInfo="state.player7"
+                        :stream-manager="state.subscribers[5]"
+                        :playerInfo="state.playersGameInfo[5]"
                         @setVoteData="state.setVoteData"
                     ></user-video>
                 </div>
@@ -40,23 +40,23 @@
                 <!-- 두번째 줄 -->
                 <div class="card-box row gx-5">
                     <user-video
-                        :stream-manager="state.subscriber9"
-                        :playerInfo="state.player8"
+                        :stream-manager="state.subscribers[6]"
+                        :playerInfo="state.playersGameInfo[6]"
                         @setVoteData="state.setVoteData"
                     ></user-video>
                     <user-video
-                        :stream-manager="state.subscriber9"
-                        :playerInfo="state.player9"
+                        :stream-manager="state.subscribers[7]"
+                        :playerInfo="state.playersGameInfo[7]"
                         @setVoteData="state.setVoteData"
                         class="offset-md-6"
                     ></user-video>
                 </div>
 
                 <!-- 세번째 줄 -->
-                <div class="card-box row gx-5 d-flex" :class="this.getJustifyClassThirdRow">
+                <div class="card-box row gx-5 d-flex" :class="getJustifyClassThirdRow">
                     <user-video
-                        :stream-manager="state.subscriber4"
-                        :playerInfo="state.player4"
+                        :stream-manager="state.subscribers[2]"
+                        :playerInfo="state.playersGameInfo[2]"
                         @setVoteData="state.setVoteData"
                     ></user-video>
                     <user-video
@@ -66,13 +66,13 @@
                         @setVoteData="state.setVoteData"
                     ></user-video>
                     <user-video
-                        :stream-manager="state.subscriber5"
-                        :playerInfo="state.player5"
+                        :stream-manager="state.subscribers[3]"
+                        :playerInfo="state.playersGameInfo[3]"
                         @setVoteData="state.setVoteData"
                     ></user-video>
                     <user-video
-                        :stream-manager="state.subscriber10"
-                        :playerInfo="state.player10"
+                        :stream-manager="state.subscribers[8]"
+                        :playerInfo="state.playersGameInfo[8]"
                         @setVoteData="state.setVoteData"
                     ></user-video>
                 </div>
@@ -108,6 +108,7 @@ var colorCode = [
     "#808080",
     "#000000",
 ];
+var playerNum = 1;
 export default {
     name: "Game",
     components: {
@@ -145,27 +146,9 @@ export default {
             message: undefined,
             submessage: "",
 
+            playerNum: 1,
             playerMe: undefined, //publisher
-            player2: undefined, //subscribers
-            player3: undefined,
-            player4: undefined,
-            player5: undefined,
-            player6: undefined,
-            player7: undefined,
-            player8: undefined,
-            player9: undefined,
-            player10: undefined,
             playersGameInfo: [], //player 정보 저장
-
-            subscriber2: undefined, //subscribers
-            subscriber3: undefined,
-            subscriber4: undefined,
-            subscriber5: undefined,
-            subscriber6: undefined,
-            subscriber7: undefined,
-            subscriber8: undefined,
-            subscriber9: undefined,
-            subscriber10: undefined,
 
             inviteUrl: "",
         });
@@ -210,10 +193,8 @@ export default {
                 });
 
                 // 플레이어 수 1 증가
-                store.dispatch("ingame/joinPlayer");
-                console.log("playerNum,", store.getters["ingame/getPlayerNum"]);
+                state.playerNum += 1;
                 console.log("player game info", state.playersGameInfo);
-                passProps(idx, true);
             });
 
             // 플레이어 나갔을 때
@@ -222,24 +203,11 @@ export default {
                 console.log("remove idx ", index);
                 if (index >= 0) {
                     state.subscribers.splice(index, 1);
-                }
-
-                if (store.getters["ingame/getPlayerNum"] == 1) return;
-
-                console.log("removeIdx", index);
-                if (index >= 0) {
-                    console.log("inside of logic");
                     state.playersGameInfo.splice(index, 1);
-                    passProps(index, false);
-
-                    let idx = index;
-                    for (; idx < state.playersGameInfo.length; idx++) {
-                        passProps(idx + 1, false);
-                        passProps(idx, true);
-                    }
                 }
+
                 // 한명 제거
-                store.dispatch("ingame/leavePlayer");
+                state.playerNum -= 1;
 
                 console.log("playerGameInfo", state.playersGameInfo);
             });
@@ -599,72 +567,24 @@ export default {
         /////////////////set url//////////////
         state.inviteUrl = "https://localhost:8081/nickname/" + route.params.roomId;
 
-        ////////////////grid 관련 method////////////////
-        function passProps(i, flag) {
-            switch (i + 2) {
-                case 2:
-                    state.player2 = flag ? state.playersGameInfo[i] : null;
-                    state.subscriber2 = flag ? state.subscribers[i] : null;
-                    console.log(2);
-                    break;
-                case 3:
-                    state.player3 = flag ? state.playersGameInfo[i] : null;
-                    state.subscriber3 = flag ? state.subscribers[i] : null;
-                    console.log(3);
-                    break;
-                case 4:
-                    state.player4 = flag ? state.playersGameInfo[i] : null;
-                    state.subscriber4 = flag ? state.subscribers[i] : null;
-                    console.log(4);
-                    break;
-                case 5:
-                    state.player5 = flag ? state.playersGameInfo[i] : null;
-                    state.subscriber5 = flag ? state.subscribers[i] : null;
-                    console.log(5);
-                    break;
-                case 6:
-                    state.player6 = flag ? state.playersGameInfo[i] : null;
-                    state.subscriber6 = flag ? state.subscribers[i] : null;
-                    console.log(6);
-                    break;
-                case 7:
-                    state.player7 = flag ? state.playersGameInfo[i] : null;
-                    state.subscriber7 = flag ? state.subscribers[i] : null;
-                    console.log(7);
-                    break;
-                case 8:
-                    state.player8 = flag ? state.playersGameInfo[i] : null;
-                    state.subscriber8 = flag ? state.subscribers[i] : null;
-                    console.log(8);
-                    break;
-                case 9:
-                    state.player9 = flag ? state.playersGameInfo[i] : null;
-                    state.subscriber9 = flag ? state.subscribers[i] : null;
-                    console.log(9);
-                    break;
-                case 10:
-                    state.player10 = flag ? state.playersGameInfo[i] : null;
-                    state.subscriber10 = flag ? state.subscribers[i] : null;
-                    console.log(10);
-                    break;
-            }
-        }
         const getJustifyClassFirstRow = computed(() => {
-            if (store.getters["ingame/getPlayerNum"] == 2) {
-                console.log("1 justify center", store.getters["ingame/getPlayerNum"]);
+            console.log("getJustifyClassFirstRow, ", state.playerNum);
+            if (state.playerNum <= 2) {
+                console.log("justift center", state.playerNum);
                 return "justify-content-center";
             } else {
-                console.log("1 justify center", store.getters["ingame/getPlayerNum"]);
+                console.log("justift between", state.playerNum);
                 return "justify-content-between";
             }
         });
 
         const getJustifyClassThirdRow = computed(() => {
-            if (store.getters["ingame/getPlayerNum"] <= 3) {
-                console.log("3 justify center", store.getters["ingame/getPlayerNum"]);
+            console.log("getJustifyClassThirdRow, ", state.playerNum);
+            if (state.playerNum <= 3) {
+                console.log("justift center", state.playerNum);
                 return "justify-content-center";
             } else {
-                console.log("4 justift between", store.getters["ingame/getPlayerNum"]);
+                console.log("justift between", state.playerNum);
                 return "justify-content-between";
             }
         });
