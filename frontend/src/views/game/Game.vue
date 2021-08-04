@@ -4,6 +4,7 @@
     <nav-header
       @emitConfirmDataUpdate="emitConfirmDataUpdate"
       @gameStart="sendMessageStart"
+      :isHost="state.isHost"
     ></nav-header>
 
     <!--정보박스-->
@@ -414,16 +415,66 @@ export default {
     }
 
     function infoUpdater(key, message) {
-      if (message === null) {
-        state.playerMe[key] = null;
-        for (let i = 0; i < state.playersGameInfo.length; i++) {
-          state.playersGameInfo[i][key] = null;
+      if (key === "voters") {
+        if (message === null) {
+          state.playerMe[key] = null;
+          for (let i = 0; i < state.playersGameInfo.length; i++) {
+            state.playersGameInfo[i][key] = null;
+          }
+        } else {
+          // 내 voters 갱신하는 로직
+          let tmp = [];
+          if (
+            message[state.playerMe.playerId][key].inclueds(
+              state.playerMe.playerId
+            )
+          ) {
+            tmp.push(state.playerMe.color);
+          }
+          for (let i = 0; i < state.playerGameInfo.length; i++) {
+            if (
+              message[state.playersGameInfo[i].playerId][key].includes(
+                state.playerGameInfo[i].playerId
+              )
+            ) {
+              tmp.push(state.playersGameInfo[i].color);
+            }
+          }
+          state.playerMe[key] = tmp;
+          // subscribers voters 갱신하는 로직
+          for (let i = 0; i < state.playersGameInfo.length; i++) {
+            let tmp = [];
+            if (
+              message[state.playerMe.playerId][key].inclueds(
+                state.playerMe.playerId
+              )
+            ) {
+              tmp.push(state.playerMe.color);
+            }
+            for (let j = 0; j < state.playerGameInfo.length; j++) {
+              if (
+                message[state.playersGameInfo[i].playerId][key].includes(
+                  state.playerGameInfo[j].playerId
+                )
+              ) {
+                tmp.push(state.playersGameInfo[j].color);
+              }
+            }
+            state.playersGameInfo[i][key] = tmp;
+          }
         }
       } else {
-        state.playerMe[key] = message[state.playerMe.playerId][key];
-        for (let i = 0; i < state.playersGameInfo.length; i++) {
-          state.playersGameInfo[i][key] =
-            message[state.playersGameInfo[i].playerId][key];
+        if (message === null) {
+          state.playerMe[key] = null;
+          for (let i = 0; i < state.playersGameInfo.length; i++) {
+            state.playersGameInfo[i][key] = null;
+          }
+        } else {
+          state.playerMe[key] = message[state.playerMe.playerId][key];
+          for (let i = 0; i < state.playersGameInfo.length; i++) {
+            state.playersGameInfo[i][key] =
+              message[state.playersGameInfo[i].playerId][key];
+          }
         }
       }
     }
@@ -478,10 +529,16 @@ export default {
                 "최다 득표자가 너무 많거나 또는 무효투표자가 너무 많은 관계로,\n  최종 투표를 스킵하고 밤으로 넘어갑니다.";
             } else {
               let victimNickname = "";
-              for (let i = 0; i < state.subscribers.length; i++) {
-                if (state.subscribers[i].playerId === message.victim) {
-                  victimNickname = state.subscribers[i].nickname;
-                  break;
+              if (message.gameStatus.victim === state.playerMe.playerId) {
+                victimNickname = state.playerMe.nickname;
+              } else {
+                for (let i = 0; i < state.subscribers.length; i++) {
+                  if (
+                    state.subscribers[i].playerId === message.gameStatus.victim
+                  ) {
+                    victimNickname = state.subscribers[i].nickname;
+                    break;
+                  }
                 }
               }
               const victimJob = message.victimIsMafia ? "마피아" : "시민";
@@ -534,10 +591,16 @@ export default {
           case "NIGHT_TO_DAY": {
             if (message.gameStatus.victim) {
               let victimNickname = "";
-              for (let i = 0; i < state.subscribers.length; i++) {
-                if (state.subscribers[i].playerId === message.victim) {
-                  victimNickname = state.subscribers[i].nickname;
-                  break;
+              if (message.gameStatus.victim === state.playerMe.playerId) {
+                victimNickname = state.playerMe.nickname;
+              } else {
+                for (let i = 0; i < state.subscribers.length; i++) {
+                  if (
+                    state.subscribers[i].playerId === message.gameStatus.victim
+                  ) {
+                    victimNickname = state.subscribers[i].nickname;
+                    break;
+                  }
                 }
               }
               const victimJob = message.gameStatus.victimIsMafia
@@ -588,9 +651,6 @@ export default {
         }
       } else if (message.type === "UPDATE") {
         infoUpdater("voters", message);
-        // } else if (message.type === "REJOIN") {
-        //   state.gameStatus = message.gameStatus;
-        //   state.players = message.players;
       } else {
         console.log(
           `sorry, unexpected message type. this is what we'v got ${message.type}`
@@ -603,13 +663,13 @@ export default {
       if (message.type === "ROLE") {
         state.role = message.role;
         state.mafias = message.mafias;
-        let mafiaNicknames = []
-        for (let i; i<state.playersGameInfo.length;i++){
-            if (state.mafias.includes(state.playersGameInfo[i].playerId)) {
-                mafiaNicknames.push(state.playersGameInfo[i].nickname)
-            }
+        let mafiaNicknames = [];
+        for (let i; i < state.playersGameInfo.length; i++) {
+          if (state.mafias.includes(state.playersGameInfo[i].playerId)) {
+            mafiaNicknames.push(state.playersGameInfo[i].nickname);
+          }
         }
-        const mafiaNicknameString = mafiaNicknames.join()
+        const mafiaNicknameString = mafiaNicknames.join(" , ");
         if (state.role === "mafia") {
           state.message = `게임이 시작되었습니다. \n 당신은 마피아입니다. \n 마피아 동료와 함께 시민의 수를 마피아의 수와 같게 만들면 당신의 승리입니다. \n 밤마다 마피아 동료들과 상의해 시민을 한명씩 제거해나가세요. \n 당신의 마피아 동료는 ${mafiaNicknameString}들입니다`;
         } else if (state.role === "police") {
@@ -623,7 +683,7 @@ export default {
             "게임이 시작되었습니다. \n 당신은 시민입니다. \n 다른 시민과 함께 마피아를 모두 제거하면 당신의 승리입니다.";
         } else {
           state.message =
-            "당신은 관전자입니다. \n 게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
+            "당신은 관전자입니다. \n 게임에 개입할 수는 없지만, 일어나고 있는 일들에 대한 모든 정보를 받아볼 수 있습니다.";
           state.publisher.publishAudio(false);
           state.publisher.publishVideo(false);
           for (let i; i < state.subscribers.length; i++) {
@@ -676,6 +736,7 @@ export default {
         {},
         JSON.stringify(message)
       );
+      state.stompClient.disconnect();
     }
 
     state.openviduToken = store.getters["token/getOpenviduToken"];
@@ -685,7 +746,7 @@ export default {
     // connect();
 
     window.addEventListener("beforeunload", leaveSession);
-    window.addEventListener("beforeunload", leaveGame);
+    // window.addEventListener("beforeunload", leaveGame);
 
     /////////////////set url//////////////
     state.inviteUrl = "https://localhost:8081/nickname/" + route.params.roomId;
