@@ -10,6 +10,7 @@ const state = {
     victim: undefined,
     victimIsMafia: undefined,
     suspects: undefined,
+    playerNum: 1,
   },
 };
 
@@ -20,6 +21,9 @@ const getters = {
   getRole: (state) => {
     return state.role;
   },
+  getPlayerNum: (state) => {
+    return state.gameStatus.playerNum;
+  }
 };
 
 const actions = {
@@ -41,6 +45,12 @@ const actions = {
       }, 0);
     });
   },
+  joinPlayer({ commit }) {
+    commit(INGAME.JOIN_PLAYER);    
+  },
+  leavePlayer({ commit }) {
+    commit(INGAME.LEAVE_PLAYER);    
+  }
 };
 
 const mutations = {
@@ -49,7 +59,13 @@ const mutations = {
     },
     [INGAME.SET_ROLE](state, role){
         state.rolel = role
-    }
+    },
+    [INGAME.JOIN_PLAYER](state) {
+      state.gameStatus.playerNum += 1;
+  },
+  [INGAME.LEAVE_PLAYER](state) {
+    state.gameStatus.playerNum -= 1;
+  }
 };
 
 export default {

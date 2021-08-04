@@ -11,7 +11,9 @@ const TOKEN = {
 
 const INGAME = {
     SET_GAMESTATUS: 'SET_GAMESTATUS',
-    SET_ROLE: 'SET_ROLE',    
+    SET_ROLE: 'SET_ROLE',
+    JOIN_PLAYER: 'JOIN_PLAYER',
+    LEAVE_PLAYER: 'LEAVE_PLAYER'
 }
 
 export {

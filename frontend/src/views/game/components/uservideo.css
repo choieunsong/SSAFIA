@@ -1,0 +1,45 @@
+.cell-box {
+    border-radius: 10px;
+}
+
+.cell {
+    height: 100%;
+    padding-top: 10px;
+    border-radius: 10px;
+    position: relative;
+}
+
+.cell:hover {
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px;
+    cursor: pointer;
+}
+
+.ov-video-wrap {
+    position: relative;
+    height: 80%;
+    width: 100%;
+    /* width: 100%; */
+    /* background-color: black; */
+}
+
+#nickname {
+    position: absolute;
+    color: white;
+    background-color: black;
+    font-size: small;
+    left: 5%;
+    bottom: 20%;
+}
+
+.vote-box {
+    position: absolute;
+    height: 20%;
+    width: 92%;
+}
+
+.voter-icon-span {
+    position: relative;
+    top: 13%;
+    margin-right: 10px;
+    float: left;
+}
