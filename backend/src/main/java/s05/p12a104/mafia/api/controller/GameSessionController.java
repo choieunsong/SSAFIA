@@ -94,7 +94,7 @@ public class GameSessionController {
       throw new BadRequestException("잘못된 형식의 토큰입니다. - reqeusted token : " + token);
     }
 
-    gameSessionService.removeUser(roomId, token);
+    GameSession gameSession = gameSessionService.removeUser(roomId, req.getUserId());
     return ApiResponseDto.DEFAULT_SUCCESS;
   }
 }
