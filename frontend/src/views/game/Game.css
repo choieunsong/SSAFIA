@@ -46,11 +46,12 @@
     margin-top: 20px;
     /* margin-bottom: 30px; */
     height: 28%;
+    min-height: 212px;
 }
 
-@media (max-width: 762px) {
+@media (max-width: 764px) {
     #info-box {
-        top: 350px;
+        top: 370px;
         width: 350px;
         height: 200px;
     }
@@ -71,13 +72,13 @@
     }
 }
 
-@media (max-height: 725px) {
+/* @media (max-height: 725px) {
     #info-box {
         top: 300px;
-        /* width: 400px; */
+        
         height: 200px;
     }
-}
+} */
 
 @media (min-height: 1000px) {
     .card-box {
