@@ -8,8 +8,10 @@ import io.openvidu.java.client.OpenViduJavaClientException;
 import io.openvidu.java.client.OpenViduRole;
 import io.openvidu.java.client.Session;
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,8 +27,10 @@ import s05.p12a104.mafia.common.exception.OverMaxTotalRoomCountException;
 import s05.p12a104.mafia.common.util.RoomIdUtils;
 import s05.p12a104.mafia.common.util.UrlUtils;
 import s05.p12a104.mafia.domain.dao.GameSessionDao;
+import s05.p12a104.mafia.domain.entity.Color;
 import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.entity.GameState;
+import s05.p12a104.mafia.domain.entity.Player;
 import s05.p12a104.mafia.domain.entity.User;
 import s05.p12a104.mafia.domain.mapper.GameSessionDaoMapper;
 import s05.p12a104.mafia.domain.repository.GameSessionRedisRepository;
@@ -123,9 +127,11 @@ public class GameSessionServiceImpl implements GameSessionService {
           .orElseThrow(OpenViduSessionNotFoundException::new)
           .substring(4);
 
-      gameSession.getMapSessionNamesTokens().put(token, role);
+      Player player = Player.builder(userId, nickname, getNewColor(gameSession), token, role)
+          .build();
 
-      if (gameSession.getMapSessionNamesTokens().size() == 1) {
+      gameSession.getPlayerMap().put(userId, player);
+      if (gameSession.getPlayerMap().size() == 1) {
         gameSession.setHostId(userId);
       }
       update(gameSession);
@@ -143,25 +149,31 @@ public class GameSessionServiceImpl implements GameSessionService {
   }
 
   @Override
-  public boolean removeUser(String roomId, String token) {
+  public GameSession removeUser(String roomId, String userId) {
     GameSession gameSession = findById(roomId);
     Session session = gameSession.getSession();
-    Map<String, OpenViduRole> mapSessionNamesTokens = gameSession.getMapSessionNamesTokens();
+    Map<String, Player> playerMap = gameSession.getPlayerMap();
 
     // If the session exists ("TUTORIAL" in this case)
-    if (session == null || mapSessionNamesTokens == null) {
+    if (session == null || playerMap == null) {
       log.info("Problems in the app server: the SESSION does not exist");
-      return true;
+      throw new OpenViduSessionNotFoundException();
     }
-    if (mapSessionNamesTokens.remove(token) == null) {
-      log.info("Problems in the app server: the TOKEN - {} wasn't valid", token);
-      return true;
+
+    if (playerMap.remove(userId) == null) {
+      log.info("Problems in the app server: the USER_ID - {} wasn't valid", userId);
     }
+
     // User left the session
-    if (mapSessionNamesTokens.isEmpty()) {
+    if (playerMap.isEmpty()) {
       removeGameSession(gameSession);
+    } else {
+      if (userId.equals(gameSession.getHostId())) {
+        // 다음 player를 방장으로 등록
+        gameSession.setHostId(playerMap.keySet().iterator().next());
+      }
     }
-    return true;
+    return gameSession;
   }
 
   public GameSession toEntity(GameSessionDao dao) {
@@ -176,14 +188,13 @@ public class GameSessionServiceImpl implements GameSessionService {
       throw new OpenViduSessionNotFoundException();
     }
 
-    Map<String, OpenViduRole> sessionNamesTokens = dao.getMapSessionNamesTokens();
-    if (sessionNamesTokens == null) {
-      sessionNamesTokens = new HashMap<>();
+    Map<String, Player> playerMap = dao.getPlayerMap();
+    if (playerMap == null) {
+      playerMap = new LinkedHashMap<>();
     }
 
     GameSession gameSession = GameSession.builder(dao.getRoomId(), dao.getCreatorEmail(),
-        dao.getAccessType(), dao.getRoomType(), dao.getCreatedTime(), entitySession,
-        sessionNamesTokens)
+        dao.getAccessType(), dao.getRoomType(), dao.getCreatedTime(), entitySession, playerMap)
         .finishedTime(dao.getFinishedTime())
         .day(dao.getDay())
         .isNight(dao.isNight())
@@ -196,14 +207,29 @@ public class GameSessionServiceImpl implements GameSessionService {
     return gameSession;
   }
 
-  public void validateToBePossibleToJoin(GameSession gameSession) {
+  private void validateToBePossibleToJoin(GameSession gameSession) {
     if (gameSession.getState() == GameState.STARTED) {
       throw new AlreadyGameStartedException();
     }
 
-    if (gameSession.getMapSessionNamesTokens().size() >= MAX_PLAYER_COUNT) {
+    if (gameSession.getPlayerMap().size() >= MAX_PLAYER_COUNT) {
       throw new OverMaxPlayerCountException();
     }
+  }
+
+  private Color getNewColor(GameSession gameSession) {
+    Set<Color> usedColors = new HashSet<>();
+    for (Player player : gameSession.getPlayerMap().values()) {
+      usedColors.add(player.getColor());
+    }
+
+    for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
+      Color newColor = Color.randomColor();
+      if (!usedColors.contains(newColor)) {
+        return newColor;
+      }
+    }
+    return Color.RED;
   }
 
 }

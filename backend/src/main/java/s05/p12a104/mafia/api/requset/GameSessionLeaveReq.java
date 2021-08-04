@@ -7,4 +7,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GameSessionLeaveReq {
   private String token;
+  private String userId;
 }

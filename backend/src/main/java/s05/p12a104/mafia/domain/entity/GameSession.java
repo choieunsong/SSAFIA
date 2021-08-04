@@ -1,10 +1,10 @@
 package s05.p12a104.mafia.domain.entity;
 
-import io.openvidu.java.client.OpenViduRole;
 import io.openvidu.java.client.Session;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.AccessLevel;
@@ -34,7 +34,7 @@ public class GameSession {
   @NonNull
   private final String creatorEmail;
 
-//  private List<Player> players;
+  private Map<String, Player> playerMap;
 
   @NonNull
   @Enumerated(EnumType.STRING)
@@ -64,11 +64,8 @@ public class GameSession {
 
   private String hostId;
 
-  private final Map<String, OpenViduRole> mapSessionNamesTokens;
-
   public static GameSessionBuilder builder(String roomId, String creatorEmail, AccessType accessType,
-      RoomType roomType, LocalDateTime createdTime, Session session,
-      Map<String, OpenViduRole> mapSessionNamesTokens) {
+      RoomType roomType, LocalDateTime createdTime, Session session, Map<String, Player> playerMap) {
     return new GameSessionBuilder()
         .roomId(roomId)
         .creatorEmail(creatorEmail)
@@ -77,6 +74,6 @@ public class GameSession {
         .createdTime(createdTime)
         .session(session)
         .state(GameState.WAIT)
-        .mapSessionNamesTokens(mapSessionNamesTokens);
+        .playerMap(playerMap);
   }
 }
