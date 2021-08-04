@@ -8,7 +8,7 @@
         </el-button>
       </div>
       <div>
-        <el-button class="gamemode-btn2" round @click="chooseAccessType('public')" disabled>
+        <el-button class="gamemode-btn2" round  disabled>
           <span class="font-jua">모르는 사람과 플레이!</span>
         </el-button>
       </div>
@@ -22,7 +22,7 @@
         </el-button>
       </div>
       <div>
-        <el-button class="gamemode-btn2" round @click="chooseRoomType('custom')" disabled>
+        <el-button class="gamemode-btn2" round disabled>
           <span class="font-jua">커스텀 모드</span>
         </el-button>
       </div>
@@ -32,6 +32,12 @@
         </el-button>
       </div>
     </div>
+    <el-alert
+      class="nickname-alert"
+      type="error"
+      :title="state.errorMessage"
+      v-if="state.isError"
+    ></el-alert>
   </div>
 </template>
 
@@ -52,6 +58,8 @@ export default defineComponent({
       roomType: "basic",
       isLast: false,
       roomId: "Es14g5f", //나중에 backend에서 받아올 부분
+      isError: false,
+      errorMessage: '',
     });
     const chooseAccessType = (type) => {
       state.accessType = type;
@@ -73,11 +81,12 @@ export default defineComponent({
             store.dispatch("token/setRoomId", data.data.id);
             router.push({ name: "Nickname", params: { roomId: data.data.id } });
           } else if (data.code === "fail") {
-            alert(data.data.message);
+            state.isError = true
+            state.errorMessage = data.data.message
           }
         })
-        .catch((err) => {
-          console.log(err);
+        .catch((error) => {
+          console.log(error);
         });
     };
     const chooseRoomType = (type) => {
