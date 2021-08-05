@@ -1,0 +1,91 @@
+version: "3.4"
+services:
+  mysql:
+    image: mariadb:10.4.20
+    restart: always
+    ports:
+      - "32000:3306"
+    volumes:
+      - ./mysql/mysql-data:/var/lib/mysql
+      - ./mysql/initdb.d/:/docker-entrypoint-initdb.d/
+    env_file: prod.env
+    environment:
+      MYSQL_DATABASE: mafia
+      TZ: "Asia/Seoul"
+    privileged: true
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    networks:
+      - internal_network
+
+  redis:
+    image: redis:6.2.4-alpine
+    restart: always
+    volumes:
+      - ./redis/redis-data:/data
+    ports:
+      - "32001:6379"
+    networks:
+      - internal_network
+
+  openvidu:
+    image: openvidu/openvidu-server-kms:2.19.0
+    restart: always
+    ports:
+      - "3333:3333"
+    env_file: prod.env
+    environment:
+      HTTPS_PORT: 3333
+    networks:
+      - internal_network
+
+  backend:
+    build:
+      dockerfile: Dockerfile
+      context: ./backend
+      target: prod
+    env_file: prod.env
+    environment:
+      TZ: "Asia/Seoul"
+      SPRING_PROFILES_ACTIVE: "prod"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/mafia?useUnicode=yes&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true"
+      SPRING_REDIS_HOST: "redis"
+      server.address: 0.0.0.0
+    depends_on:
+      - mysql
+      - redis
+      - openvidu
+    networks:
+      - internal_network
+
+  nginx:
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: ./frontend
+      target: production-stage
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    depends_on:
+      - backend
+      - certbot
+    networks:
+      - internal_network
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - internal_network
+    
+
+networks:
+  internal_network:
