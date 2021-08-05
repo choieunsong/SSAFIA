@@ -71,9 +71,7 @@
 
           <!--정보박스-->
           <div id="info-box" class="font-jua">
-            <span class="info-text"
-              >최소 4명부터 게임을 시작할 수 있습니다.
-            </span>
+            <span class="info-text">{{ state.message }} </span>
 
             <div v-if="state.gameStatus.phase == 'READY'" class="url-copy-box">
               <span class="url-title">친구를 초대해 보세요!</span>
@@ -204,7 +202,7 @@ export default {
       stompClient: undefined,
       jobClient: undefined,
       mafias: undefined,
-      message: "",
+      message: "인원수가 4명이 넘어가면 호스트가 게임을 시작할 수 있습니다.",
       submessage: "",
       isConfirm: false,
 
@@ -273,7 +271,7 @@ export default {
         // 한명 제거
         state.playerNum -= 1;
 
-        console.log("playerGameInfo", state.playersGameInfo);
+        console.log("playersGameInfo", state.playersGameInfo);
       });
 
       state.session.on("exception", ({ exception }) => {
@@ -313,6 +311,7 @@ export default {
             color: colorCode[0],
             isMafia: null,
           };
+          console.log(state.playerMe);
         })
         .catch((error) => {
           console.log(
@@ -448,6 +447,7 @@ export default {
 
     // playersGameInfo 업데이트용 함수
     function infoUpdater(key, message) {
+      console.log(message);
       if (key === "voters") {
         if (message === null) {
           state.playerMe[key] = null;
@@ -458,17 +458,17 @@ export default {
           // 내 voters 갱신하는 로직
           let tmp = [];
           if (
-            message.playerMap[state.playerMe.playerId][key].inclueds(
+            message.playerMap[state.playerMe.playerId][key].includes(
               state.playerMe.playerId
             )
           ) {
             tmp.push(state.playerMe.color);
           }
-          for (let i = 0; i < state.playerGameInfo.length; i++) {
+          for (let i = 0; i < state.playersGameInfo.length; i++) {
             if (
-              message.playerMap[state.playersGameInfo[i].playerId][
-                key
-              ].includes(state.playerGameInfo[i].playerId)
+              message.playerMap[state.playerMe.playerId][key].includes(
+                state.playersGameInfo[i].playerId
+              )
             ) {
               tmp.push(state.playersGameInfo[i].color);
             }
@@ -478,17 +478,17 @@ export default {
           for (let i = 0; i < state.playersGameInfo.length; i++) {
             let tmp = [];
             if (
-              message.playerMap[state.playerMe.playerId][key].inclueds(
-                state.playerMe.playerId
-              )
+              message.playerMap[state.playersGameInfo[i].playerId][
+                key
+              ].includes(state.playerMe.playerId)
             ) {
               tmp.push(state.playerMe.color);
             }
-            for (let j = 0; j < state.playerGameInfo.length; j++) {
+            for (let j = 0; j < state.playersGameInfo.length; j++) {
               if (
                 message.playerMap[state.playersGameInfo[i].playerId][
                   key
-                ].includes(state.playerGameInfo[j].playerId)
+                ].includes(state.playersGameInfo[j].playerId)
               ) {
                 tmp.push(state.playersGameInfo[j].color);
               }
@@ -517,13 +517,18 @@ export default {
       var message = JSON.parse(payload.body);
       if (message.type === "JOIN") {
         infoUpdater("color", message);
+        if (message.hostId === state.playerId) {
+          state.isHost = true;
+        } else {
+          state.isHost = false;
+        }
       } else if (message.type === "LEAVE") {
         if (message.hostId === state.playerId) {
           state.isHost = true;
         } else {
           state.isHost = false;
         }
-      } else if (message.type === "PHASE_CHANED") {
+      } else if (message.type === "PHASE_CHANGED") {
         switch (message.gameStatus.phase) {
           case "START": {
             state.gameStatus = message.gameStatus;
@@ -701,25 +706,31 @@ export default {
     // 개인 메세지 채널로 온 메세지에 따라 할 일
     function onPersonalMessageReceived(payload) {
       const message = JSON.parse(payload.body);
+      console.log(message);
       if (message.type === "ROLE") {
         state.role = message.role;
         state.mafias = message.mafias;
-        let mafiaNicknames = [];
-        for (let i; i < state.playersGameInfo.length; i++) {
-          if (state.mafias.includes(state.playersGameInfo[i].playerId)) {
-            mafiaNicknames.push(state.playersGameInfo[i].nickname);
+        if (state.role === "MAFIA") {
+          if (state.mafias.length === 1) {
+            state.message =
+              "게임이 시작되었습니다. \n 당신은 마피아입니다. \n 마피아 동료와 함께 시민의 수를 마피아의 수와 같게 만들면 당신의 승리입니다. \n 밤마다 마피아 동료들과 상의해 시민을 한명씩 제거해나가세요. \n 마피아는 당신 한명 입니다";
+          } else {
+            let mafiaNicknames = [];
+            for (let i; i < state.playersGameInfo.length; i++) {
+              if (state.mafias.includes(state.playersGameInfo[i].playerId)) {
+                mafiaNicknames.push(state.playersGameInfo[i].nickname);
+              }
+            }
+            const mafiaNicknameString = mafiaNicknames.join(" , ");
+            state.message = `게임이 시작되었습니다. \n 당신은 마피아입니다. \n 마피아 동료와 함께 시민의 수를 마피아의 수와 같게 만들면 당신의 승리입니다. \n 밤마다 마피아 동료들과 상의해 시민을 한명씩 제거해나가세요. \n 당신의 마피아 동료는 ${mafiaNicknameString}들입니다`;
           }
-        }
-        const mafiaNicknameString = mafiaNicknames.join(" , ");
-        if (state.role === "mafia") {
-          state.message = `게임이 시작되었습니다. \n 당신은 마피아입니다. \n 마피아 동료와 함께 시민의 수를 마피아의 수와 같게 만들면 당신의 승리입니다. \n 밤마다 마피아 동료들과 상의해 시민을 한명씩 제거해나가세요. \n 당신의 마피아 동료는 ${mafiaNicknameString}들입니다`;
-        } else if (state.role === "police") {
+        } else if (state.role === "POLICE") {
           state.message =
             "게임이 시작되었습니다. \n 당신은 경찰입니다. \n 시민을 도와 마피아를 모두 제거하면 당신의 승리입니다. \n 밤마다 의심가는 사람 한 명을 지목하여 그 사람의 직업을 알아낼 수 있습니다.";
-        } else if (state.role === "doctor") {
+        } else if (state.role === "DOCTOR") {
           state.message =
             "게임이 시작되었습니다. \n 당신은 의사입니다. \n 시민을 도와 마피아를 모두 제거하면 당신의 승리입니다. \n 밤마다 죽을 것 같은 사람에게 투표하여 그 사람을 구할 수 있습니다.";
-        } else if (state.role === "civilian") {
+        } else if (state.role === "CIVILIAN") {
           state.message =
             "게임이 시작되었습니다. \n 당신은 시민입니다. \n 다른 시민과 함께 마피아를 모두 제거하면 당신의 승리입니다.";
         } else {
@@ -732,7 +743,7 @@ export default {
             state.subscribers[i].subscribeToVideo(true);
           }
         }
-        if (state.mafia === null) {
+        if (state.mafias === null) {
           infoUpdater("isMafia", null);
         } else {
           for (let i; i < state.playersGameInfo.length; i++) {
@@ -758,9 +769,9 @@ export default {
     // 직업 채널로 온 메세지에 따라 할 일
     function onJobMessageReceived(payload) {
       const message = JSON.parse(payload.body);
-      if (state.role === "mafia" || state.role === "observer") {
+      if (state.role === "MAFIA" || state.role === "OBSERVER") {
         infoUpdater("voters", message);
-      } else if (state.role === "police") {
+      } else if (state.role === "POLICE") {
         let targetNickname = "";
         for (let i = 0; i < state.subscribers.length; i++) {
           if (state.subscribers[i].playerId === message.vote) {
@@ -782,11 +793,12 @@ export default {
     state.myUserName = store.getters["token/getNickname"];
     state.playerId = store.getters["token/getPlayerId"];
     joinSession();
-    connect();
+
+    setTimeout(connect, 100);
     function leave() {
       confirm("정말 나가시겠습니까?");
       leaveSession();
-      // leaveGame()
+      leaveGame();
     }
     window.addEventListener("beforeunload", leave);
 

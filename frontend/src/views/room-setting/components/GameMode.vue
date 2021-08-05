@@ -77,12 +77,13 @@ export default defineComponent({
                 },
             })
                 .then(({ data }) => {
+                    console.log(data)
                     if (data.code === "success") {
                         store.dispatch("token/setRoomId", data.data.id);
                         router.push({ name: "Nickname", params: { roomId: data.data.id } });
                     } else if (data.code === "fail") {
                         state.isError = true;
-                        state.errorMessage = data.data.message;
+                        state.errorMessage = data.message;
                     }
                 })
                 .catch((error) => {
