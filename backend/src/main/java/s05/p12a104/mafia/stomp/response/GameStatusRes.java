@@ -11,15 +11,15 @@ public class GameStatusRes {
 
   private StompMessageType type;
   private GameStatus gameStatus;
-  private Map<String, PlayerStatus> players;
+  private Map<String, PlayerStatus> playerMap;
 
   public static GameStatusRes of(GameSession gameSession) {
     GameStatusRes gameStatusRes = new GameStatusRes();
     gameStatusRes.type = StompMessageType.PHASE_CHANGED;
     gameStatusRes.gameStatus = GameStatus.of(gameSession);
-    gameStatusRes.players = new HashMap<>();
+    gameStatusRes.playerMap = new HashMap<>();
     gameSession.getPlayerMap().forEach(
-        (playerId, player) -> gameStatusRes.players.put(playerId, PlayerStatus.of(player)));
+        (playerId, player) -> gameStatusRes.playerMap.put(playerId, PlayerStatus.of(player)));
     return gameStatusRes;
   }
 
