@@ -1,0 +1,35 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update # 나중에 none으로 변경
+    properties:
+      hibernate:
+        format_sql: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirectUri: ${APP_BASE_URL}/oauth2/callback/{registrationId}
+            scope:
+              - email
+              - profile
+
+# EMBEDDED SERVER CONFIGURATION
+server:
+  ssl:
+    key-store: classpath:keystore.jks
+    key-store-password: kurento
+    key-store-type: JKS
+    key-alias: kurento-selfsigned
+
+app:
+  tokenSecret: ${JWT_SECRET}
+  tokenExpirationMsec: 864000000
+  authorizedRedirectUris:
+    - ${APP_BASE_URL}/oauth2/redirect
