@@ -108,6 +108,11 @@
     cursor: pointer;
 }
 
+#confirm-button:hover {
+    transition: transform 0.2s ease-out;
+    transition: color 0.2s ease-out;
+}
+
 .progress {
     height: 20px;
     background: #484949;

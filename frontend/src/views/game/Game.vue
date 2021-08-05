@@ -119,66 +119,8 @@
                     ></user-video>
                 </div>
             </div>
-          </div>
-
-          <user-video
-            :stream-manager="state.subscribers[7]"
-            :playerInfo="state.playersGameInfo[7]"
-            :gameStatus="state.gameStatus"
-            :isConfirm="state.isConfirm"
-            :role="state.role"
-            @emitVoteDataUpdate="
-              emitVoteDataUpdate(state.playersGameInfo[7].playerId)
-            "
-            class="offset-md-6"
-          ></user-video>
         </div>
-
-        <!-- 세번째 줄 -->
-        <div class="card-box row gx-5 d-flex" :class="getJustifyClassThirdRow">
-          <user-video
-            :stream-manager="state.subscribers[2]"
-            :playerInfo="state.playersGameInfo[2]"
-            :gameStatus="state.gameStatus"
-            :isConfirm="state.isConfirm"
-            :role="state.role"
-            @emitVoteDataUpdate="
-              emitVoteDataUpdate(state.playersGameInfo[2].playerId)
-            "
-          ></user-video>
-          <user-video
-            :stream-manager="state.publisher"
-            :playerInfo="state.playerMe"
-            :gameStatus="state.gameStatus"
-            :isConfirm="state.isConfirm"
-            :role="state.role"
-            id="video-mine"
-            @emitVoteDataUpdate="emitVoteDataUpdate(state.playerMe.playerId)"
-          ></user-video>
-          <user-video
-            :stream-manager="state.subscribers[3]"
-            :playerInfo="state.playersGameInfo[3]"
-            :gameStatus="state.gameStatus"
-            :isConfirm="state.isConfirm"
-            :role="state.role"
-            @emitVoteDataUpdate="
-              emitVoteDataUpdate(state.playersGameInfo[3].playerId)
-            "
-          ></user-video>
-          <user-video
-            :stream-manager="state.subscribers[8]"
-            :playerInfo="state.playersGameInfo[8]"
-            :gameStatus="state.gameStatus"
-            :isConfirm="state.isConfirm"
-            :role="state.role"
-            @emitVoteDataUpdate="
-              semitVoteDataUpdate(state.playersGameInfo[8].playerId)
-            "
-          ></user-video>
-        </div>
-      </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -361,7 +303,7 @@ export default {
         };
 
         // 게임 관련 소켓통신
-        function onConnected() {           
+        function onConnected() {
             state.message = `Room: ${state.mySessionId}에 오신 걸 환영합니다. \n 부디 SSAFIA를 즐겨주시기 바랍니다`;
             // 개인 채널 구독
             state.stompClient.subscribe(
@@ -370,17 +312,21 @@ export default {
             );
             // 방 채널 구독
             state.stompClient.subscribe(`/sub/${state.mySessionId}`, onMessageReceived);
-            
+
             // 구독했다고 서버에 알리기, 나갔다 오면 다른 경로로
-            const localGameStatus = store.getters['ingame/getgameStatus']
-            if (localGameStatus.phase === 'ready') {
-                state.stompClient.send(`/pub/${state.mySessionId}/join`, {}, );
+            const localGameStatus = store.getters["ingame/getgameStatus"];
+            if (localGameStatus.phase === "ready") {
+                state.stompClient.send(`/pub/${state.mySessionId}/join`, {});
             } else {
                 const message = {
                     date: localGameStatus.date,
-                    phase: localGameStatus.phase
-                }
-                state.stompClient.send(`/pub/${state.mySessionId}/rejoin`,{}, JSON.stringify(message))
+                    phase: localGameStatus.phase,
+                };
+                state.stompClient.send(
+                    `/pub/${state.mySessionId}/rejoin`,
+                    {},
+                    JSON.stringify(message)
+                );
             }
         }
         // 에러시 할 것
@@ -420,7 +366,7 @@ export default {
                 );
             }
         }
-        
+
         // 게임 시작 메세지 보내는 함수
         function sendMessageStart() {
             //응답 받고
@@ -477,7 +423,11 @@ export default {
                 } else {
                     // 내 voters 갱신하는 로직
                     let tmp = [];
-                    if (message.playerMap[state.playerMe.playerId][key].inclueds(state.playerMe.playerId)) {
+                    if (
+                        message.playerMap[state.playerMe.playerId][key].inclueds(
+                            state.playerMe.playerId
+                        )
+                    ) {
                         tmp.push(state.playerMe.color);
                     }
                     for (let i = 0; i < state.playerGameInfo.length; i++) {
@@ -494,7 +444,9 @@ export default {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
                         let tmp = [];
                         if (
-                            message.playerMap[state.playerMe.playerId][key].inclueds(state.playerMe.playerId)
+                            message.playerMap[state.playerMe.playerId][key].inclueds(
+                                state.playerMe.playerId
+                            )
                         ) {
                             tmp.push(state.playerMe.color);
                         }
@@ -542,7 +494,7 @@ export default {
                     case "START": {
                         state.gameStatus = message.gameStatus;
                         infoUpdater("alive", message);
-                        store.dispatch('ingame/setGameStatus', state.gameStatus)
+                        store.dispatch("ingame/setGameStatus", state.gameStatus);
                         break;
                     }
                     case "DAY_DISCUSSION": {
@@ -556,7 +508,7 @@ export default {
                         }
                         state.gameStatus = message.gameStatus;
                         infoUpdater("alive", message);
-                        store.dispatch('ingame/setGameStatus', state.gameStatus)
+                        store.dispatch("ingame/setGameStatus", state.gameStatus);
                         break;
                     }
                     case "DAY_ELIMINATION": {
@@ -571,7 +523,7 @@ export default {
                         infoUpdater("suspicious", message);
                         infoUpdater("voters", null);
                         state.isConfirm = false;
-                        store.dispatch('ingame/setGameStatus', state.gameStatus)
+                        store.dispatch("ingame/setGameStatus", state.gameStatus);
                         break;
                     }
                     case "DAY_TO_NIGHT": {
@@ -600,7 +552,7 @@ export default {
                         infoUpdater("suspicious", null);
                         infoUpdater("voters", null);
                         state.isConfirm = false;
-                        store.dispatch('ingame/setGameStatus', state.gameStatus)
+                        store.dispatch("ingame/setGameStatus", state.gameStatus);
                         break;
                     }
                     case "NIGHT_VOTE": {
@@ -638,7 +590,7 @@ export default {
                             }
                         }
                         state.gameStatus = message.gameStatus;
-                        store.dispatch('ingame/setGameStatus', state.gameStatus)
+                        store.dispatch("ingame/setGameStatus", state.gameStatus);
                         break;
                     }
                     case "NIGHT_TO_DAY": {
@@ -669,7 +621,7 @@ export default {
                             state.subscribers[i].subscribeToAudio(true);
                             state.subscribers[i].subscribeToVideo(true);
                         }
-                        store.dispatch('ingame/setGameStatus', state.gameStatus)
+                        store.dispatch("ingame/setGameStatus", state.gameStatus);
                         break;
                     }
                     case "END": {
@@ -697,7 +649,7 @@ export default {
                         infoUpdater("voters", null);
                         infoUpdater("isMafia", null);
                         state.isConfirm = false;
-                        store.dispatch('ingame/setGameStatus', state.gameStatus)
+                        store.dispatch("ingame/setGameStatus", state.gameStatus);
                         break;
                     }
                 }
@@ -759,11 +711,11 @@ export default {
                     onJobMessageReceived
                 );
             } else {
-                state.gameStatus = message.gameStatus
+                state.gameStatus = message.gameStatus;
                 if (state.gameStatus.phase === "DAY_ELIMINATION") {
-                    infoUpdater('suspicious', message)
+                    infoUpdater("suspicious", message);
                 }
-                infoUpdater('alive', message)
+                infoUpdater("alive", message);
             }
         }
         // 직업 채널로 온 메세지에 따라 할 일
@@ -795,9 +747,9 @@ export default {
         joinSession();
         // connect();
         function leave() {
-          confirm("정말 나가시겠습니까?")
-          leaveSession()
-          // leaveGame()
+            confirm("정말 나가시겠습니까?");
+            leaveSession();
+            // leaveGame()
         }
         window.addEventListener("beforeunload", leave);
 
@@ -857,7 +809,6 @@ export default {
             urlInput.select();
             document.execCommand("copy");
         }
-
 
         return {
             state,
