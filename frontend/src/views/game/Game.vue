@@ -130,8 +130,9 @@ import UserVideo from "@/views/game/components/UserVideo";
 import { computed, reactive } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
+import { API_BASE_URL } from "@/constant/index";
 import SockJS from "sockjs-client";
-import Stomp from "stomp-client";
+import Stomp from "webstomp-client";
 
 import NavHeader from "@/views/game/components/NavHeader";
 import "./Game.css";
@@ -335,9 +336,11 @@ export default {
         }
         // 실제 연결
         function connect() {
-            var socket = new SockJS("/ws/gamesession");
+            var socket = new SockJS(`${API_BASE_URL}/ws/gamesession`);
+            console.log("sockjs 연결 성공")
             state.stompClient = Stomp.over(socket);
             state.stompClient.connect({ playerId: state.playerId }, onConnected, onError);
+            console.log("stomp 연결 성공")
         }
         // 투표 메세지 보내는 함수
         function sendMessageVote(targetPlayerId) {
@@ -745,7 +748,7 @@ export default {
         state.myUserName = store.getters["token/getNickname"];
         state.playerId = store.getters["token/getPlayerId"];
         joinSession();
-        // connect();
+        connect();
         function leave() {
             confirm("정말 나가시겠습니까?");
             leaveSession();
