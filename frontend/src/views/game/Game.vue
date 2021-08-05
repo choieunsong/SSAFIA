@@ -64,10 +64,10 @@
                         <span class="info-text">최소 4명부터 게임을 시작할 수 있습니다. </span>
 
                         <div class="url-copy-box">
-                            <span class="invite-text">친구를 초대해 보세요!</span>
+                            <span class="url-title">친구를 초대해 보세요!</span>
                             <span class="url-copy-text">{{ state.inviteUrl }}</span>
-                            <input type="text" id="urlInput" />
                             <i class="fas fa-copy" id="url-copy-btn" @click="copyUrl"></i>
+                            <input type="text" id="urlInput" />
                         </div>
                     </div>
 
