@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import s05.p12a104.mafia.domain.enums.AuthProvider;
 
 @Entity
 @Getter

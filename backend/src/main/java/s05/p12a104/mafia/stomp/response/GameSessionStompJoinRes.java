@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.entity.Player;
-import s05.p12a104.mafia.domain.entity.StompMessageType;
+import s05.p12a104.mafia.domain.enums.StompMessageType;
 
 @Getter
 @RequiredArgsConstructor
