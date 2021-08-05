@@ -2,14 +2,15 @@ package s05.p12a104.mafia.domain.dao;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Timer;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.domain.entity.AccessType;
 import s05.p12a104.mafia.domain.entity.GamePhase;
 import s05.p12a104.mafia.domain.entity.GameState;
@@ -30,6 +31,12 @@ public class GameSessionDao {
   private final int phaseCount;
 
   private final boolean night;
+  
+  private int aliveMafia;
+  
+  private int time;
+  
+  private Timer timer;
 
   @Indexed
   private final String creatorEmail;
