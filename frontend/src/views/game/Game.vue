@@ -2,9 +2,9 @@
     <div id="main-container">
         <!-- 헤더 -->
         <nav-header
-            :maxTime="state.gameStatus.timer"
             :current-player-num="state.playerNum"
             :isHost="state.isHost"
+            :gameStatus="state.gameStatus"
             @emitConfirmDataUpdate="emitConfirmDataUpdate"
             @gameStart="sendMessageStart"
         ></nav-header>
@@ -63,7 +63,7 @@
                     <div id="info-box" class="font-jua">
                         <span class="info-text">최소 4명부터 게임을 시작할 수 있습니다. </span>
 
-                        <div class="url-copy-box">
+                        <div v-if="state.gameStatus.phase == 'READY'" class="url-copy-box">
                             <span class="url-title">친구를 초대해 보세요!</span>
                             <span class="url-copy-text">{{ state.inviteUrl }}</span>
                             <i class="fas fa-copy" id="url-copy-btn" @click="copyUrl"></i>
@@ -234,7 +234,7 @@ export default {
             role: undefined,
             gameStatus: {
                 date: 0,
-                phase: "ready",
+                phase: "READY",
                 timer: 10,
                 aliveMafia: 0,
             },
@@ -423,6 +423,15 @@ export default {
         
         // 게임 시작 메세지 보내는 함수
         function sendMessageStart() {
+            //응답 받고
+            state.gameStatus.phase = "START";
+            state.gameStatus.aliveMafia = 2;
+            state.gameStatus.timer = 100;
+            state.gameStatus.date += 1;
+
+            console.log("game Start");
+            console.log(state.gameStatus.phase);
+
             if (state.stompClient) {
                 state.stompClient.send(`/pub/${state.mySessionId}/start`, {});
             }
