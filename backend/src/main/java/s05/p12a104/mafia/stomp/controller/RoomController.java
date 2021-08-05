@@ -56,6 +56,11 @@ public class RoomController {
     
     // 초기 설정하기
     gameSessionService.startGame(gameSession);
+    
+    Timer timer = new Timer();
+    StartFinTimerTask task = new StartFinTimerTask(redisPublisher);
+    task.setRoomId(roomId);
+    timer.schedule(task, gameSession.getTimer() * 1000);
 
     // 전체 전송
     simpMessagingTemplate.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));
