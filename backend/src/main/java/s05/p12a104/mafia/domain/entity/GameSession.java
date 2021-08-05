@@ -3,7 +3,6 @@ package s05.p12a104.mafia.domain.entity;
 import io.openvidu.java.client.Session;
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.Timer;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.AccessLevel;
@@ -36,9 +35,7 @@ public class GameSession {
   
   private int aliveMafia;
   
-  private int time;
-  
-  private Timer timer;
+  private int timer;
 
   @NonNull
   private final String creatorEmail;

@@ -2,7 +2,6 @@ package s05.p12a104.mafia.domain.dao;
 
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.Timer;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import org.springframework.data.annotation.Id;
@@ -34,9 +33,7 @@ public class GameSessionDao {
   
   private int aliveMafia;
   
-  private int time;
-  
-  private Timer timer;
+  private int timer;
 
   @Indexed
   private final String creatorEmail;

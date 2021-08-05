@@ -1,4 +1,4 @@
-package s05.p12a104.mafia.api.response;
+package s05.p12a104.mafia.stomp.response;
 
 import io.swagger.annotations.ApiModel;
 import lombok.Getter;

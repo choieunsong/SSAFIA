@@ -24,4 +24,6 @@ public interface GameSessionService {
   GameSessionJoinRes addUser(String roomId, String nickname);
 
   GameSession removeUser(String roomId, String userId);
+  
+  void startGame(GameSession gameSession);
 }
