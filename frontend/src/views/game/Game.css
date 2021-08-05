@@ -24,7 +24,7 @@
 .info-text {
     position: absolute;
     left: 50%;
-    top: 50%;
+    top: 40%;
     transform: translate(-50%, -50%);
     vertical-align: middle;
 
@@ -54,7 +54,7 @@
 
 #url-copy-btn {
     display: inline-block;
-    margin-left: 50px;
+    margin-left: 20px;
     color: white;
     cursor: pointer;
 
