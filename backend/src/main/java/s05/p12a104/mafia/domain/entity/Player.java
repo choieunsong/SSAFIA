@@ -2,6 +2,7 @@ package s05.p12a104.mafia.domain.entity;
 
 import io.openvidu.java.client.OpenViduRole;
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,6 +29,10 @@ public class Player implements Serializable {
   private final String token;
 
   private final OpenViduRole openViduRole;
+  
+  private List<String> mafias;
+  
+  private boolean suspicious;
 
   public void setRole(GameRole role) {
     this.role = role;
@@ -35,6 +40,14 @@ public class Player implements Serializable {
 
   public void setAlive(boolean alive) {
     this.alive = alive;
+  }
+  
+  public void setMafias(List<String> mafias) {
+    this.mafias = mafias;
+  }
+  
+  public void setSuspicious(boolean suspicious) {
+    this.suspicious = suspicious;
   }
 
   public static PlayerBuilder builder(String id, String nickname, Color color, String token,

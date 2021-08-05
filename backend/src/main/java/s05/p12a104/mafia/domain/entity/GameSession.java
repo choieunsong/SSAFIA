@@ -32,6 +32,10 @@ public class GameSession {
   private int phaseCount;
 
   private boolean isNight;
+  
+  private int aliveMafia;
+  
+  private int timer;
 
   @NonNull
   private final String creatorEmail;
