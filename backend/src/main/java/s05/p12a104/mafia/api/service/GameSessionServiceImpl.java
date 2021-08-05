@@ -1,5 +1,11 @@
 package s05.p12a104.mafia.api.service;
 
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import org.springframework.stereotype.Service;
 import io.openvidu.java.client.ConnectionProperties;
 import io.openvidu.java.client.ConnectionType;
 import io.openvidu.java.client.OpenVidu;
@@ -7,14 +13,8 @@ import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
 import io.openvidu.java.client.OpenViduRole;
 import io.openvidu.java.client.Session;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import s05.p12a104.mafia.api.requset.GameSessionPostReq;
 import s05.p12a104.mafia.api.response.GameSessionJoinRes;
 import s05.p12a104.mafia.common.exception.AlreadyGameStartedException;
@@ -24,14 +24,17 @@ import s05.p12a104.mafia.common.exception.OpenViduSessionNotFoundException;
 import s05.p12a104.mafia.common.exception.OverMaxIndividualRoomCountException;
 import s05.p12a104.mafia.common.exception.OverMaxPlayerCountException;
 import s05.p12a104.mafia.common.exception.OverMaxTotalRoomCountException;
+import s05.p12a104.mafia.common.util.RoleUtils;
 import s05.p12a104.mafia.common.util.RoomIdUtils;
 import s05.p12a104.mafia.common.util.UrlUtils;
 import s05.p12a104.mafia.domain.dao.GameSessionDao;
-import s05.p12a104.mafia.domain.enums.Color;
 import s05.p12a104.mafia.domain.entity.GameSession;
-import s05.p12a104.mafia.domain.enums.GameState;
 import s05.p12a104.mafia.domain.entity.Player;
 import s05.p12a104.mafia.domain.entity.User;
+import s05.p12a104.mafia.domain.enums.Color;
+import s05.p12a104.mafia.domain.enums.GamePhase;
+import s05.p12a104.mafia.domain.enums.GameRole;
+import s05.p12a104.mafia.domain.enums.GameState;
 import s05.p12a104.mafia.domain.mapper.GameSessionDaoMapper;
 import s05.p12a104.mafia.domain.repository.GameSessionRedisRepository;
 
@@ -56,22 +59,19 @@ public class GameSessionServiceImpl implements GameSessionService {
       throw new OverMaxTotalRoomCountException();
     }
 
-    if (gameSessionRedisRepository.findByCreatorEmail(user.getEmail()).size()
-        >= MAX_INDIVIDUAL_ROOM_COUNT) {
+    if (gameSessionRedisRepository.findByCreatorEmail(user.getEmail())
+        .size() >= MAX_INDIVIDUAL_ROOM_COUNT) {
       throw new OverMaxIndividualRoomCountException();
     }
 
     Session newSession = openVidu.createSession();
     String newRoomId =
-        RoomIdUtils.getIdPrefix(typeInfo.getAccessType())
-            + newSession.getSessionId().split("_")[1];
+        RoomIdUtils.getIdPrefix(typeInfo.getAccessType()) + newSession.getSessionId().split("_")[1];
 
     LocalDateTime createdTime = LocalDateTime.now();
     GameSession newGameSession = GameSession.builder(newRoomId, user.getEmail(),
-        typeInfo.getAccessType(), typeInfo.getRoomType(), createdTime,
-        newSession, null)
-        .finishedTime(createdTime)
-        .build();
+        typeInfo.getAccessType(), typeInfo.getRoomType(), createdTime, newSession, null)
+        .finishedTime(createdTime).build();
 
     GameSessionDao newDao = GameSessionDaoMapper.INSTANCE.toDao(newGameSession);
     return toEntity(gameSessionRedisRepository.save(newDao));
@@ -93,8 +93,8 @@ public class GameSessionServiceImpl implements GameSessionService {
 
   @Override
   public GameSession findById(String id) {
-    GameSessionDao gameSessionDao = gameSessionRedisRepository.findById(id)
-        .orElseThrow(GameSessionNotFoundException::new);
+    GameSessionDao gameSessionDao =
+        gameSessionRedisRepository.findById(id).orElseThrow(GameSessionNotFoundException::new);
 
     return toEntity(gameSessionDao);
   }
@@ -124,11 +124,10 @@ public class GameSessionServiceImpl implements GameSessionService {
 
       // ex> tok_A1c0pNsLJFwVJTeb
       String userId = UrlUtils.getUrlQueryParam(token, "token")
-          .orElseThrow(OpenViduSessionNotFoundException::new)
-          .substring(4);
+          .orElseThrow(OpenViduSessionNotFoundException::new).substring(4);
 
-      Player player = Player.builder(userId, nickname, getNewColor(gameSession), token, role)
-          .build();
+      Player player =
+          Player.builder(userId, nickname, getNewColor(gameSession), token, role).build();
 
       gameSession.getPlayerMap().put(userId, player);
       if (gameSession.getPlayerMap().size() == 1) {
@@ -193,16 +192,12 @@ public class GameSessionServiceImpl implements GameSessionService {
       playerMap = new LinkedHashMap<>();
     }
 
-    GameSession gameSession = GameSession.builder(dao.getRoomId(), dao.getCreatorEmail(),
-        dao.getAccessType(), dao.getRoomType(), dao.getCreatedTime(), entitySession, playerMap)
-        .finishedTime(dao.getFinishedTime())
-        .day(dao.getDay())
-        .isNight(dao.isNight())
-        .phase(dao.getPhase())
-        .lastEnter(dao.getLastEnter())
-        .state(dao.getState())
-        .hostId(dao.getHostId())
-        .build();
+    GameSession gameSession = GameSession
+        .builder(dao.getRoomId(), dao.getCreatorEmail(), dao.getAccessType(), dao.getRoomType(),
+            dao.getCreatedTime(), entitySession, playerMap)
+        .finishedTime(dao.getFinishedTime()).day(dao.getDay()).isNight(dao.isNight())
+        .aliveMafia(dao.getAliveMafia()).timer(dao.getTimer()).phase(dao.getPhase())
+        .lastEnter(dao.getLastEnter()).state(dao.getState()).hostId(dao.getHostId()).build();
 
     return gameSession;
   }
@@ -232,4 +227,27 @@ public class GameSessionServiceImpl implements GameSessionService {
     return Color.RED;
   }
 
+  @Override
+  public void startGame(GameSession gameSession) {
+    // 각 역할에 맞는 인원수 구하기
+    Map<GameRole, Integer> roleNum = RoleUtils.getRoleNum(gameSession);
+
+    // game 초기 setting
+    gameSession.setState(GameState.STARTED);
+    gameSession.setDay(1);
+    gameSession.setAliveMafia(roleNum.get(GameRole.MAFIA));
+    gameSession.setPhase(GamePhase.START);
+    gameSession.setTimer(15);
+    // player 초기화
+    gameSession.getPlayerMap().forEach((playerId, player) -> {
+      player.setAlive(true);
+      player.setSuspicious(false);
+    });
+    
+    // 역할 부여
+    RoleUtils.assignRole(roleNum, gameSession.getPlayerMap());
+    
+    // redis에 저장
+    update(gameSession);
+  }
 }
