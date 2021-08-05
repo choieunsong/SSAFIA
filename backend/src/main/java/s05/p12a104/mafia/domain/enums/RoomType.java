@@ -1,13 +1,13 @@
-package s05.p12a104.mafia.domain.entity;
+package s05.p12a104.mafia.domain.enums;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import s05.p12a104.mafia.common.util.EnumType;
 
-public enum AccessType implements EnumType {
-  @JsonProperty("private")
-  PRIVATE,
-  @JsonProperty("public")
-  PUBLIC;
+public enum RoomType implements EnumType {
+  @JsonProperty("basic")
+  BASIC,
+  @JsonProperty("custom")
+  CUSTOM;
 
   @Override
   public String getId() {
@@ -18,4 +18,5 @@ public enum AccessType implements EnumType {
   public String getText() {
     return this.name();
   }
+
 }

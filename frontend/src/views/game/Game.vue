@@ -1,85 +1,123 @@
 <template>
-  <div id="main-container">
-    <!-- 헤더 -->
-    <nav-header
-      :maxTime="state.gameStatus.timer"
-      :current-player-num="state.playerNum"
-      :isHost="state.isHost"
-      @emitConfirmDataUpdate="emitConfirmDataUpdate"
-      @gameStart="sendMessageStart"
-    ></nav-header>
+    <div id="main-container">
+        <!-- 헤더 -->
+        <nav-header
+            :maxTime="state.gameStatus.timer"
+            :current-player-num="state.playerNum"
+            :isHost="state.isHost"
+            @emitConfirmDataUpdate="emitConfirmDataUpdate"
+            @gameStart="sendMessageStart"
+        ></nav-header>
 
-    <!-- 플레이어 비디오 -->
-    <div class="container-fluid">
-      <div class="card-box-parent">
-        <!--첫번째 줄-->
-        <div class="card-box row gx-5 d-flex" :class="getJustifyClassFirstRow">
-          <user-video
-            :stream-manager="state.subscribers[0]"
-            :playerInfo="state.playersGameInfo[0]"
-            :gameStatus="state.gameStatus"
-            :isConfirm="state.isConfirm"
-            :role="state.role"
-            @emitVoteDataUpdate="
-              emitVoteDataUpdate(state.playersGameInfo[0].playerId)
-            "
-          ></user-video>
-          <user-video
-            :stream-manager="state.subscribers[1]"
-            :playerInfo="state.playersGameInfo[1]"
-            :gameStatus="state.gameStatus"
-            :isConfirm="state.isConfirm"
-            :role="state.role"
-            @emitVoteDataUpdate="
-              emitVoteDataUpdate(state.playersGameInfo[1].playerId)
-            "
-          ></user-video>
-          <user-video
-            :stream-manager="state.subscribers[4]"
-            :playerInfo="state.playersGameInfo[4]"
-            :gameStatus="state.gameStatus"
-            :isConfirm="state.isConfirm"
-            :role="state.role"
-            @emitVoteDataUpdate="
-              emitVoteDataUpdate(state.playersGameInfo[4].playerId)
-            "
-          ></user-video>
-          <user-video
-            :stream-manager="state.subscribers[5]"
-            :playerInfo="state.playersGameInfo[5]"
-            :gameStatus="state.gameStatus"
-            :isConfirm="state.isConfirm"
-            :role="state.role"
-            @emitVoteDataUpdate="
-              emitVoteDataUpdate(state.playersGameInfo[5].playerId)
-            "
-          ></user-video>
-        </div>
+        <!-- 플레이어 비디오 -->
+        <div class="container-fluid">
+            <div class="card-box-parent">
+                <!--첫번째 줄-->
+                <div class="card-box row gx-5 d-flex" :class="getJustifyClassFirstRow">
+                    <user-video
+                        :stream-manager="state.subscribers[0]"
+                        :playerInfo="state.playersGameInfo[0]"
+                        :gameStatus="state.gameStatus"
+                        :isConfirm="state.isConfirm"
+                        :role="state.role"
+                        @emitVoteDataUpdate="emitVoteDataUpdate(state.playersGameInfo[0].playerId)"
+                    ></user-video>
+                    <user-video
+                        :stream-manager="state.subscribers[1]"
+                        :playerInfo="state.playersGameInfo[1]"
+                        :gameStatus="state.gameStatus"
+                        :isConfirm="state.isConfirm"
+                        :role="state.role"
+                        @emitVoteDataUpdate="emitVoteDataUpdate(state.playersGameInfo[1].playerId)"
+                    ></user-video>
+                    <user-video
+                        :stream-manager="state.subscribers[4]"
+                        :playerInfo="state.playersGameInfo[4]"
+                        :gameStatus="state.gameStatus"
+                        :isConfirm="state.isConfirm"
+                        :role="state.role"
+                        @emitVoteDataUpdate="emitVoteDataUpdate(state.playersGameInfo[4].playerId)"
+                    ></user-video>
+                    <user-video
+                        :stream-manager="state.subscribers[5]"
+                        :playerInfo="state.playersGameInfo[5]"
+                        :gameStatus="state.gameStatus"
+                        :isConfirm="state.isConfirm"
+                        :role="state.role"
+                        @emitVoteDataUpdate="emitVoteDataUpdate(state.playersGameInfo[5].playerId)"
+                    ></user-video>
+                </div>
 
-        <!-- 두번째 줄 -->
-        <div class="card-box row gx-5">
-          <user-video
-            :stream-manager="state.subscribers[6]"
-            :playerInfo="state.playersGameInfo[6]"
-            :gameStatus="state.gameStatus"
-            :isConfirm="state.isConfirm"
-            :role="state.role"
-            @emitVoteDataUpdate="
-              emitVoteDataUpdate(state.playersGameInfo[6].playerId)
-            "
-          ></user-video>
+                <!-- 두번째 줄 -->
+                <div class="card-box row gx-5">
+                    <user-video
+                        :stream-manager="state.subscribers[6]"
+                        :playerInfo="state.playersGameInfo[6]"
+                        :gameStatus="state.gameStatus"
+                        :isConfirm="state.isConfirm"
+                        :role="state.role"
+                        @emitVoteDataUpdate="emitVoteDataUpdate(state.playersGameInfo[6].playerId)"
+                    ></user-video>
 
-          <!--정보박스-->
-          <div id="info-box" class="font-jua">
-            <span class="info-text"
-              >최소 4명부터 게임을 시작할 수 있습니다.
-            </span>
+                    <!--정보박스-->
+                    <div id="info-box" class="font-jua">
+                        <span class="info-text">최소 4명부터 게임을 시작할 수 있습니다. </span>
 
-            <div class="url-copy-box">
-              <span class="invite-text">친구를 초대해 보세요!</span>
-              <span class="url-copy-text">{{ state.inviteUrl }}</span>
-              <input type="text" id="urlInput" />
-              <i class="fas fa-copy" id="url-copy-btn" @click="copyUrl"></i>
+                        <div class="url-copy-box">
+                            <span class="url-title">친구를 초대해 보세요!</span>
+                            <span class="url-copy-text">{{ state.inviteUrl }}</span>
+                            <i class="fas fa-copy" id="url-copy-btn" @click="copyUrl"></i>
+                            <input type="text" id="urlInput" />
+                        </div>
+                    </div>
+
+                    <user-video
+                        :stream-manager="state.subscribers[7]"
+                        :playerInfo="state.playersGameInfo[7]"
+                        :gameStatus="state.gameStatus"
+                        :isConfirm="state.isConfirm"
+                        :role="state.role"
+                        @emitVoteDataUpdate="emitVoteDataUpdate(state.playersGameInfo[7].playerId)"
+                        class="offset-md-6"
+                    ></user-video>
+                </div>
+
+                <!-- 세번째 줄 -->
+                <div class="card-box row gx-5 d-flex" :class="getJustifyClassThirdRow">
+                    <user-video
+                        :stream-manager="state.subscribers[2]"
+                        :playerInfo="state.playersGameInfo[2]"
+                        :gameStatus="state.gameStatus"
+                        :isConfirm="state.isConfirm"
+                        :role="state.role"
+                        @emitVoteDataUpdate="emitVoteDataUpdate(state.playersGameInfo[2].playerId)"
+                    ></user-video>
+                    <user-video
+                        :stream-manager="state.publisher"
+                        :playerInfo="state.playerMe"
+                        :gameStatus="state.gameStatus"
+                        :isConfirm="state.isConfirm"
+                        :role="state.role"
+                        id="video-mine"
+                        @emitVoteDataUpdate="emitVoteDataUpdate(state.playerMe.playerId)"
+                    ></user-video>
+                    <user-video
+                        :stream-manager="state.subscribers[3]"
+                        :playerInfo="state.playersGameInfo[3]"
+                        :gameStatus="state.gameStatus"
+                        :isConfirm="state.isConfirm"
+                        :role="state.role"
+                        @emitVoteDataUpdate="emitVoteDataUpdate(state.playersGameInfo[3].playerId)"
+                    ></user-video>
+                    <user-video
+                        :stream-manager="state.subscribers[8]"
+                        :playerInfo="state.playersGameInfo[8]"
+                        :gameStatus="state.gameStatus"
+                        :isConfirm="state.isConfirm"
+                        :role="state.role"
+                        @emitVoteDataUpdate="semitVoteDataUpdate(state.playersGameInfo[8].playerId)"
+                    ></user-video>
+                </div>
             </div>
           </div>
 

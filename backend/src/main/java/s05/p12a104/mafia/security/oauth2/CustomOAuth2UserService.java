@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import s05.p12a104.mafia.common.exception.OAuth2AuthenticationProcessingException;
-import s05.p12a104.mafia.domain.entity.AuthProvider;
+import s05.p12a104.mafia.domain.enums.AuthProvider;
 import s05.p12a104.mafia.domain.entity.User;
 import s05.p12a104.mafia.domain.repository.UserRepository;
 import s05.p12a104.mafia.security.UserPrincipal;

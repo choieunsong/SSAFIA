@@ -1,6 +1,6 @@
 package s05.p12a104.mafia.security.oauth2.user;
 
-import static s05.p12a104.mafia.domain.entity.AuthProvider.google;
+import static s05.p12a104.mafia.domain.enums.AuthProvider.google;
 import java.util.Map;
 import s05.p12a104.mafia.common.exception.OAuth2AuthenticationProcessingException;
 

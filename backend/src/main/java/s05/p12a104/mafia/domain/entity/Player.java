@@ -6,6 +6,8 @@ import javax.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import s05.p12a104.mafia.domain.enums.Color;
+import s05.p12a104.mafia.domain.enums.GameRole;
 
 @Slf4j
 @Getter

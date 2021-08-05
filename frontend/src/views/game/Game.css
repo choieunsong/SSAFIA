@@ -4,10 +4,10 @@
 
 #info-box {
     position: absolute;
-    width: 50%;
+    width: 40%;
     height: 105%;
 
-    left: 26%;
+    left: 30%;
 
     background-color: #535353;
     opacity: 0.9;
@@ -16,15 +16,60 @@
     padding: 10px;
 
     color: white;
-    font-size: x-large;
+    font-size: larger;
     text-align: center;
     z-index: 1;
 }
 
 .info-text {
-    display: inline-block;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     vertical-align: middle;
-    line-height: 10rem;
+
+    line-height: 1.5em;
+}
+
+.url-copy-box {
+    position: absolute;
+    top: 60%;
+    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.url-title {
+    display: block;
+    color: salmon;
+    font-size: 300;
+    line-height: 2em;
+}
+
+.url-copy-text {
+    margin-left: 10%;
+    margin-right: auto;
+    display: inline-block;
+}
+
+#url-copy-btn {
+    display: inline-block;
+    margin-left: 50px;
+    color: white;
+    cursor: pointer;
+
+    transition: transform 0.2s ease-out;
+    transition: color 0.2s ease-out;
+}
+
+#url-copy-btn:hover {
+    color: green;
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+#urlInput {
+    opacity: 0;
 }
 
 .card-box-parent {
@@ -42,56 +87,6 @@
     min-height: 190px;
 }
 
-.url-copy-box {
-    position: absolute;
-    height: 60px;
-    min-width: 80%;
-    max-width: 555px;
-    left: 50%;
-    top: 10rem;
-    transform: translate(-50%, -50%);
-    vertical-align: middle;
-}
-
-.invite-text {
-    position: absolute;
-    font-size: 300;
-    left: 12%;
-    color: salmon;
-}
-
-.url-copy-text {
-    font-size: large;
-    position: absolute;
-    color: white;
-
-    height: 25px;
-    top: 70%;
-    left: 12%;
-    z-index: 1;
-}
-
-#url-copy-btn {
-    position: absolute;
-    display: inline-block;
-    cursor: pointer;
-    margin-left: 0.8rem;
-    left: 85%;
-    top: 70%;
-
-    transition: transform 0.2s ease-out;
-    transition: color 0.2s ease-out;
-}
-
-#url-copy-btn:hover {
-    transform: scale(1.2);
-    color: green;
-    cursor: pointer;
-}
-
-#urlInput {
-    opacity: 0;
-}
 /* 
 @media (max-width: 764px) {
     #info-box {
@@ -120,9 +115,18 @@
         width: 500px;
         height: 200px;
     }
-}
+} */
 
-@media (min-height: 1000px) {
+/* @media (max-height: 725px) {
+    #info-box {
+        top: 300px;
+        
+        height: 200px;
+    }
+} */
+
+/* @media (min-height: 1000px) {
+>>>>>>> Stashed changes
     .card-box {
         margin-left: 5%;
         margin-right: 5%;

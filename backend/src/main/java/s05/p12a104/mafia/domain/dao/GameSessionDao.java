@@ -2,7 +2,6 @@ package s05.p12a104.mafia.domain.dao;
 
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.Set;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Builder;
@@ -11,12 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
-import s05.p12a104.mafia.domain.entity.AccessType;
-import s05.p12a104.mafia.domain.entity.Color;
-import s05.p12a104.mafia.domain.entity.GamePhase;
-import s05.p12a104.mafia.domain.entity.GameState;
+import s05.p12a104.mafia.domain.enums.AccessType;
+import s05.p12a104.mafia.domain.enums.GamePhase;
+import s05.p12a104.mafia.domain.enums.GameState;
 import s05.p12a104.mafia.domain.entity.Player;
-import s05.p12a104.mafia.domain.entity.RoomType;
+import s05.p12a104.mafia.domain.enums.RoomType;
 
 @Getter
 @Slf4j

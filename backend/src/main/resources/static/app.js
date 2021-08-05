@@ -9,6 +9,51 @@ var token;			// Token retrieved from OpenVidu Server
 
 function joinSession() {
 	getToken((token) => {
+
+    let nick = $("#nickName").val();
+    var socket = new SockJS("/ws/gamesession");
+    stompClient = Stomp.over(socket);
+    console.log("Before connect STOMP")
+    stompClient.connect({
+      name: nick // Username!
+    }, function () {
+      console.log('STOMP Connected');
+      stompClient.subscribe('/user/sub/V1234', (payload) => {
+        let message = JSON.parse(payload.body);
+        console.log("onMessageReceived1");
+        console.log(message);
+      });
+      stompClient.subscribe('/sub/V1234', (payload) => {
+        let message = JSON.parse(payload.body);
+        console.log("onMessageReceived2");
+        console.log(message);
+      });
+
+      stompClient.subscribe('/sub/V1234/' + nick, (payload) => {
+        let message = JSON.parse(payload.body);
+        console.log("onMessageReceived3");
+        console.log(message);
+      });
+
+      // {name: nick+'Join'},
+      stompClient.send("/pub/V1234/join",
+          {},
+          JSON.stringify({sender: 'hihi', type: 'JOIN'})
+      )
+    });
+
+    function onMessageReceived1(payload) {
+      var message = JSON.parse(payload.body);
+      console.log("onMessageReceived1");
+      console.log(message);
+    }
+
+    function onMessageReceived2(payload) {
+      var message = JSON.parse(payload.body);
+      console.log("onMessageReceived2");
+      console.log(message);
+    }
+
 		console.log("token : " + token);
 
 		// --- 1) Get an OpenVidu object ---
