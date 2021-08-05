@@ -9,7 +9,6 @@ const state = {
     aliveMafia: 0,
     victim: undefined,
     victimIsMafia: undefined,
-    suspects: undefined,
     playerNum: 1,
   },
 };
@@ -23,7 +22,7 @@ const getters = {
   },
   getPlayerNum: (state) => {
     return state.gameStatus.playerNum;
-  }
+  },
 };
 
 const actions = {
@@ -46,26 +45,26 @@ const actions = {
     });
   },
   joinPlayer({ commit }) {
-    commit(INGAME.JOIN_PLAYER);    
+    commit(INGAME.JOIN_PLAYER);
   },
   leavePlayer({ commit }) {
-    commit(INGAME.LEAVE_PLAYER);    
-  }
+    commit(INGAME.LEAVE_PLAYER);
+  },
 };
 
 const mutations = {
-    [INGAME.SET_GAMESTATUS](state, gameStatus) {
-        state.gameStatus = gameStatus
-    },
-    [INGAME.SET_ROLE](state, role){
-        state.rolel = role
-    },
-    [INGAME.JOIN_PLAYER](state) {
-      state.gameStatus.playerNum += 1;
+  [INGAME.SET_GAMESTATUS](state, gameStatus) {
+    state.gameStatus = gameStatus;
+  },
+  [INGAME.SET_ROLE](state, role) {
+    state.rolel = role;
+  },
+  [INGAME.JOIN_PLAYER](state) {
+    state.gameStatus.playerNum += 1;
   },
   [INGAME.LEAVE_PLAYER](state) {
     state.gameStatus.playerNum -= 1;
-  }
+  },
 };
 
 export default {
