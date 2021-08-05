@@ -6,6 +6,7 @@
 
 #sun-logo {
     width: 50px;
+    margin-left: 1em;
 }
 
 #sun-logo-title {
@@ -23,6 +24,22 @@
     left: 15px;
 }
 
+#start-button-inactive {
+    position: absolute;
+    width: 244px;
+    height: 68%;
+    left: 45%;
+    text-align: center;
+    font-size: larger;
+    margin: 0 auto;
+
+    background-color: gray;
+    color: white;
+    /* border: 5px solid #ffb6c1; */
+    border: none;
+    border-radius: 25px;
+}
+
 #start-button {
     position: absolute;
     width: 244px;
@@ -33,21 +50,23 @@
     margin: 0 auto;
 
     background-color: #ff0081;
-    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
     color: white;
-    border: none;
+    border: 5px solid #ffb6c1;
     border-radius: 25px;
 
     cursor: pointer;
 }
 
 #start-button:hover {
-    box-shadow: 0 5px 30px rgba(255, 0, 130, 0.5);
+    animation-name: hover-scale-down;
+    animation-iteration-count: infinite;
+    animation-duration: 1s;
 }
 
 #start-button:active {
     transform: scale(0.9);
     background-color: darken(#ff0081, 5%);
+    box-shadow: 0 5px 30px rgba(255, 0, 130, 0.5);
     box-shadow: 0 2px 25px rgba(255, 0, 130, 0.2);
 }
 
@@ -62,10 +81,31 @@
     top: 28px;
     position: absolute;
     right: 30px;
+    cursor: pointer;
 }
 
 #rule-book:hover {
-    color: gray;
+    animation-name: hover-scale-up;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    color: black;
+}
+
+#confirm-button {
+    position: absolute;
+    width: 244px;
+    height: 68%;
+    left: 45%;
+    text-align: center;
+    font-size: larger;
+    margin: 0 auto;
+
+    background-color: #1e90ff;
+    color: white;
+    border: 5px solid #00bfff;
+    border-radius: 25px;
+
+    cursor: pointer;
 }
 
 .progress {
@@ -77,4 +117,30 @@
 
 .progress-bar {
     background-image: linear-gradient(to right, #152fc0, #9c16a8);
+}
+
+@keyframes hover-scale-down {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.9);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes hover-scale-up {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+        color: gray;
+    }
+    100% {
+        transform: scale(1);
+        color: black;
+    }
 }

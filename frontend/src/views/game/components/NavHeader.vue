@@ -15,8 +15,24 @@
             </div>
 
             <!-- playerNum가 4 이상 됐을 때 활성화 되기 -->
-            <button @click="startCountDown" type="button" class="font-jua" id="start-button">
+            <button
+                v-if="!this.clickStartButton && this.currentPlayerNum < 2"
+                class="font-jua"
+                id="start-button-inactive"
+            >
+                게임 준비
+            </button>
+            <button
+                v-else-if="isHost && !this.clickStartButton && this.currentPlayerNum >= 2"
+                @click="gameStart"
+                type="button"
+                class="font-jua"
+                id="start-button"
+            >
                 게임 시작
+            </button>
+            <button v-else @click="confirmVote" type="button" class="font-jua" id="confirm-button">
+                투표 확정
             </button>
 
             <span id="timer" class="font-jua">{{ this.time }}</span>
@@ -41,12 +57,19 @@
 import "./navheader.css";
 export default {
     name: "NavHeader",
+    props: {
+        maxTime: Number, // 최대 시간
+        currentPlayerNum: Number,
+        isHost: Boolean,
+    },
+
     data() {
         return {
-            maxTime: 100, //최대시간
             time: this.maxTime, //표시될 시간(100 -> 0)
             leftTime: 0, //progress bar를 위한 남은 시간(0 -> 100)
             multiplier: 0,
+            minPlayerNumToPlay: 4,
+            clickStartButton: false, //한번 start button 누르면 끝날때까지 비활성화
         };
     },
     computed: {
@@ -55,17 +78,30 @@ export default {
         },
     },
     created() {
-        this.multiplier = 100 / this.maxTime;
+        // this.isHost = true;
     },
     methods: {
         openRuleBook() {},
+        gameStart() {
+            //Game.vue에 게임 시작 전송
+            this.$emit("gameStart");
+        },
         startCountDown() {
-            this.time = this.maxTime;
-            this.leftTime = 0;
-            this.$emit("setTime", this.leftTime);
-            setTimeout(() => {
-                this.countDownTimer();
-            }, 200);
+            if (!this.clickStartButton) {
+                this.multiplier = 100 / this.maxTime; //곱해줄 값 구하기
+                this.time = this.maxTime; // 시간 구하기
+                this.leftTime = 0;
+
+                console.log("multiplier", this.multiplier);
+                console.log("time", this.time);
+                console.log("leftTime", this.leftTime);
+                console.log("maxTime", this.maxTime);
+
+                this.clickStartButton = true;
+                setTimeout(() => {
+                    this.countDownTimer();
+                }, 200);
+            }
         },
         countDownTimer() {
             var interval = setInterval(() => {
@@ -75,6 +111,8 @@ export default {
 
             setTimeout(() => {
                 clearInterval(interval);
+                this.leftTime = 0;
+                this.clickStartButton = false; //다시 start button 활성화
             }, 1000 * this.maxTime);
         },
     },

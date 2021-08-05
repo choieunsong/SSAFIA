@@ -17,10 +17,14 @@ export default {
 </script>
 <style>
 .video-size {
-    position: absolute;
+    /* position: absolute;
     width: 93%;
 
     left: 10px;
-    top: 10px;
+    top: 10px; */
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 </style>

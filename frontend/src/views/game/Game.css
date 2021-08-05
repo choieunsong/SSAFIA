@@ -2,23 +2,15 @@
     height: 100vh;
 }
 
-.info-box-parent {
-    width: 100%;
-    height: 100%;
-    background-color: red;
-    position: relative;
-}
-
 #info-box {
     position: absolute;
-    width: 675px;
-    height: 235px;
-    /* width: 43%;
-    height: 27%; */
-    left: 50%;
-    top: 375px;
-    transform: translateX(-50%);
+    width: 50%;
+    height: 105%;
+
+    left: 26%;
+
     background-color: #535353;
+    opacity: 0.9;
     border-radius: 40px;
     border: 6px solid #9b9b9b;
     padding: 10px;
@@ -26,13 +18,13 @@
     color: white;
     font-size: x-large;
     text-align: center;
-    line-height: 200px;
+    z-index: 1;
 }
 
 .info-text {
     display: inline-block;
     vertical-align: middle;
-    line-height: 2;
+    line-height: 10rem;
 }
 
 .card-box-parent {
@@ -41,17 +33,75 @@
     overflow: scroll;
 }
 .card-box {
+    position: relative;
     margin-left: 5%;
     margin-right: 5%;
     margin-top: 20px;
     /* margin-bottom: 30px; */
     height: 28%;
-    min-height: 212px;
+    min-height: 190px;
 }
 
+.url-copy-box {
+    position: absolute;
+    height: 60px;
+    min-width: 80%;
+    max-width: 555px;
+    left: 50%;
+    top: 10rem;
+    transform: translate(-50%, -50%);
+    vertical-align: middle;
+}
+
+.invite-text {
+    position: absolute;
+    font-size: 300;
+    left: 12%;
+    color: salmon;
+}
+
+.url-copy-text {
+    font-size: large;
+    position: absolute;
+    color: white;
+
+    height: 25px;
+    top: 70%;
+    left: 12%;
+    z-index: 1;
+}
+
+#url-copy-btn {
+    position: absolute;
+    display: inline-block;
+    cursor: pointer;
+    margin-left: 0.8rem;
+    left: 85%;
+    top: 70%;
+
+    transition: transform 0.2s ease-out;
+    transition: color 0.2s ease-out;
+}
+
+#url-copy-btn:hover {
+    transform: scale(1.2);
+    color: green;
+    cursor: pointer;
+}
+
+#urlInput {
+    opacity: 0;
+}
+/* 
 @media (max-width: 764px) {
     #info-box {
-        top: 370px;
+        width: 350px;
+        height: 200px;
+    }
+}
+
+@media (max-height: 830px) {
+    #info-box {
         width: 350px;
         height: 200px;
     }
@@ -72,14 +122,6 @@
     }
 }
 
-/* @media (max-height: 725px) {
-    #info-box {
-        top: 300px;
-        
-        height: 200px;
-    }
-} */
-
 @media (min-height: 1000px) {
     .card-box {
         margin-left: 5%;
@@ -90,8 +132,7 @@
 
 @media (min-height: 1180px) {
     #info-box {
-        top: 490px;
         width: 890px;
         height: 310px;
     }
-}
+} */

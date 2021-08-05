@@ -17,8 +17,12 @@
 .ov-video-wrap {
     position: relative;
     height: 80%;
-    width: 100%;
+    width: 95%;
     /* width: 100%; */
+    top: 40%;
+    left: 50%;
+
+    transform: translate(-50%, -52%);
     /* background-color: black; */
 }
 
