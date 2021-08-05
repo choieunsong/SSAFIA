@@ -22,20 +22,19 @@ import s05.p12a104.mafia.stomp.task.StartFinTimerTask;
 @Slf4j
 @RequiredArgsConstructor
 @Controller
-@MessageMapping("/{roomId}")
 public class RoomController {
 
   private final GameSessionService gameSessionService;
   private final SimpMessagingTemplate simpMessagingTemplate;
   private final RedisPublisher redisPublisher;
 
-  @MessageMapping("/join")
+  @MessageMapping("/{roomId}/join")
   public void joinGameSession(@DestinationVariable String roomId) {
     GameSessionStompJoinRes res = GameSessionStompJoinRes.of(gameSessionService.findById(roomId));
     simpMessagingTemplate.convertAndSend("/sub/" + roomId, res);
   }
 
-  @MessageMapping("/leave")
+  @MessageMapping("/{roomId}/leave")
   public void leaveGameSession(SimpMessageHeaderAccessor accessor,
       @DestinationVariable String roomId) {
     String playerId = accessor.getUser().getName();
@@ -45,7 +44,7 @@ public class RoomController {
     simpMessagingTemplate.convertAndSend("/sub/" + roomId, res);
   }
 
-  @MessageMapping("/start")
+  @MessageMapping("/{roomId}/start")
   public void startGame(SimpMessageHeaderAccessor accessor, @DestinationVariable String roomId) {
     // 방장이 시작했는지 확인
     GameSession gameSession = gameSessionService.findById(roomId);
