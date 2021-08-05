@@ -50,7 +50,7 @@ public class RoomController {
     // 방장이 시작했는지 확인
     GameSession gameSession = gameSessionService.findById(roomId);
     String playerId = accessor.getUser().getName();
-    if (gameSession.getState() == GameState.STARTED) {// || !playerId.equals(gameSession.getHostId())){
+    if (gameSession.getState() == GameState.STARTED || !playerId.equals(gameSession.getHostId())){
       return;
     }
     
