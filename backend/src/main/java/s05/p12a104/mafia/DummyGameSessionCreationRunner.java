@@ -10,9 +10,9 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import s05.p12a104.mafia.domain.dao.GameSessionDao;
-import s05.p12a104.mafia.domain.entity.AccessType;
-import s05.p12a104.mafia.domain.entity.GameState;
-import s05.p12a104.mafia.domain.entity.RoomType;
+import s05.p12a104.mafia.domain.enums.AccessType;
+import s05.p12a104.mafia.domain.enums.GameState;
+import s05.p12a104.mafia.domain.enums.RoomType;
 import s05.p12a104.mafia.domain.repository.GameSessionRedisRepository;
 
 @Slf4j

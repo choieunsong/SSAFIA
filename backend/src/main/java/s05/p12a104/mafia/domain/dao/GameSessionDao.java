@@ -11,11 +11,11 @@ import org.springframework.data.redis.core.index.Indexed;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import s05.p12a104.mafia.domain.entity.AccessType;
-import s05.p12a104.mafia.domain.entity.GamePhase;
-import s05.p12a104.mafia.domain.entity.GameState;
 import s05.p12a104.mafia.domain.entity.Player;
-import s05.p12a104.mafia.domain.entity.RoomType;
+import s05.p12a104.mafia.domain.enums.AccessType;
+import s05.p12a104.mafia.domain.enums.GamePhase;
+import s05.p12a104.mafia.domain.enums.GameState;
+import s05.p12a104.mafia.domain.enums.RoomType;
 
 @Getter
 @Slf4j

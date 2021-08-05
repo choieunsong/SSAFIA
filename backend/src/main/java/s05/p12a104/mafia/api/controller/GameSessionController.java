@@ -26,7 +26,7 @@ import s05.p12a104.mafia.common.exception.ResourceNotFoundException;
 import s05.p12a104.mafia.common.reponse.ApiResponseDto;
 import s05.p12a104.mafia.common.util.UrlUtils;
 import s05.p12a104.mafia.domain.entity.GameSession;
-import s05.p12a104.mafia.domain.entity.GameState;
+import s05.p12a104.mafia.domain.enums.GameState;
 import s05.p12a104.mafia.domain.repository.UserRepository;
 import s05.p12a104.mafia.security.CurrentUser;
 import s05.p12a104.mafia.security.UserPrincipal;

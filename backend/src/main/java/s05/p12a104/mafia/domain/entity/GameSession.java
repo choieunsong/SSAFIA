@@ -13,6 +13,10 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import s05.p12a104.mafia.domain.enums.AccessType;
+import s05.p12a104.mafia.domain.enums.GamePhase;
+import s05.p12a104.mafia.domain.enums.GameState;
+import s05.p12a104.mafia.domain.enums.RoomType;
 
 @Setter
 @Getter
