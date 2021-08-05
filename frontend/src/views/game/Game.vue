@@ -119,8 +119,66 @@
                     ></user-video>
                 </div>
             </div>
+          </div>
+
+          <user-video
+            :stream-manager="state.subscribers[7]"
+            :playerInfo="state.playersGameInfo[7]"
+            :gameStatus="state.gameStatus"
+            :isConfirm="state.isConfirm"
+            :role="state.role"
+            @emitVoteDataUpdate="
+              emitVoteDataUpdate(state.playersGameInfo[7].playerId)
+            "
+            class="offset-md-6"
+          ></user-video>
         </div>
+
+        <!-- 세번째 줄 -->
+        <div class="card-box row gx-5 d-flex" :class="getJustifyClassThirdRow">
+          <user-video
+            :stream-manager="state.subscribers[2]"
+            :playerInfo="state.playersGameInfo[2]"
+            :gameStatus="state.gameStatus"
+            :isConfirm="state.isConfirm"
+            :role="state.role"
+            @emitVoteDataUpdate="
+              emitVoteDataUpdate(state.playersGameInfo[2].playerId)
+            "
+          ></user-video>
+          <user-video
+            :stream-manager="state.publisher"
+            :playerInfo="state.playerMe"
+            :gameStatus="state.gameStatus"
+            :isConfirm="state.isConfirm"
+            :role="state.role"
+            id="video-mine"
+            @emitVoteDataUpdate="emitVoteDataUpdate(state.playerMe.playerId)"
+          ></user-video>
+          <user-video
+            :stream-manager="state.subscribers[3]"
+            :playerInfo="state.playersGameInfo[3]"
+            :gameStatus="state.gameStatus"
+            :isConfirm="state.isConfirm"
+            :role="state.role"
+            @emitVoteDataUpdate="
+              emitVoteDataUpdate(state.playersGameInfo[3].playerId)
+            "
+          ></user-video>
+          <user-video
+            :stream-manager="state.subscribers[8]"
+            :playerInfo="state.playersGameInfo[8]"
+            :gameStatus="state.gameStatus"
+            :isConfirm="state.isConfirm"
+            :role="state.role"
+            @emitVoteDataUpdate="
+              semitVoteDataUpdate(state.playersGameInfo[8].playerId)
+            "
+          ></user-video>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
@@ -255,7 +313,6 @@ export default {
                 console.log("playerGameInfo", state.playersGameInfo);
             });
 
-            // On every asynchronous exception...
             state.session.on("exception", ({ exception }) => {
                 console.warn(exception);
             });
@@ -304,28 +361,39 @@ export default {
         };
 
         // 게임 관련 소켓통신
-        function onConnected() {
-            // Subscribe to the Public Topic
+        function onConnected() {           
             state.message = `Room: ${state.mySessionId}에 오신 걸 환영합니다. \n 부디 SSAFIA를 즐겨주시기 바랍니다`;
-            state.stompClient.subscribe(`/sub/${state.mySessionId}`, onMessageReceived);
+            // 개인 채널 구독
             state.stompClient.subscribe(
                 `/sub/${state.mySessionId}/${state.playerId}`,
                 onPersonalMessageReceived
             );
-            // Tell your username to the server
-            state.stompClient.send(`/pub/${state.mySessionId}/join`, { playerId: state.playerId });
+            // 방 채널 구독
+            state.stompClient.subscribe(`/sub/${state.mySessionId}`, onMessageReceived);
+            
+            // 구독했다고 서버에 알리기, 나갔다 오면 다른 경로로
+            const localGameStatus = store.getters['ingame/getgameStatus']
+            if (localGameStatus.phase === 'ready') {
+                state.stompClient.send(`/pub/${state.mySessionId}/join`, {}, );
+            } else {
+                const message = {
+                    date: localGameStatus.date,
+                    phase: localGameStatus.phase
+                }
+                state.stompClient.send(`/pub/${state.mySessionId}/rejoin`,{}, JSON.stringify(message))
+            }
         }
-
+        // 에러시 할 것
         function onError(error) {
             console.log("websocket connection failed, try agin or change your code");
         }
-
+        // 실제 연결
         function connect() {
             var socket = new SockJS("/ws/gamesession");
             state.stompClient = Stomp.over(socket);
             state.stompClient.connect({ playerId: state.playerId }, onConnected, onError);
         }
-
+        // 투표 메세지 보내는 함수
         function sendMessageVote(targetPlayerId) {
             if (state.stompClient) {
                 const Message = {
@@ -334,12 +402,12 @@ export default {
                 };
                 state.stompClient.send(
                     `/pub/${state.mySessionId}/vote`,
-                    { playerId: state.playerId },
+                    {},
                     JSON.stringify(Message)
                 );
             }
         }
-
+        // 투표 확정 메세지 보내는 함수
         function sendMessageConfirm() {
             if (state.stompClient) {
                 const Message = {
@@ -347,20 +415,20 @@ export default {
                 };
                 state.stompClient.send(
                     `/pub/${state.mySessionId}/confirm`,
-                    { playerId: state.playerId },
+                    {},
                     JSON.stringify(Message)
                 );
             }
         }
-
+        
+        // 게임 시작 메세지 보내는 함수
         function sendMessageStart() {
             if (state.stompClient) {
-                state.stompClient.send(`/pub/${state.mySessionId}/start`, {
-                    playerId: state.playerId,
-                });
+                state.stompClient.send(`/pub/${state.mySessionId}/start`, {});
             }
         }
 
+        // 밤 투표 메세지 보내는 함수
         function sendMessageNightVote(targetPlayerId) {
             if (state.stompClient) {
                 const message = {
@@ -369,12 +437,13 @@ export default {
                 };
                 state.stompClient.send(
                     `/pub/${state.mySessionId}/${state.role}/vote`,
-                    { playerId: state.playerId },
+                    {},
                     JSON.stringify(message)
                 );
             }
         }
 
+        // 밤 투표 확정 메세지 보내는 함수
         function sendMessageNightConfirm() {
             if (state.stompClient) {
                 const message = {
@@ -382,12 +451,13 @@ export default {
                 };
                 state.stompClient.send(
                     `/pub/${state.mySessionId}/${state.role}/confirm`,
-                    { playerId: state.playerId },
+                    {},
                     JSON.stringify(message)
                 );
             }
         }
 
+        // playersGameInfo 업데이트용 함수
         function infoUpdater(key, message) {
             if (key === "voters") {
                 if (message === null) {
@@ -398,12 +468,12 @@ export default {
                 } else {
                     // 내 voters 갱신하는 로직
                     let tmp = [];
-                    if (message[state.playerMe.playerId][key].inclueds(state.playerMe.playerId)) {
+                    if (message.playerMap[state.playerMe.playerId][key].inclueds(state.playerMe.playerId)) {
                         tmp.push(state.playerMe.color);
                     }
                     for (let i = 0; i < state.playerGameInfo.length; i++) {
                         if (
-                            message[state.playersGameInfo[i].playerId][key].includes(
+                            message.playerMap[state.playersGameInfo[i].playerId][key].includes(
                                 state.playerGameInfo[i].playerId
                             )
                         ) {
@@ -415,13 +485,13 @@ export default {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
                         let tmp = [];
                         if (
-                            message[state.playerMe.playerId][key].inclueds(state.playerMe.playerId)
+                            message.playerMap[state.playerMe.playerId][key].inclueds(state.playerMe.playerId)
                         ) {
                             tmp.push(state.playerMe.color);
                         }
                         for (let j = 0; j < state.playerGameInfo.length; j++) {
                             if (
-                                message[state.playersGameInfo[i].playerId][key].includes(
+                                message.playerMap[state.playersGameInfo[i].playerId][key].includes(
                                     state.playerGameInfo[j].playerId
                                 )
                             ) {
@@ -438,15 +508,16 @@ export default {
                         state.playersGameInfo[i][key] = null;
                     }
                 } else {
-                    state.playerMe[key] = message[state.playerMe.playerId][key];
+                    state.playerMe[key] = message.playerMap[state.playerMe.playerId][key];
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
                         state.playersGameInfo[i][key] =
-                            message[state.playersGameInfo[i].playerId][key];
+                            message.playerMap[state.playersGameInfo[i].playerId][key];
                     }
                 }
             }
         }
 
+        // 공통 채널에서 메세지를 받았을 경우 할 일
         function onMessageReceived(payload) {
             var message = JSON.parse(payload.body);
             if (message.type === "JOIN") {
@@ -462,6 +533,7 @@ export default {
                     case "START": {
                         state.gameStatus = message.gameStatus;
                         infoUpdater("alive", message);
+                        store.dispatch('ingame/setGameStatus', state.gameStatus)
                         break;
                     }
                     case "DAY_DISCUSSION": {
@@ -475,6 +547,7 @@ export default {
                         }
                         state.gameStatus = message.gameStatus;
                         infoUpdater("alive", message);
+                        store.dispatch('ingame/setGameStatus', state.gameStatus)
                         break;
                     }
                     case "DAY_ELIMINATION": {
@@ -489,6 +562,7 @@ export default {
                         infoUpdater("suspicious", message);
                         infoUpdater("voters", null);
                         state.isConfirm = false;
+                        store.dispatch('ingame/setGameStatus', state.gameStatus)
                         break;
                     }
                     case "DAY_TO_NIGHT": {
@@ -517,6 +591,7 @@ export default {
                         infoUpdater("suspicious", null);
                         infoUpdater("voters", null);
                         state.isConfirm = false;
+                        store.dispatch('ingame/setGameStatus', state.gameStatus)
                         break;
                     }
                     case "NIGHT_VOTE": {
@@ -554,6 +629,7 @@ export default {
                             }
                         }
                         state.gameStatus = message.gameStatus;
+                        store.dispatch('ingame/setGameStatus', state.gameStatus)
                         break;
                     }
                     case "NIGHT_TO_DAY": {
@@ -584,6 +660,7 @@ export default {
                             state.subscribers[i].subscribeToAudio(true);
                             state.subscribers[i].subscribeToVideo(true);
                         }
+                        store.dispatch('ingame/setGameStatus', state.gameStatus)
                         break;
                     }
                     case "END": {
@@ -611,6 +688,7 @@ export default {
                         infoUpdater("voters", null);
                         infoUpdater("isMafia", null);
                         state.isConfirm = false;
+                        store.dispatch('ingame/setGameStatus', state.gameStatus)
                         break;
                     }
                 }
@@ -622,7 +700,7 @@ export default {
                 );
             }
         }
-
+        // 개인 메세지 채널로 온 메세지에 따라 할 일
         function onPersonalMessageReceived(payload) {
             const message = JSON.parse(payload.body);
             if (message.type === "ROLE") {
@@ -671,9 +749,15 @@ export default {
                     `/sub/${state.mySessionId}/${state.role}`,
                     onJobMessageReceived
                 );
+            } else {
+                state.gameStatus = message.gameStatus
+                if (state.gameStatus.phase === "DAY_ELIMINATION") {
+                    infoUpdater('suspicious', message)
+                }
+                infoUpdater('alive', message)
             }
         }
-
+        // 직업 채널로 온 메세지에 따라 할 일
         function onJobMessageReceived(payload) {
             const message = JSON.parse(payload.body);
             if (state.role === "mafia" || state.role === "observer") {
@@ -690,9 +774,9 @@ export default {
                 state.submessage = `당신이 지목한 ${targetNickname}의 직업은 ${targetJob}입니다.`;
             }
         }
-
+        // 게임 페이지 떠날 때 할일
         function leaveGame() {
-            state.stompClient.send(`/pub/${state.mySessionId}/leave`, { playerId: state.playerId });
+            state.stompClient.send(`/pub/${state.mySessionId}/leave`, {});
             state.stompClient.disconnect();
         }
 
@@ -701,9 +785,12 @@ export default {
         state.playerId = store.getters["token/getPlayerId"];
         joinSession();
         // connect();
-
-        window.addEventListener("beforeunload", leaveSession);
-        // window.addEventListener("beforeunload", leaveGame);
+        function leave() {
+          confirm("정말 나가시겠습니까?")
+          leaveSession()
+          // leaveGame()
+        }
+        window.addEventListener("beforeunload", leave);
 
         /////////////////set url//////////////
         state.inviteUrl = "https://localhost:8081/nickname/" + route.params.roomId;
@@ -761,6 +848,7 @@ export default {
             urlInput.select();
             document.execCommand("copy");
         }
+
 
         return {
             state,
