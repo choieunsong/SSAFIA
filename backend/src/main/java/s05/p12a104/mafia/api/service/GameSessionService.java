@@ -6,7 +6,7 @@ import s05.p12a104.mafia.api.requset.GameSessionPostReq;
 import s05.p12a104.mafia.api.response.GameSessionJoinRes;
 import s05.p12a104.mafia.common.exception.GameSessionException;
 import s05.p12a104.mafia.domain.entity.GameSession;
-import s05.p12a104.mafia.domain.entity.GameState;
+import s05.p12a104.mafia.domain.enums.GameState;
 import s05.p12a104.mafia.domain.entity.User;
 
 public interface GameSessionService {

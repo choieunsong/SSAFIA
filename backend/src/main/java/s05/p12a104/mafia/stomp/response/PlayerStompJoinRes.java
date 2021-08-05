@@ -2,7 +2,7 @@ package s05.p12a104.mafia.stomp.response;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import s05.p12a104.mafia.domain.entity.Color;
+import s05.p12a104.mafia.domain.enums.Color;
 import s05.p12a104.mafia.domain.entity.Player;
 
 @Getter

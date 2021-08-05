@@ -2,7 +2,7 @@ package s05.p12a104.mafia.stomp.response;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import s05.p12a104.mafia.domain.entity.StompMessageType;
+import s05.p12a104.mafia.domain.enums.StompMessageType;
 
 @Getter
 @RequiredArgsConstructor
