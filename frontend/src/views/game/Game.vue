@@ -327,9 +327,8 @@ export default {
       );
       // Tell your username to the server
       state.stompClient.send(
-        `/pub/${state.mySessionId}`,
-        {},
-        JSON.stringify({ id: state.playerId, type: "JOIN" })
+        `/pub/${state.mySessionId}/join`,
+        {playerId:state.playerId},
       );
     }
 
@@ -340,19 +339,18 @@ export default {
     function connect() {
       var socket = new SockJS("/ws/gamesession");
       state.stompClient = Stomp.over(socket);
-      state.stompClient.connect({}, onConnected, onError);
+      state.stompClient.connect({playerId:state.playerId}, onConnected, onError);
     }
 
     function sendMessageVote(targetPlayerId) {
       if (state.stompClient) {
         const Message = {
-          id: state.playerId,
           vote: targetPlayerId,
           phase: state.gameStatus.phase,
         };
         state.stompClient.send(
           `/pub/${state.mySessionId}/vote`,
-          {},
+          {playerId:state.playerId},
           JSON.stringify(Message)
         );
       }
@@ -361,12 +359,11 @@ export default {
     function sendMessageConfirm() {
       if (state.stompClient) {
         const Message = {
-          id: state.playerId,
           phase: state.gameStatus.phase,
         };
         state.stompClient.send(
           `/pub/${state.mySessionId}/confirm`,
-          {},
+          {playerId:state.playerId},
           JSON.stringify(Message)
         );
       }
@@ -374,13 +371,9 @@ export default {
 
     function sendMessageStart() {
       if (state.stompClient) {
-        const Message = {
-          id: state.playerId,
-        };
         state.stompClient.send(
           `/pub/${state.mySessionId}/start`,
-          {},
-          JSON.stringify(Message)
+          {playerId:state.playerId},
         );
       }
     }
@@ -389,12 +382,11 @@ export default {
       if (state.stompClient) {
         const message = {
           phase: state.gameStatus.phase,
-          id: state.playerId,
           vote: targetPlayerId,
         };
         state.stompClient.send(
           `/pub/${state.mySessionId}/${state.role}/vote`,
-          {},
+          {playerId:state.playerId},
           JSON.stringify(message)
         );
       }
@@ -404,11 +396,10 @@ export default {
       if (state.stompClient) {
         const message = {
           phase: state.gameStatus.phase,
-          id: state.playerId,
         };
         state.stompClient.send(
           `/pub/${state.mySessionId}/${state.role}/confirm`,
-          {},
+          {playerId:state.playerId},
           JSON.stringify(message)
         );
       }
@@ -727,14 +718,9 @@ export default {
     }
 
     function leaveGame() {
-      const message = {
-        type: "LEAVE",
-        id: state.playerId,
-      };
       state.stompClient.send(
-        `/pub/${state.mySessionId}`,
-        {},
-        JSON.stringify(message)
+        `/pub/${state.mySessionId}/leave`,
+        {playerId:state.playerId},
       );
       state.stompClient.disconnect();
     }
