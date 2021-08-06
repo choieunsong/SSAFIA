@@ -45,7 +45,7 @@ public class RedisConfig {
     RedisMessageListenerContainer container = new RedisMessageListenerContainer();
     container.setConnectionFactory(connectionFactory);
     container.addMessageListener(listenerAdapter, topicStartFin);
-    container.addMessageListener(dayDisculistenerAdapter, new ChannelTopic("DAYDISCUSSION_FIN"));
+    container.addMessageListener(dayDisculistenerAdapter, new ChannelTopic("DAY_DISCUSSION_FIN"));
     return container;
   }
 

@@ -15,12 +15,12 @@ public class DayDiscussionVoteFinTimerTask extends TimerTask {
 
   @Override
   public void run() {
-    redisPublisher.publish(new ChannelTopic("DAYDISCUSSION_FIN"), roomId);
+    redisPublisher.publish(new ChannelTopic("DAY_DISCUSSION_FIN"), roomId);
   }
   
   @Override
   public boolean cancel() {
-    redisPublisher.publish(new ChannelTopic("DAYDISCUSSION_FIN"), roomId);
+    redisPublisher.publish(new ChannelTopic("DAY_DISCUSSION_FIN"), roomId);
     return super.cancel();
   }
 
