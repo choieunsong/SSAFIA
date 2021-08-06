@@ -15,23 +15,33 @@
             </div>
 
             <!-- playerNum가 4 이상 됐을 때 활성화 되기 -->
-            <!-- <button
-                v-if="this.gameStatus.phase == 'READY' && this.currentPlayerNum < 2"
+            <button
+                v-if="
+                    (this.currentPlayerNum < 4 || !this.isHost) && this.gameStatus.phase == 'READY'
+                "
                 class="font-jua"
                 id="start-button-inactive"
             >
                 게임 준비
-            </button> -->
+            </button>
             <button
-                v-if="isHost && this.gameStatus.phase == 'READY'"
+                v-else-if="this.isHost && this.gameStatus.phase == 'READY'"
                 @click="gameStart"
                 type="button"
                 class="font-jua"
                 id="start-button"
+                ref="start"
             >
                 게임 시작
             </button>
-            <button v-else @click="confirmVote" type="button" class="font-jua" id="confirm-button">
+            <button
+                v-else
+                @click="confirmVote"
+                type="button"
+                class="font-jua"
+                id="confirm-button"
+                ref="confirm"
+            >
                 투표 확정
             </button>
 
@@ -61,6 +71,7 @@ export default {
         currentPlayerNum: Number,
         isHost: Boolean,
         gameStatus: Object,
+        finishStartAnimation: Boolean,
     },
     watch: {
         gameStatus: {
@@ -71,18 +82,25 @@ export default {
                     console.log("watch ready");
                 } else if (this.gameStatus.phase == "START") {
                     console.log("watch start");
+                    this.clickStartButton = true;
+
                     this.startCountDown();
+                } else if (this.gameStatus.phase == "DAY_DISCUSSION") {
+                    this.$refs.confirm.classList.remove("unhover");
+                    this.startCountDown();
+                } else if (this.gameStatus.phase == "DAY_DISCUSSION") {
+                    this.$refs.confirm.classList.remove("unhover");
                 }
             },
         },
     },
     data() {
         return {
-            time: this.gameStatus.timer,
+            time: 0,
             leftTime: 0, //progress bar를 위한 남은 시간(0 -> 100)
             multiplier: 0,
             minPlayerNumToPlay: 4,
-            clickStartButton: false, //한번 start button 누르면 끝날때까지 비활성화
+            clickStartButton: false,
         };
     },
     computed: {
@@ -93,7 +111,7 @@ export default {
             if (this.gameStatus.phase == "READY") {
                 return "READY";
             } else {
-                return "DAY " + this.gameStatus.date;
+                return "DAY " + this.gameStatus.day;
             }
         },
     },
@@ -105,24 +123,26 @@ export default {
         gameStart() {
             //Game.vue에 게임 시작 전송
             console.log("start");
+
+            //hover class 떼기
+            this.$refs.start.classList.add("unhover");
+
             this.$emit("gameStart");
         },
         startCountDown() {
-            if (!this.clickStartButton) {
-                this.multiplier = 100 / this.gameStatus.timer; //곱해줄 값 구하기
-                this.time = this.gameStatus.timer; // 시간 구하기
-                this.leftTime = 0;
+            this.multiplier = 100 / this.gameStatus.timer; //곱해줄 값 구하기
+            this.time = this.gameStatus.timer; // 시간 구하기
+            this.leftTime = 0;
 
-                console.log("multiplier", this.multiplier);
-                console.log("time", this.time);
-                console.log("leftTime", this.leftTime);
-                console.log("maxTime", this.gameStatus.timer);
+            console.log("multiplier", this.multiplier);
+            console.log("time", this.time);
+            console.log("leftTime", this.leftTime);
+            console.log("maxTime", this.gameStatus.timer);
 
-                this.clickStartButton = true;
-                setTimeout(() => {
-                    this.countDownTimer();
-                }, 200);
-            }
+            this.clickStartButton = true;
+            setTimeout(() => {
+                this.countDownTimer();
+            }, 200);
         },
         countDownTimer() {
             var interval = setInterval(() => {
@@ -136,6 +156,16 @@ export default {
                 this.clickStartButton = false; //다시 start button 활성화
             }, 1000 * this.gameStatus.timer);
         },
+        confirmVote() {
+            //투표 확정
+            this.$refs.confirm.classList.add("unhover");
+        },
     },
 };
 </script>
+<style>
+.unhover {
+    pointer-events: none;
+    opacity: 0.7;
+}
+</style>

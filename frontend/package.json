@@ -25,6 +25,7 @@
     "vue-clipboard2": "^0.3.1",
     "vue-google-login": "^2.0.5",
     "vue-router": "^4.0.10",
+    "vue-typer": "^1.2.0",
     "vuex": "^4.0.2",
     "vuex-persistedstate": "^4.0.0",
     "webrtc-adapter": "^8.0.0",
@@ -37,7 +38,9 @@
     "@vue/compiler-sfc": "^3.0.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^7.0.0"
+    "eslint-plugin-vue": "^7.0.0",
+    "less": "^4.1.1",
+    "less-loader": "^10.0.1"
   },
   "eslintConfig": {
     "root": true,
