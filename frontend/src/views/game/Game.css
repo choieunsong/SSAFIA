@@ -1,10 +1,10 @@
 #main-container {
     height: 100vh;
 }
-
 #info-box {
     position: absolute;
-    width: 40%;
+    display: table;
+    width: 45%;
     height: 105%;
 
     left: 30%;
@@ -13,7 +13,6 @@
     opacity: 0.9;
     border-radius: 40px;
     border: 6px solid #9b9b9b;
-    padding: 10px;
 
     color: white;
     font-size: larger;
@@ -22,21 +21,32 @@
 }
 
 .info-text {
-    position: absolute;
-    left: 50%;
-    top: 40%;
-    transform: translate(-50%, -50%);
-    vertical-align: middle;
+    display: table-cell;
+    width: 100%;
 
+    vertical-align: middle;
+    text-align: center;
     line-height: 1.5em;
+}
+
+@keyframes cursor {
+    0% {
+        border-right: 1px solid #fff;
+    }
+    50% {
+        border-right: 1px solid #000;
+    }
+    100% {
+        border-right: 1px solid #fff;
+    }
 }
 
 .url-copy-box {
     position: absolute;
+    text-align: center;
     top: 60%;
     width: 100%;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 0;
 }
 
 .url-title {
@@ -87,56 +97,13 @@
     min-height: 190px;
 }
 
-/* 
-@media (max-width: 764px) {
-    #info-box {
-        width: 350px;
-        height: 200px;
-    }
+.start-animation {
+    position: absolute;
+    display: inline-block;
+    font-size: 5em;
+    left: 50%;
+    top: 50%;
+    width: 100%;
+    transform: translate(-50%, -50%);
+    color: #87cefa;
 }
-
-@media (max-height: 830px) {
-    #info-box {
-        width: 350px;
-        height: 200px;
-    }
-}
-
-@media (max-width: 1000px) {
-    #info-box {
-        width: 400px;
-        height: 200px;
-        font-size: small;
-    }
-}
-
-@media (max-width: 1240px) {
-    #info-box {
-        width: 500px;
-        height: 200px;
-    }
-} */
-
-/* @media (max-height: 725px) {
-    #info-box {
-        top: 300px;
-        
-        height: 200px;
-    }
-} */
-
-/* @media (min-height: 1000px) {
->>>>>>> Stashed changes
-    .card-box {
-        margin-left: 5%;
-        margin-right: 5%;
-        margin-top: 20px;
-    }
-}
-
-@media (min-height: 1180px) {
-    #info-box {
-        width: 890px;
-        height: 310px;
-    }
-} */

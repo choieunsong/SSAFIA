@@ -66,19 +66,18 @@
 #start-button:active {
     transform: scale(0.9);
     background-color: darken(#ff0081, 5%);
-    box-shadow: 0 5px 30px rgba(255, 0, 130, 0.5);
-    box-shadow: 0 2px 25px rgba(255, 0, 130, 0.2);
+    box-shadow: 0 5px 0px rgba(255, 0, 130, 0.5);
 }
 
 #timer {
     font-size: 2.5rem;
-    top: 13px;
+    top: 25px;
     position: absolute;
     right: 90px;
 }
 
 #rule-book {
-    top: 28px;
+    top: 30px;
     position: absolute;
     right: 30px;
     cursor: pointer;
@@ -106,11 +105,14 @@
     border-radius: 25px;
 
     cursor: pointer;
+    transition: transform 0.2s ease-out;
+    transition: color 0.2s ease-out;
 }
 
 #confirm-button:hover {
-    transition: transform 0.2s ease-out;
-    transition: color 0.2s ease-out;
+    transform: scale(0.9);
+    background-color: darken(#1e90ff, 5%);
+    box-shadow: 0 5px 20px rgba(25, 13, 90, 0.5);
 }
 
 .progress {
