@@ -1,6 +1,5 @@
 package s05.p12a104.mafia.redispubsub;
 
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +20,6 @@ public class DayDiscussionFinSubscriber {
   private final GameSessionService gameSessionService;
 
   public void sendMessage(String redisMessageStr) {
-    System.out.println("Redis Sub Start!");
     try {
       String roomId = objectMapper.readValue(redisMessageStr, String.class);
       GameSession gameSession = gameSessionService.findById(roomId);

@@ -9,9 +9,8 @@ import s05.p12a104.mafia.domain.entity.Vote;
 import s05.p12a104.mafia.domain.enums.GamePhase;
 import s05.p12a104.mafia.domain.repository.VoteRepository;
 import s05.p12a104.mafia.redispubsub.RedisPublisher;
+import s05.p12a104.mafia.stomp.request.GameSessionVoteReq;
 import s05.p12a104.mafia.stomp.task.DayDiscussionVoteFinTimerTask;
-import s05.p12a104.mafia.stomp.task.StartFinTimerTask;
-import s05.p12a104.mafia.vote.GameSessionVoteReq;
 
 @Service
 @Slf4j
@@ -21,14 +20,13 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   private final RedisPublisher redisPublisher;
   private final VoteRepository voteRepository;
   private DayDiscussionVoteFinTimerTask task;
-  private Timer timer;
 
   @Override
   public void startVote(String roomId) {
-    timer = new Timer();
+    Timer timer = new Timer();
     task = new DayDiscussionVoteFinTimerTask(redisPublisher);
     task.setRoomId(roomId);
-    timer.schedule(task, 10 * 1000);
+    timer.schedule(task, 15 * 1000);
   }
 
   @Override

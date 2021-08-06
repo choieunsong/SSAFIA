@@ -1,4 +1,4 @@
-package s05.p12a104.mafia.vote;
+package s05.p12a104.mafia.stomp.controller;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -9,13 +9,16 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.api.service.GameSessionService;
 import s05.p12a104.mafia.api.service.GameSessionVoteService;
 import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.entity.Vote;
 import s05.p12a104.mafia.redispubsub.RedisPublisher;
+import s05.p12a104.mafia.stomp.request.GameSessionVoteReq;
 import s05.p12a104.mafia.stomp.response.VoteResultRes;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class VoteController {
@@ -92,9 +95,8 @@ public class VoteController {
     String playerId = accessor.getUser().getName();
 
     GameSession gameSession = gameSessionService.findById(roomId);
-
     if (gameSessionVoteService.confirmVote(roomId, playerId, req) == gameSession.getAlivePlayer()) {
-
+      gameSessionVoteService.endVote(roomId);
     }
   }
 

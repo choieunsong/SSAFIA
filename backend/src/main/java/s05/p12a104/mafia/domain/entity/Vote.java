@@ -31,12 +31,12 @@ public class Vote implements Serializable {
   private Map<String, String> voteResult;
 
   public int incrConfirm() {
-    return this.confirmCnt++;
+    return ++this.confirmCnt;
   }
 
   public static Vote builder(String voteId, GamePhase phase) {
-    Map m = new HashMap();
-    return new VoteBuilder().voteId(voteId).phase(phase).confirmCnt(0).voteResult(m).build();
+    return new VoteBuilder().voteId(voteId).phase(phase).confirmCnt(0).voteResult(new HashMap())
+        .build();
   }
 
 }

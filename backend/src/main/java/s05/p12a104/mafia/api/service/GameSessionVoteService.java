@@ -2,7 +2,7 @@ package s05.p12a104.mafia.api.service;
 
 import s05.p12a104.mafia.domain.entity.Vote;
 import s05.p12a104.mafia.domain.enums.GamePhase;
-import s05.p12a104.mafia.vote.GameSessionVoteReq;
+import s05.p12a104.mafia.stomp.request.GameSessionVoteReq;
 
 public interface GameSessionVoteService {
   void createVote(String roomId, GamePhase phase);

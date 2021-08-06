@@ -1,4 +1,4 @@
-package s05.p12a104.mafia.vote;
+package s05.p12a104.mafia.stomp.request;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;

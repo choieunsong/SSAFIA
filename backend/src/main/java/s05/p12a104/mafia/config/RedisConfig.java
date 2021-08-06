@@ -14,6 +14,7 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import s05.p12a104.mafia.redispubsub.DayDiscussionFinSubscriber;
 import s05.p12a104.mafia.redispubsub.StartFinSubscriber;
 
 @Configuration
@@ -40,15 +41,21 @@ public class RedisConfig {
   @Bean
   public RedisMessageListenerContainer redisMessageListener(
       RedisConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter,
-      ChannelTopic topicStartFin) {
+      MessageListenerAdapter dayDisculistenerAdapter, ChannelTopic topicStartFin) {
     RedisMessageListenerContainer container = new RedisMessageListenerContainer();
     container.setConnectionFactory(connectionFactory);
     container.addMessageListener(listenerAdapter, topicStartFin);
+    container.addMessageListener(dayDisculistenerAdapter, new ChannelTopic("DAYDISCUSSION_FIN"));
     return container;
   }
 
   @Bean
   public MessageListenerAdapter listenerAdapter(StartFinSubscriber subscriber) {
+    return new MessageListenerAdapter(subscriber, "sendMessage");
+  }
+
+  @Bean
+  public MessageListenerAdapter dayDisculistenerAdapter(DayDiscussionFinSubscriber subscriber) {
     return new MessageListenerAdapter(subscriber, "sendMessage");
   }
 
