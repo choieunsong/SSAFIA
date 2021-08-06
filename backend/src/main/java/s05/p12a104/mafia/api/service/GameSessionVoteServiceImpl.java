@@ -20,13 +20,20 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
 
   private final RedisPublisher redisPublisher;
   private final VoteRepository voteRepository;
+  private DayDiscussionVoteFinTimerTask task;
+  private Timer timer;
 
   @Override
-  public void startTimer(String roomId) {
-    Timer timer = new Timer();
-    DayDiscussionVoteFinTimerTask task = new DayDiscussionVoteFinTimerTask(redisPublisher);
+  public void startVote(String roomId) {
+    timer = new Timer();
+    task = new DayDiscussionVoteFinTimerTask(redisPublisher);
     task.setRoomId(roomId);
-    timer.schedule(task, 5 * 1000);
+    timer.schedule(task, 10 * 1000);
+  }
+
+  @Override
+  public void endVote(String roomId) {
+    task.cancel();
   }
 
   @Override

@@ -17,6 +17,12 @@ public class DayDiscussionVoteFinTimerTask extends TimerTask {
   public void run() {
     redisPublisher.publish(new ChannelTopic("DAYDISCUSSION_FIN"), roomId);
   }
+  
+  @Override
+  public boolean cancel() {
+    redisPublisher.publish(new ChannelTopic("DAYDISCUSSION_FIN"), roomId);
+    return super.cancel();
+  }
 
   public void setRoomId(String roomId) {
     this.roomId = roomId;

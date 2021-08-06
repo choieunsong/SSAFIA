@@ -7,7 +7,9 @@ import s05.p12a104.mafia.vote.GameSessionVoteReq;
 public interface GameSessionVoteService {
   void createVote(String roomId, GamePhase phase);
 
-  void startTimer(String roomId);
+  void startVote(String roomId);
+  
+  void endVote(String roomId);
   
   Vote vote(String roomId, String playerId, GameSessionVoteReq req);
 
