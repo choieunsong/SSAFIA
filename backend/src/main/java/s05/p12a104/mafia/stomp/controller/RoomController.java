@@ -75,12 +75,4 @@ public class RoomController {
 
     });
   }
-
-  @MessageMapping("/{roomId}/reset")
-  public void resetGame(SimpMessageHeaderAccessor accessor, @DestinationVariable String roomId) {
-    // 방장이 시작했는지 확인
-    GameSession gameSession = gameSessionService.findById(roomId);
-    gameSession.setState(GameState.WAIT);
-    gameSessionService.update(gameSession);
-  }
 }
