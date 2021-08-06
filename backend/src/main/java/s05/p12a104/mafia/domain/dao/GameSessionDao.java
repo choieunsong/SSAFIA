@@ -33,6 +33,8 @@ public class GameSessionDao {
   
   private int aliveMafia;
   
+  private int alivePlayer;
+  
   private int timer;
 
   @Indexed

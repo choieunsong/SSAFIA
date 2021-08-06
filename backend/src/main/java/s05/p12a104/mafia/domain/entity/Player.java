@@ -34,6 +34,8 @@ public class Player implements Serializable {
   
   private boolean suspicious;
 
+  private String vote;
+  
   public void setRole(GameRole role) {
     this.role = role;
   }
@@ -48,6 +50,10 @@ public class Player implements Serializable {
   
   public void setSuspicious(boolean suspicious) {
     this.suspicious = suspicious;
+  }
+
+  public void setVote(String vote) {
+    this.vote = vote;
   }
 
   public static PlayerBuilder builder(String id, String nickname, Color color, String token,

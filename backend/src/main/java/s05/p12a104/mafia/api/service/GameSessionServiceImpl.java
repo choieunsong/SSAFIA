@@ -196,7 +196,7 @@ public class GameSessionServiceImpl implements GameSessionService {
         .builder(dao.getRoomId(), dao.getCreatorEmail(), dao.getAccessType(), dao.getRoomType(),
             dao.getCreatedTime(), entitySession, playerMap)
         .finishedTime(dao.getFinishedTime()).day(dao.getDay()).isNight(dao.isNight())
-        .aliveMafia(dao.getAliveMafia()).timer(dao.getTimer()).phase(dao.getPhase())
+        .aliveMafia(dao.getAliveMafia()).alivePlayer(dao.getAlivePlayer()).timer(dao.getTimer()).phase(dao.getPhase())
         .lastEnter(dao.getLastEnter()).state(dao.getState()).hostId(dao.getHostId()).build();
 
     return gameSession;

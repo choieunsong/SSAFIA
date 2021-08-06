@@ -35,6 +35,8 @@ public class GameSession {
   
   private int aliveMafia;
   
+  private int alivePlayer;
+  
   private int timer;
 
   @NonNull

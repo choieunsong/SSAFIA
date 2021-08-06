@@ -34,6 +34,9 @@ public class DummyGameSessionCreationRunner implements ApplicationRunner {
         .state(GameState.WAIT)
         .sessionId(openVidu.createSession().getSessionId())
         .playerMap(new HashMap<>())
+        //지우기
+        .hostId("aaa")
+        .alivePlayer(1)
         .build();
 
     GameSessionDao saved = gameSessionRedisRepository.save(newGameSessionDao);
