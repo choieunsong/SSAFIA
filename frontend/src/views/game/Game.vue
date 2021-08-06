@@ -566,6 +566,7 @@ export default {
             break;
           }
           case "DAY_ELIMINATION": {
+            state.vote = null;
             if (state.role !== "observer") {
               state.message =
                 "최종투표시간이 되었습니다. \n 최종투표 후보자들 중에 제거할 사람에게 투표해 주세요. \n 최다득표자는 제거되게 됩니다.";
@@ -581,6 +582,7 @@ export default {
             break;
           }
           case "DAY_TO_NIGHT": {
+            state.vote = null;
             if (state.gameStatus === "DAY_DISCUSSION") {
               state.message =
                 "최다 득표자가 너무 많거나 또는 무효투표자가 너무 많은 관계로,\n  최종 투표를 스킵하고 밤으로 넘어갑니다.";
@@ -591,7 +593,8 @@ export default {
               } else {
                 for (let i = 0; i < state.playersGameInfo.length; i++) {
                   if (
-                    state.playersGameInfo[i].playerId === message.gameStatus.victim
+                    state.playersGameInfo[i].playerId ===
+                    message.gameStatus.victim
                   ) {
                     victimNickname = state.playersGameInfo[i].nickname;
                     break;
@@ -648,6 +651,7 @@ export default {
             break;
           }
           case "NIGHT_TO_DAY": {
+            state.vote = null;
             if (message.gameStatus.victim) {
               let victimNickname = "";
               if (message.gameStatus.victim === state.playerMe.playerId) {
@@ -655,7 +659,8 @@ export default {
               } else {
                 for (let i = 0; i < state.playersGameInfo.length; i++) {
                   if (
-                    state.playersGameInfo[i].playerId === message.gameStatus.victim
+                    state.playersGameInfo[i].playerId ===
+                    message.gameStatus.victim
                   ) {
                     victimNickname = state.playersGameInfo[i].nickname;
                     break;
@@ -705,6 +710,7 @@ export default {
             infoUpdater("suspicious", null);
             infoUpdater("voters", null);
             infoUpdater("isMafia", null);
+            state.vote = null;
             state.isConfirm = false;
             store.dispatch("ingame/setGameStatus", state.gameStatus);
             break;
