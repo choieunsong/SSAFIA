@@ -74,15 +74,7 @@ export default {
 
         const nickname = ref(null);
 
-        const validateNickname = (rule, value, callback) => {
-            console.log(rule.message);
-            if (value == "" || value.length < 3) {
-                // rule.message = '닉네임은 3자 이상 15자 이하여야 합니다';
-                callback(new Error("Please input nickname"));
-            } else {
-                callback();
-            }
-        };
+        
 
         const state = reactive({
             isError: false,
@@ -101,6 +93,25 @@ export default {
                 ],
             },
         });
+        function isRejoin() {
+            if (store.getters['token/roomId'] === route.params.roomId && store.getters['ingame/getGameStatus']!=="READY") {
+                const url = API_BASE_URL + `/api/gamesession/${route.params.roomId}`
+                    axios.get(url, {
+                        params: {
+                            playerId: store.getters['token/getPlayerId']
+                        }
+                    }).then(({data}) => {
+                        if (data.code === "success") {
+                            store.dispatch('setOpenviduToken', data.data.token)
+                             .then(router.push({name:"Game", params: { roomId: route.params.roomId}}))
+        
+                        }
+                    }).catch((error) => {
+                        console.log(error)
+                    })
+                    router.push({ name: "Game", parmas:{ roomId: route.params.roomId }})
+                } 
+        }
 
         onMounted(() => {
             axios({
@@ -125,6 +136,16 @@ export default {
             }, 1000);
         });
 
+        const validateNickname = (rule, value, callback) => {
+            console.log(rule.message);
+            if (value == "" || value.length < 3) {
+                // rule.message = '닉네임은 3자 이상 15자 이하여야 합니다';
+                callback(new Error("Please input nickname"));
+            } else {
+                callback();
+            }
+        };
+
         const redirectToGame = (formName) => {
             // nickname validation
             nickname.value.validate((valid) => {
@@ -142,7 +163,7 @@ export default {
                                 state.errorMessage = data.message;
                                 state.isError = true;
                             } else {
-                                store.dispatch("token/setPlayerId", data.data.userId);
+                                store.dispatch("token/setPlayerId", data.data.playerId);
                                 store.dispatch("token/setOpenviduToken", data.data.token);
                                 store
                                     .dispatch("token/setNickname", state.form.nickname)
@@ -160,9 +181,11 @@ export default {
                 }
             });
         };
+
         const goHome = () => {
             router.push({ name: "Home" });
         };
+        isRejoin()
         return {
             isShow,
             state,
