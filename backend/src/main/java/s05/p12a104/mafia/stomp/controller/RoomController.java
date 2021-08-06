@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.api.service.GameSessionService;
 import s05.p12a104.mafia.domain.entity.GameSession;
+import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.domain.enums.GameState;
 import s05.p12a104.mafia.redispubsub.RedisPublisher;
 import s05.p12a104.mafia.stomp.response.GameSessionStompJoinRes;
@@ -49,13 +50,13 @@ public class RoomController {
     // 방장이 시작했는지 확인
     GameSession gameSession = gameSessionService.findById(roomId);
     String playerId = accessor.getUser().getName();
-    if (gameSession.getState() == GameState.STARTED || !playerId.equals(gameSession.getHostId())){
+    if (gameSession.getState() == GameState.STARTED || !playerId.equals(gameSession.getHostId())) {
       return;
     }
-    
+
     // 초기 설정하기
     gameSessionService.startGame(gameSession);
-    
+
     Timer timer = new Timer();
     StartFinTimerTask task = new StartFinTimerTask(redisPublisher);
     task.setRoomId(roomId);
@@ -64,8 +65,22 @@ public class RoomController {
     // 전체 전송
     simpMessagingTemplate.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));
     // 개인 전송
-    gameSession.getPlayerMap().forEach((id, player) -> simpMessagingTemplate
-        .convertAndSend("/sub/" + roomId + "/" + id, PlayerRoleRes.of(player)));
+    gameSession.getPlayerMap().forEach((id, player) -> {
+      if (player.getRole() == GameRole.MAFIA) {
+        simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + id,
+            PlayerRoleRes.of(player, gameSession.getMafias()));
+      } else {
+        simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + id, PlayerRoleRes.of(player));
+      }
 
+    });
+  }
+
+  @MessageMapping("/{roomId}/reset")
+  public void resetGame(SimpMessageHeaderAccessor accessor, @DestinationVariable String roomId) {
+    // 방장이 시작했는지 확인
+    GameSession gameSession = gameSessionService.findById(roomId);
+    gameSession.setState(GameState.WAIT);
+    gameSessionService.update(gameSession);
   }
 }
