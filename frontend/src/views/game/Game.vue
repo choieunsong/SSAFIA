@@ -589,11 +589,11 @@ export default {
               if (message.gameStatus.victim === state.playerMe.playerId) {
                 victimNickname = state.playerMe.nickname;
               } else {
-                for (let i = 0; i < state.subscribers.length; i++) {
+                for (let i = 0; i < state.playersGameInfo.length; i++) {
                   if (
-                    state.subscribers[i].playerId === message.gameStatus.victim
+                    state.playersGameInfo[i].playerId === message.gameStatus.victim
                   ) {
-                    victimNickname = state.subscribers[i].nickname;
+                    victimNickname = state.playersGameInfo[i].nickname;
                     break;
                   }
                 }
@@ -626,19 +626,19 @@ export default {
                 "당신은 관전자입니다. \n 게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
             }
             if (state.role === "mafia") {
-              for (let i; i < state.subscribers.length; i++) {
+              for (let i; i < state.playersGameInfo.length; i++) {
                 if (state.playersGameInfo[i].isMafia !== true) {
                   state.subscribers[i].subscribeToAudio(false);
                   state.subscribers[i].subscribeToVideo(false);
                 }
               }
             } else if (state.role === "observer") {
-              for (let i; i < state.subscribers.length; i++) {
+              for (let i; i < state.playersGameInfo.length; i++) {
                 state.subscribers[i].subscribeToAudio(true);
                 state.subscribers[i].subscribeToVideo(true);
               }
             } else {
-              for (let i; i < state.subscribers.length; i++) {
+              for (let i; i < state.playersGameInfo.length; i++) {
                 state.subscribers[i].subscribeToAudio(false);
                 state.subscribers[i].subscribeToVideo(false);
               }
@@ -653,11 +653,11 @@ export default {
               if (message.gameStatus.victim === state.playerMe.playerId) {
                 victimNickname = state.playerMe.nickname;
               } else {
-                for (let i = 0; i < state.subscribers.length; i++) {
+                for (let i = 0; i < state.playersGameInfo.length; i++) {
                   if (
-                    state.subscribers[i].playerId === message.gameStatus.victim
+                    state.playersGameInfo[i].playerId === message.gameStatus.victim
                   ) {
-                    victimNickname = state.subscribers[i].nickname;
+                    victimNickname = state.playersGameInfo[i].nickname;
                     break;
                   }
                 }
@@ -788,9 +788,9 @@ export default {
         infoUpdater("voters", message);
       } else if (state.role === "POLICE") {
         let targetNickname = "";
-        for (let i = 0; i < state.subscribers.length; i++) {
-          if (state.subscribers[i].playerId === message.vote) {
-            targetNickname = state.subscribers[i].nickname;
+        for (let i = 0; i < state.playersGameInfo.length; i++) {
+          if (state.playersGameInfo[i].playerId === message.vote) {
+            targetNickname = state.playersGameInfo[i].nickname;
             break;
           }
         }
@@ -845,8 +845,8 @@ export default {
 
     function emitVoteDataUpdate(targetPlayerId) {
       if (state.vote === targetPlayerId) {
-          targetPlayerId = null
-          state.vote = null
+        targetPlayerId = null;
+        state.vote = null;
         if (
           state.gameStatus.phase === "DAY_DISCUSSION" ||
           state.gameStatus.phase === "DAY_ELIMINATION"
@@ -856,14 +856,14 @@ export default {
           sendMessageNightVote(targetPlayerId);
         }
       } else {
-          state.vote = targetPlayerId
-          if (
+        if (
           state.gameStatus.phase === "DAY_DISCUSSION" ||
           state.gameStatus.phase === "DAY_ELIMINATION"
         ) {
           sendMessageVote(targetPlayerId);
         } else if (state.gameStatus.phase === "NIGHT_VOTE") {
-          sendMe
+          sendMe;
+        }
       }
     }
 
