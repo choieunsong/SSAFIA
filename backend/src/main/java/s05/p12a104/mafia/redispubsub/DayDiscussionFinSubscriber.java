@@ -19,7 +19,6 @@ public class DayDiscussionFinSubscriber {
   private final ObjectMapper objectMapper;
   private final SimpMessagingTemplate template;
   private final GameSessionService gameSessionService;
-  private final GameSessionVoteService gameSessionVoteService;
 
   public void sendMessage(String redisMessageStr) {
     try {

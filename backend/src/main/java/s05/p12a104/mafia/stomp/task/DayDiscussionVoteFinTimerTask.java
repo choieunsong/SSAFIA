@@ -1,30 +1,24 @@
 package s05.p12a104.mafia.stomp.task;
 
 import java.util.TimerTask;
-import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
-import s05.p12a104.mafia.redispubsub.RedisPublisher;
+import lombok.Setter;
+import s05.p12a104.mafia.api.service.GameSessionVoteService;
+import s05.p12a104.mafia.domain.enums.GamePhase;
 
 @RequiredArgsConstructor
 @Service
+@Setter
 public class DayDiscussionVoteFinTimerTask extends TimerTask {
 
+  private final GameSessionVoteService gameSessionVoteService;
   private String roomId;
-  private final RedisPublisher redisPublisher;
+  private GamePhase phase;
 
   @Override
   public void run() {
-    redisPublisher.publish(new ChannelTopic("DAY_DISCUSSION_FIN"), roomId);
-  }
-  
-  @Override
-  public boolean cancel() {
-    redisPublisher.publish(new ChannelTopic("DAY_DISCUSSION_FIN"), roomId);
-    return super.cancel();
+    gameSessionVoteService.endVote(roomId, phase);
   }
 
-  public void setRoomId(String roomId) {
-    this.roomId = roomId;
-  }
 }

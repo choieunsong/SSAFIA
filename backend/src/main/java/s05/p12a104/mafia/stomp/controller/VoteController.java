@@ -48,6 +48,7 @@ public class VoteController {
     String playerId = accessor.getUser().getName();
 
     GameSession gameSession = gameSessionService.findById(roomId);
+
     if (gameSessionVoteService.confirmVote(roomId, playerId, req) == gameSession.getAlivePlayer()) {
       gameSessionVoteService.endVote(roomId, req);
     }
