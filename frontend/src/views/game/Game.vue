@@ -850,25 +850,26 @@ export default {
     });
 
     function emitVoteDataUpdate(targetPlayerId) {
-      if (state.vote === targetPlayerId) {
-        targetPlayerId = null;
-        state.vote = null;
-        if (
-          state.gameStatus.phase === "DAY_DISCUSSION" ||
-          state.gameStatus.phase === "DAY_ELIMINATION"
-        ) {
+      if (
+        state.gameStatus.phase === "DAY_DISCUSSION" ||
+        state.gameStatus.phase === "DAY_ELIMINATION"
+      ) {
+        if (state.vote === targetPlayerId) {
+          state.vote = null;
+          targetPlayerId = null;
           sendMessageVote(targetPlayerId);
-        } else if (state.gameStatus.phase === "NIGHT_VOTE") {
-          sendMessageNightVote(targetPlayerId);
+        } else {
+          state.vote = targetPlayerId;
+          sendMessageVote(targetPlayerId);
         }
-      } else {
-        if (
-          state.gameStatus.phase === "DAY_DISCUSSION" ||
-          state.gameStatus.phase === "DAY_ELIMINATION"
-        ) {
-          sendMessageVote(targetPlayerId);
-        } else if (state.gameStatus.phase === "NIGHT_VOTE") {
-          sendMe;
+      } else if (state.gameStatus.phase === "NIGHT_VOTE") {
+        if (state.vote === targetPlayerId) {
+          state.vote = null;
+          targetPlayerId = null;
+          sendMessageNightVote(targetPlayerId);
+        } else {
+          state.vote = targetPlayerId;
+          sendMessageNightVote(targetPlayerId);
         }
       }
     }
