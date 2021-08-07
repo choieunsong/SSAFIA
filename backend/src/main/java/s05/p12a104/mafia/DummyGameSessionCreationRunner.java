@@ -35,7 +35,7 @@ public class DummyGameSessionCreationRunner implements ApplicationRunner {
         .sessionId(openVidu.createSession().getSessionId())
         .playerMap(new HashMap<>())
         //지우기
-        .hostId("aaa")
+        .hostId("dumy")
         .alivePlayer(1)
         .build();
 

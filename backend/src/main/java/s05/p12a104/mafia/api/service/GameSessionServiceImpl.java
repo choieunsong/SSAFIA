@@ -196,8 +196,9 @@ public class GameSessionServiceImpl implements GameSessionService {
         .builder(dao.getRoomId(), dao.getCreatorEmail(), dao.getAccessType(), dao.getRoomType(),
             dao.getCreatedTime(), entitySession, playerMap)
         .finishedTime(dao.getFinishedTime()).day(dao.getDay()).isNight(dao.isNight())
-        .aliveMafia(dao.getAliveMafia()).alivePlayer(dao.getAlivePlayer()).timer(dao.getTimer()).phase(dao.getPhase())
-        .lastEnter(dao.getLastEnter()).state(dao.getState()).hostId(dao.getHostId()).build();
+        .aliveMafia(dao.getAliveMafia()).alivePlayer(dao.getAlivePlayer()).timer(dao.getTimer())
+        .phase(dao.getPhase()).lastEnter(dao.getLastEnter()).state(dao.getState())
+        .hostId(dao.getHostId()).build();
 
     return gameSession;
   }
@@ -238,15 +239,19 @@ public class GameSessionServiceImpl implements GameSessionService {
     gameSession.setAliveMafia(roleNum.get(GameRole.MAFIA));
     gameSession.setPhase(GamePhase.START);
     gameSession.setTimer(15);
+
     // player 초기화
     gameSession.getPlayerMap().forEach((playerId, player) -> {
       player.setAlive(true);
       player.setSuspicious(false);
     });
-    
+
+    // alive player 초기화
+    gameSession.setAlivePlayer(gameSession.getPlayerMap().size());
+
     // 역할 부여
     RoleUtils.assignRole(roleNum, gameSession.getPlayerMap());
-    
+
     // redis에 저장
     update(gameSession);
   }

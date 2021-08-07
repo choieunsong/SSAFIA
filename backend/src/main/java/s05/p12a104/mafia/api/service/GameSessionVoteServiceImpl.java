@@ -30,41 +30,36 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   }
 
   @Override
-  public void endVote(String roomId) {
+  public void endVote(String roomId, GameSessionVoteReq req) {
     task.cancel();
+    String voteId = getVoteId(roomId, req.getPhase());
+    voteRepository.deleteVote(voteId);
   }
 
   @Override
   public Vote vote(String roomId, String playerId, GameSessionVoteReq req) {
 
-    String voteId = roomId + req.getPhase().toString();
+    String voteId = getVoteId(roomId, req.getPhase());
+
+    if (voteRepository.findVoteById(voteId) == null) {
+      return null;
+    }
 
     voteRepository.vote(voteId, playerId, req.getVote());
 
     return voteRepository.findVoteById(voteId);
-    // if (req.getPhase() == GamePhase.DAY_DISCUSSION) {
-    //
-    // } else if (req.getPhase() == GamePhase.DAY_DISCUSSION) {
-    //
-    // } else if (req.getPhase() == GamePhase.DAY_ELIMINATION) {
-    //
-    // } else if (req.getPhase() == GamePhase.NIGHT_VOTE) {
-    //
-    // } else {
-    //
-    // }
-
   }
 
   @Override
   public Vote getVote(String roomId, GameSessionVoteReq req) {
-    String voteId = roomId + req.getPhase().toString();
+    String voteId = getVoteId(roomId, req.getPhase());
     return voteRepository.findVoteById(voteId);
   }
 
   @Override
   public int confirmVote(String roomId, String playerId, GameSessionVoteReq req) {
-    String voteId = roomId + req.getPhase().toString();
+
+    String voteId = getVoteId(roomId, req.getPhase());
 
     return voteRepository.confirm(voteId, playerId);
   }
@@ -82,5 +77,10 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   @Override
   public void publishRedis(String roomId) {
     redisPublisher.publish(new ChannelTopic("VOTE_FIN"), roomId);
+  }
+
+  private String getVoteId(String roomId, GamePhase phase) {
+    String voteId = roomId + phase.toString();
+    return voteId;
   }
 }

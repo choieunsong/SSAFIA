@@ -8,9 +8,9 @@ public interface GameSessionVoteService {
   void createVote(String roomId, GamePhase phase);
 
   void startVote(String roomId);
-  
-  void endVote(String roomId);
-  
+
+  void endVote(String roomId, GameSessionVoteReq req);
+
   Vote vote(String roomId, String playerId, GameSessionVoteReq req);
 
   Vote getVote(String roomId, GameSessionVoteReq req);
