@@ -74,11 +74,6 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     voteRepository.finishVote(roomId, req.getPhase());
   }
 
-  @Override
-  public void publishRedis(String roomId) {
-    redisPublisher.publish(new ChannelTopic("VOTE_FIN"), roomId);
-  }
-
   private String getVoteId(String roomId, GamePhase phase) {
     String voteId = roomId + phase.toString();
     return voteId;
