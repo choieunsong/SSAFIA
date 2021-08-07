@@ -22,11 +22,11 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   private DayDiscussionVoteFinTimerTask task;
 
   @Override
-  public void startVote(String roomId) {
+  public void startVote(String roomId, int time) {
     Timer timer = new Timer();
     task = new DayDiscussionVoteFinTimerTask(redisPublisher);
     task.setRoomId(roomId);
-    timer.schedule(task, 15 * 1000);
+    timer.schedule(task, time * 1000);
   }
 
   @Override

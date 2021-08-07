@@ -7,7 +7,7 @@ import s05.p12a104.mafia.stomp.request.GameSessionVoteReq;
 public interface GameSessionVoteService {
   void createVote(String roomId, GamePhase phase);
 
-  void startVote(String roomId);
+  void startVote(String roomId, int time);
 
   void endVote(String roomId, GameSessionVoteReq req);
 

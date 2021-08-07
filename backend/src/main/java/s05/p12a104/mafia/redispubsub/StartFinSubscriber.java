@@ -33,7 +33,7 @@ public class StartFinSubscriber {
       template.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));
 
       gameSessionVoteService.createVote(roomId, gameSession.getPhase());
-      gameSessionVoteService.startVote(roomId);
+      gameSessionVoteService.startVote(roomId, gameSession.getTimer());
       log.info("DAY_DISCUSSION 투표 생성!");
     } catch (JsonProcessingException e) {
       e.printStackTrace();
