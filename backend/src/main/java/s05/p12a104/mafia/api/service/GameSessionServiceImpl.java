@@ -1,8 +1,10 @@
 package s05.p12a104.mafia.api.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.springframework.stereotype.Service;
@@ -191,13 +193,18 @@ public class GameSessionServiceImpl implements GameSessionService {
     if (playerMap == null) {
       playerMap = new LinkedHashMap<>();
     }
+    
+    List<String> mafias = dao.getMafias();
+    if(mafias == null) {
+      mafias  = new ArrayList<String>();
+    }
 
     GameSession gameSession = GameSession
         .builder(dao.getRoomId(), dao.getCreatorEmail(), dao.getAccessType(), dao.getRoomType(),
             dao.getCreatedTime(), entitySession, playerMap)
         .finishedTime(dao.getFinishedTime()).day(dao.getDay()).isNight(dao.isNight())
         .aliveMafia(dao.getAliveMafia()).timer(dao.getTimer()).phase(dao.getPhase())
-        .lastEnter(dao.getLastEnter()).state(dao.getState()).hostId(dao.getHostId()).build();
+        .lastEnter(dao.getLastEnter()).state(dao.getState()).hostId(dao.getHostId()).mafias(mafias).build();
 
     return gameSession;
   }
@@ -245,7 +252,7 @@ public class GameSessionServiceImpl implements GameSessionService {
     });
     
     // 역할 부여
-    RoleUtils.assignRole(roleNum, gameSession.getPlayerMap());
+    gameSession.setMafias(RoleUtils.assignRole(roleNum, gameSession.getPlayerMap()));
     
     // redis에 저장
     update(gameSession);
