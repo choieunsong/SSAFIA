@@ -13,11 +13,18 @@ public class PlayerRoleRes {
   private GameRole role;
   private List<String> mafias;
   
+  public static PlayerRoleRes of(Player player, List<String> mafias) {
+    PlayerRoleRes playerRoleRes = new PlayerRoleRes();
+    playerRoleRes.type = StompMessageType.ROLE;
+    playerRoleRes.role = player.getRole();
+    playerRoleRes.mafias = mafias;
+    return playerRoleRes;
+  }
+  
   public static PlayerRoleRes of(Player player) {
     PlayerRoleRes playerRoleRes = new PlayerRoleRes();
     playerRoleRes.type = StompMessageType.ROLE;
     playerRoleRes.role = player.getRole();
-    playerRoleRes.mafias = player.getMafias();
     return playerRoleRes;
   }
   

@@ -4,7 +4,7 @@ const state = {
   role: undefined,
   gameStatus: {
     date: 0,
-    phase: "ready",
+    phase: "READY",
     timer: 0,
     aliveMafia: 0,
     victim: undefined,

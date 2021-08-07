@@ -2,6 +2,7 @@ package s05.p12a104.mafia.domain.entity;
 
 import io.openvidu.java.client.Session;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -39,6 +40,8 @@ public class GameSession {
   
   private int timer;
 
+  private List<String> mafias;
+  
   @NonNull
   private final String creatorEmail;
 
