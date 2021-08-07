@@ -23,7 +23,7 @@ public class VoteRepository {
   private final RedisTemplate<String, Vote> redisTemplate;
   private HashOperations<String, String, Vote> opsHashVote;
   private Map<String, ChannelTopic> topics;
-  private final String KEY = "Vote";
+  private final String key = "Vote";
   // private Map<String, Vote> votes;
 
   @PostConstruct
@@ -34,39 +34,39 @@ public class VoteRepository {
   }
 
   public List<Vote> findAllVote() {
-    return opsHashVote.values(KEY);
+    return opsHashVote.values(key);
   }
 
   public Vote findVoteById(String voteId) {
-    return opsHashVote.get(KEY, voteId);
+    return opsHashVote.get(key, voteId);
   }
 
   public Vote createVote(String roomId, GamePhase phase) {
     String voteId = roomId + phase.toString();
     Vote vote = Vote.builder(voteId, phase);
-    opsHashVote.put(KEY, voteId, vote);
+    opsHashVote.put(key, voteId, vote);
     return vote;
   }
 
   public void deleteVote(String voteId) {
-    opsHashVote.delete(KEY, voteId);
+    opsHashVote.delete(key, voteId);
   }
 
   public void finishVote(String roomId, GamePhase phase) {
     String voteId = roomId + phase.toString();
-    opsHashVote.delete(KEY, voteId);
+    opsHashVote.delete(key, voteId);
   }
 
   public void vote(String voteId, String playerId, String player) {
-    Vote vote = opsHashVote.get(KEY, voteId);
+    Vote vote = opsHashVote.get(key, voteId);
     vote.getVoteResult().put(playerId, player);
-    opsHashVote.put(KEY, voteId, vote);
+    opsHashVote.put(key, voteId, vote);
   }
 
   public int confirm(String voteId, String playerId) {
-    Vote vote = opsHashVote.get(KEY, voteId);
+    Vote vote = opsHashVote.get(key, voteId);
     int confirmCnt = vote.incrConfirm();
-    opsHashVote.put(KEY, voteId, vote);
+    opsHashVote.put(key, voteId, vote);
     return confirmCnt;
   }
 

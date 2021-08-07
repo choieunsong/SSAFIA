@@ -193,10 +193,10 @@ public class GameSessionServiceImpl implements GameSessionService {
     if (playerMap == null) {
       playerMap = new LinkedHashMap<>();
     }
-    
+
     List<String> mafias = dao.getMafias();
-    if(mafias == null) {
-      mafias  = new ArrayList<String>();
+    if (mafias == null) {
+      mafias = new ArrayList<String>();
     }
 
     GameSession gameSession = GameSession
@@ -204,8 +204,8 @@ public class GameSessionServiceImpl implements GameSessionService {
             dao.getCreatedTime(), entitySession, playerMap)
         .finishedTime(dao.getFinishedTime()).day(dao.getDay()).isNight(dao.isNight())
         .aliveMafia(dao.getAliveMafia()).timer(dao.getTimer()).phase(dao.getPhase())
-        .lastEnter(dao.getLastEnter()).state(dao.getState()).hostId(dao.getHostId())
-        .mafias(mafias).alivePlayer(dao.getAlivePlayer()).hostId(dao.getHostId()).build();
+        .lastEnter(dao.getLastEnter()).state(dao.getState()).hostId(dao.getHostId()).mafias(mafias)
+        .alivePlayer(dao.getAlivePlayer()).hostId(dao.getHostId()).build();
 
     return gameSession;
   }
@@ -258,7 +258,7 @@ public class GameSessionServiceImpl implements GameSessionService {
 
     // 역할 부여
     gameSession.setMafias(RoleUtils.assignRole(roleNum, gameSession.getPlayerMap()));
-    
+
     // redis에 저장
     update(gameSession);
   }
