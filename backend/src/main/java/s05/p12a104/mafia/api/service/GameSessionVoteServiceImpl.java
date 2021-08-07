@@ -57,9 +57,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
       return null;
     }
 
-    voteRepository.vote(voteId, playerId, req.getVote());
-
-    return voteRepository.findVoteById(voteId);
+    return voteRepository.vote(voteId, playerId, req.getVote());
   }
 
   @Override

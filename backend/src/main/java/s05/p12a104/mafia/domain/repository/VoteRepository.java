@@ -53,10 +53,11 @@ public class VoteRepository {
     opsHashVote.delete(key, voteId);
   }
 
-  public void vote(String voteId, String playerId, String player) {
+  public Vote vote(String voteId, String playerId, String player) {
     Vote vote = opsHashVote.get(key, voteId);
     vote.getVoteResult().put(playerId, player);
     opsHashVote.put(key, voteId, vote);
+    return vote;
   }
 
   public int confirm(String voteId, String playerId) {
