@@ -861,9 +861,10 @@ export default {
     }
 
     function leave() {
-      confirm("정말 나가시겠습니까?");
-      leaveSession();
-      leaveGame();
+      if (confirm("정말 나가시겠습니까?")) {
+        leaveSession();
+        leaveGame();
+      }
     }
     window.addEventListener("beforeunload", leave);
 
