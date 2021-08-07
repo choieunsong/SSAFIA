@@ -5,7 +5,6 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import s05.p12a104.mafia.domain.entity.GameSession;
-import s05.p12a104.mafia.domain.entity.Player;
 import s05.p12a104.mafia.domain.enums.StompMessageType;
 
 @Getter
@@ -18,9 +17,9 @@ public class GameSessionStompJoinRes {
 
   public static GameSessionStompJoinRes of(GameSession gameSession) {
     Map<String, PlayerStompJoinRes> newPlayerMap = new HashMap<>();
-    for (Player player : gameSession.getPlayerMap().values()) {
-      newPlayerMap.put(player.getId(), PlayerStompJoinRes.of(player));
-    }
+    gameSession.getPlayerMap().forEach((playerId, player) ->
+        newPlayerMap.put(playerId, PlayerStompJoinRes.of(player))
+    );
     return new GameSessionStompJoinRes(gameSession.getHostId(), newPlayerMap);
   }
 }
