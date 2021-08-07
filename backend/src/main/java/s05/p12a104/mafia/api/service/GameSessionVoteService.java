@@ -19,5 +19,4 @@ public interface GameSessionVoteService {
 
   void finishVote(String roomId, GameSessionVoteReq req);
 
-  void publishRedis(String roomId);
 }
