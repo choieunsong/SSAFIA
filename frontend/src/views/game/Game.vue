@@ -233,13 +233,17 @@ export default {
     // 세션 나가기
     var leaveSession = function() {
       // --- Leave the session by calling 'disconnect' method over the Session object ---
-      if (state.session) state.session.disconnect();
-
-      state.session = undefined;
-      state.publisher = undefined;
-      state.subscribers = [];
-      state.OV = undefined;
+      if (state.gameStatus.phase === "READY")
+      {
+          if (state.session) state.session.disconnect();
+  
+          state.session = undefined;
+          state.publisher = undefined;
+          state.subscribers = [];
+          state.OV = undefined;
+      }
     };
+
     // 세션 참가하기
     var joinSession = function() {
       console.log("joinsession");
@@ -256,24 +260,40 @@ export default {
         const tmp = array[3].split(",");
         subscriber.nickname = tmp[0];
         subscriber.playerId = tmp[1];
-        state.subscribers.push(subscriber);
-
-        //subscribers의 info 세팅
-        let idx = state.playersGameInfo.length;
-        console.log("enter new player, idx: ", idx);
-        state.playersGameInfo.push({
-          playerId: tmp[1],
-          nickname: tmp[0],
-          alive: null,
-          suspicious: null,
-          voters: [],
-          isMafia: null,
-          color: null,
-        });
-
-        // 플레이어 수 1 증가
-        state.playerNum += 1;
-        console.log("player game info", state.playersGameInfo);
+        let index = false;
+        for (let i; i < state.subscribers.length; i++) {
+          if (subscriber.playerId === state.subscribers[i].playerId) {
+            index = i;
+            break;
+          }
+        }
+        if (index !== false) {
+          for (let j; j < state.removeList.length; j++) {
+            if (state.removeList[j] === index) {
+              state.removeList.splice(j, 1);
+            }
+          }
+          state.subscribers.splice(index, 1);
+          state.subscribers.splice(index, 0, subscriber);
+        } else {
+          state.subscribers.push(subscriber);
+          //subscribers의 info 세팅
+          let idx = state.playersGameInfo.length;
+          console.log("enter new player, idx: ", idx);
+          state.playersGameInfo.push({
+            playerId: tmp[1],
+            nickname: tmp[0],
+            alive: null,
+            suspicious: null,
+            voters: [],
+            isMafia: null,
+            color: null,
+          });
+          // 플레이어 수 1 증가
+          state.playerNum += 1;
+          console.log("player game info", state.playersGameInfo);
+        }
+        console.log(state.subscribers);
       });
 
       // 플레이어 나갔을 때
@@ -358,8 +378,8 @@ export default {
       );
 
       // 구독했다고 서버에 알리기, 나갔다 오면 다른 경로로
-      if (store.getters["ingame/getgameStatus"]) {
-        const localGameStatus = store.getters["ingame/getgameStatus"];
+      if (store.getters["ingame/getGameStatus"]) {
+        const localGameStatus = store.getters["ingame/getGameStatus"];
         if (localGameStatus.phase === "READY") {
           state.stompClient.send(`/pub/${state.mySessionId}/join`, {});
         } else {
@@ -384,14 +404,12 @@ export default {
     // 실제 연결
     function connect() {
       var socket = new SockJS(`${API_BASE_URL}/ws/gamesession`);
-      console.log("sockjs 연결 성공");
       state.stompClient = Stomp.over(socket);
       state.stompClient.connect(
         { playerId: state.playerId },
         onConnected,
         onError
       );
-      console.log("stomp 연결 성공");
     }
     // 투표 메세지 보내는 함수
     function sendMessageVote(targetPlayerId) {
@@ -701,12 +719,21 @@ export default {
             };
             state.jobClient = undefined;
             state.mafias = undefined;
-            state.message = undefined;
+            state.message = `Room: ${state.mySessionId}에 오신 걸 환영합니다. \n 부디 SSAFIA를 즐겨주시기 바랍니다`;
             state.submessage = "";
+
+            for (let j; j < state.removeList.length; j++) {
+              if (state.removeList.includes(j)) {
+                state.subscribers.splice(j, 1);
+                state.playersGameInfo.splice(j, 1);
+                state.playerNum--;
+              }
+            }
             for (let i; i < state.subscribers.length; i++) {
               state.subscribers[i].subscribeToAudio(true);
               state.subscribers[i].subscribeToVideo(true);
             }
+            
             infoUpdater("alive", null);
             infoUpdater("suspicious", null);
             infoUpdater("voters", null);
@@ -786,6 +813,25 @@ export default {
           infoUpdater("suspicious", message);
         }
         infoUpdater("alive", message);
+        if (state.gameStatus.phase === "READY") {
+          state.role = undefined;
+          state.gameStatus = {
+            date: 0,
+            phase: "ready",
+            timer: 0,
+            aliveMafia: 0,
+          };
+          state.jobClient = undefined;
+          state.mafias = undefined;
+          state.message = `Room: ${state.mySessionId}에 오신 걸 환영합니다. \n 부디 SSAFIA를 즐겨주시기 바랍니다`;
+          state.submessage = "";
+          infoUpdater("alive", null);
+          infoUpdater("suspicious", null);
+          infoUpdater("voters", null);
+          infoUpdater("isMafia", null);
+          state.isConfirm = false;
+          store.dispatch("ingame/setGameStatus", state.gameStatus);
+        }
       }
     }
     // 직업 채널로 온 메세지에 따라 할 일
@@ -807,8 +853,10 @@ export default {
     }
     // 게임 페이지 떠날 때 할일
     function leaveGame() {
-      state.stompClient.send(`/pub/${state.mySessionId}/leave`, {});
-      state.stompClient.disconnect();
+        if (state.gameStatus.phase === "READY") {
+            state.stompClient.send(`/pub/${state.mySessionId}/leave`, {});
+            state.stompClient.disconnect();
+        }
     }
 
     function leave() {
