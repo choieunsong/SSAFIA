@@ -515,7 +515,7 @@ export default {
               message.playerMap[state.playerMe.playerId].vote ===
               state.playersGameInfo[i].playerId
             ) {
-              tmp.push(playerMe.color);
+              tmp.push(state.playerMe.color);
             }
             for (let j = 0; i < state.playersGameInfo.length; j++) {
               if (
@@ -607,7 +607,8 @@ export default {
               state.message =
                 "최다 득표자가 너무 많거나 또는 무효투표자가 너무 많은 관계로,\n  최종 투표를 스킵하고 밤으로 넘어갑니다.";
             } else {
-              let victimNickname = "";
+              if (message.gameStatus.victime) {
+                let victimNickname = "";
               if (message.gameStatus.victim === state.playerMe.playerId) {
                 victimNickname = state.playerMe.nickname;
               } else {
@@ -623,6 +624,9 @@ export default {
               }
               const victimJob = message.victimIsMafia ? "마피아" : "시민";
               state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다. \n ${victimNickname}님의 직업은 ${victimJob}이였습니다 \n 곧 밤으로 넘어갑니다.`;
+              } else {
+                state.message = '최종투표로 인해 아무도 죽지 않았습니다. 밤으로 넘어갑니다.'
+              }
             }
             state.gameStatus = message.gameStatus;
             infoUpdater("alive", message);
