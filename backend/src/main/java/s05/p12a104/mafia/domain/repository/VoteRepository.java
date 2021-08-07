@@ -18,19 +18,15 @@ import s05.p12a104.mafia.domain.enums.GamePhase;
 @Repository
 public class VoteRepository {
 
-  // private final RedisMessageListenerContainer redisMessageListenerContainer;
-  // private final RedisSubscriber redisSubscriber;
   private final RedisTemplate<String, Vote> redisTemplate;
   private HashOperations<String, String, Vote> opsHashVote;
   private Map<String, ChannelTopic> topics;
   private final String key = "Vote";
-  // private Map<String, Vote> votes;
 
   @PostConstruct
   private void init() {
     opsHashVote = redisTemplate.opsForHash();
     topics = new HashMap<>();
-    // votes = new HashMap<>();
   }
 
   public List<Vote> findAllVote() {
