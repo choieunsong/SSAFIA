@@ -30,8 +30,6 @@ public class Player implements Serializable {
 
   private final OpenViduRole openViduRole;
   
-  private List<String> mafias;
-  
   private boolean suspicious;
 
   public void setRole(GameRole role) {
@@ -41,11 +39,7 @@ public class Player implements Serializable {
   public void setAlive(boolean alive) {
     this.alive = alive;
   }
-  
-  public void setMafias(List<String> mafias) {
-    this.mafias = mafias;
-  }
-  
+    
   public void setSuspicious(boolean suspicious) {
     this.suspicious = suspicious;
   }

@@ -14,9 +14,8 @@ public enum Color {
   ORANGE,
   PINK,
   BROWN,
-  MINT_GREEN,
-  SKY_BLUE,
-  INDIGO;
+  AQUAMARINE,
+  GRAY;
 
   private static final List<Color> VALUES =
       Collections.unmodifiableList(Arrays.asList(values()));

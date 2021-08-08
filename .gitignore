@@ -130,3 +130,6 @@ redis/redis-data
 # env file
 local.env
 prod.env
+
+# cert file
+.certs/

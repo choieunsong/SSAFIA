@@ -67,11 +67,17 @@
                             state.message
                         }}</span>
 
+                        <!-- 시작 애니메이션 -->
+                        <span v-if="state.doCountDownAnimation" class="start-animation">{{
+                            state.countDownMsg
+                        }}</span>
+
                         <div v-if="state.gameStatus.phase == 'READY'" class="url-copy-box">
                             <span class="url-title">친구를 초대해 보세요!</span>
                             <span class="url-copy-text">{{ state.inviteUrl }}</span>
                             <i class="fas fa-copy" id="url-copy-btn" @click="copyUrl"></i>
                             <input type="text" id="urlInput" />
+                            >>>>>>> e1072a966e5290704b1bdf45cce2163d544c19d4
                         </div>
                     </div>
 
