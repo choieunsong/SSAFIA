@@ -211,7 +211,7 @@ export default {
       validateNickname,
     };
   },
-};
+}
 </script>
 
 <style></style>
