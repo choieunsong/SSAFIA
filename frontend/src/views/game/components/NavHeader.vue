@@ -88,8 +88,6 @@ export default {
                 } else if (this.gameStatus.phase == "DAY_DISCUSSION") {
                     this.$refs.confirm.classList.remove("unhover");
                     this.startCountDown();
-                } else if (this.gameStatus.phase == "DAY_DISCUSSION") {
-                    this.$refs.confirm.classList.remove("unhover");
                 }
             },
         },

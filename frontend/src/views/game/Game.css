@@ -37,7 +37,19 @@
         border-right: 1px solid #000;
     }
     100% {
-        border-right: 1px solid #fff;
+        border-right: 1px solid white;
+    }
+}
+
+@keyframes float {
+    0% {
+        transform: translatey(0px);
+    }
+    70% {
+        transform: translateY(-5px) scaleX(1);
+    }
+    to {
+        transform: translatey(0px);
     }
 }
 
@@ -52,13 +64,17 @@
 .url-title {
     display: block;
     color: salmon;
-    font-size: 300;
+    font-size: 1.5em;
+    text-shadow: 2px 1px 1px rgb(153, 65, 65);
     line-height: 2em;
+    animation: float 1s ease-in infinite;
 }
 
 .url-copy-text {
     margin-left: 10%;
     margin-right: auto;
+    font-size: 1em;
+    text-shadow: 2px 1px 1px rgb(153, 65, 65);
     display: inline-block;
 }
 

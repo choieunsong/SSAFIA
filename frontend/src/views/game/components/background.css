@@ -7,12 +7,50 @@
     }
 }
 
-@keyframes sunpulse {
+@keyframes sun-effect {
     from {
-        box-shadow: 0 0 150px #ff0, 0 0 150px #ff0;
+        box-shadow: 0 0 10px rgb(255, 245, 194), 0 0 50px rgb(255, 245, 194),
+            0 0 75px rgb(247, 222, 102), 0 0 0 20px rgba(255, 231, 164, 0.1),
+            0 0 0 40px rgba(255, 240, 163, 0.07), 0 0 0 70px rgba(247, 223, 102, 0.03);
     }
     to {
-        box-shadow: 0 0 100px #ff0, 0 0 85px #ff0;
+        box-shadow: 0 0 10px rgb(255, 245, 194), 0 0 50px rgb(255, 245, 194),
+            0 0 75px rgb(247, 222, 102), 0 0 8px 30px rgba(255, 249, 232, 0.08),
+            0 0 10px 70px rgba(255, 247, 210, 0.05), 0 0 20px 100px rgba(255, 248, 214, 0.03);
+    }
+}
+
+@-webkit-keyframes gradient-animation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+@-moz-keyframes gradient-animation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+@keyframes gradient-animation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
     }
 }
 #animtaion-wrap {
@@ -21,6 +59,11 @@
     height: 100%;
     z-index: -1;
     overflow: hidden;
+    background: linear-gradient(#c8fdff, #70c5fd, #3e97f0);
+
+    -webkit-animation: gradient-animation 10s ease infinite;
+    -moz-animation: gradient-animation 10s ease infinite;
+    animation: gradient-animation 10s ease infinite;
 }
 #animation-body {
     position: absolute;
@@ -41,7 +84,7 @@
     bottom: -9vw;
     right: 7vw;
     transform-origin: -28vw 7vw;
-    animation: sunpulse 2s alternate infinite;
+    animation: sun-effect 2s alternate infinite;
 }
 
 body {
@@ -81,36 +124,6 @@ body {
     }
     100% {
         margin-left: 100%;
-    }
-}
-
-@-moz-keyframes animateCloud2 {
-    0% {
-        margin-left: 0px;
-    }
-    25% {
-        margin-left: 100%;
-    }
-    50% {
-        margin-left: -1000px;
-    }
-    100% {
-        margin-left: 0%;
-    }
-}
-
-@-moz-keyframes animateCloud2 {
-    0% {
-        margin-left: 0px;
-    }
-    25% {
-        margin-left: 100%;
-    }
-    50% {
-        margin-left: -1000px;
-    }
-    100% {
-        margin-left: 0%;
     }
 }
 /* ANIMATIONS */

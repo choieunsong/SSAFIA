@@ -32,12 +32,6 @@
                 </el-button>
             </div>
         </div>
-        <el-alert
-            class="nickname-alert"
-            type="error"
-            :title="state.errorMessage"
-            v-if="state.isError"
-        ></el-alert>
     </div>
 </template>
 
@@ -47,6 +41,7 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 import { useStore } from "vuex";
 import { API_BASE_URL } from "@/constant/index";
+import { ElMessage } from "element-plus";
 
 export default defineComponent({
     name: "GameMode",
@@ -77,7 +72,7 @@ export default defineComponent({
                 },
             })
                 .then(({ data }) => {
-                    console.log(data)
+                    console.log(data);
                     if (data.code === "success") {
                         store.dispatch("token/setRoomId", data.data.id);
                         router.push({ name: "Nickname", params: { roomId: data.data.id } });

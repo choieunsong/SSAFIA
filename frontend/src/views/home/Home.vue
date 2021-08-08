@@ -19,22 +19,12 @@ import { router } from "@/router/router.js";
 import { ElMessage } from "element-plus";
 import { useStore } from "vuex";
 import { computed } from "vue";
-// import { onMounted } from '@vue/runtime-core';
 
 export default {
     name: "Home",
     components: {
         Login,
     },
-    // created() {
-    //   const token = localStorage.getItem("token");
-    //   if (token) {
-    //     this.$store.dispatch("token/setIsLogin", true);
-    //     this.$store.dispatch("token/setToken", token);
-    //   } else {
-    //     this.$store.dispatch("token/setIsLogin", false);
-    //   }
-    // },
     setup() {
         const store = useStore();
         const isLogin = computed(() => store.getters["token/getIsLogin"]);
@@ -49,18 +39,6 @@ export default {
         return {
             moveToNickname,
         };
-        // const store = useStore();
-
-        // onMounted(() => {
-        //     const Token = localStorage.getItem("token");
-        //     console.log('Token',Token);
-        //     if(Token){
-        //         store.dispatch('token/setIsLogin', true);
-        //         store.dispatch('token/setToken', Token);
-        //     }else{
-        //         store.dispatch('token/setIsLogin', false);
-        //     }
-        // })
     },
 };
 </script>
