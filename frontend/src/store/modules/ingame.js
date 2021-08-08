@@ -2,15 +2,22 @@ import { INGAME } from "../mutation-types";
 
 const state = {
   phase: "READY",
+<<<<<<< HEAD
   date: 0,
+=======
+
+>>>>>>> f94bc87c4414e253cf2dd13da8b99869bb589d22
 };
 
 const getters = {
   getPhase: (state) => {
     return state.phase;
+<<<<<<< HEAD
   },
   getDate: (state) => {
     return state.date
+=======
+>>>>>>> f94bc87c4414e253cf2dd13da8b99869bb589d22
   }
 };
 
