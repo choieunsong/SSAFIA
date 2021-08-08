@@ -609,6 +609,7 @@ export default {
             } else {
               if (message.gameStatus.victime) {
                 let victimNickname = "";
+<<<<<<< HEAD
               if (message.gameStatus.victim === state.playerMe.playerId) {
                 victimNickname = state.playerMe.nickname;
               } else {
@@ -619,13 +620,26 @@ export default {
                   ) {
                     victimNickname = state.playersGameInfo[i].nickname;
                     break;
+=======
+                if (message.gameStatus.victim === state.playerMe.playerId) {
+                  victimNickname = state.playerMe.nickname;
+                } else {
+                  for (let i = 0; i < state.subscribers.length; i++) {
+                    if (
+                      state.subscribers[i].playerId ===
+                      message.gameStatus.victim
+                    ) {
+                      victimNickname = state.subscribers[i].nickname;
+                      break;
+                    }
+>>>>>>> 6dd8c0e (feat: confirm 한번만 되도록 state.isConfirm 추가)
                   }
                 }
-              }
-              const victimJob = message.victimIsMafia ? "마피아" : "시민";
-              state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다. \n ${victimNickname}님의 직업은 ${victimJob}이였습니다 \n 곧 밤으로 넘어갑니다.`;
+                const victimJob = message.victimIsMafia ? "마피아" : "시민";
+                state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다. \n ${victimNickname}님의 직업은 ${victimJob}이였습니다 \n 곧 밤으로 넘어갑니다.`;
               } else {
-                state.message = '최종투표로 인해 아무도 죽지 않았습니다. 밤으로 넘어갑니다.'
+                state.message =
+                  "최종투표로 인해 아무도 죽지 않았습니다. 밤으로 넘어갑니다.";
               }
             }
             state.gameStatus = message.gameStatus;
@@ -923,14 +937,16 @@ export default {
     }
 
     function emitConfirmDataUpdate(targetPlayerId) {
-      state.isConfirm = true;
-      if (
-        state.gameStatus.phase === "DAY_DISCUSSION" ||
-        state.gameStatus.phase === "DAY_ELIMINATION"
-      ) {
-        sendMessageConfirm(targetPlayerId);
-      } else if (state.gameStatus.phase === "NIGHT_VOTE") {
-        sendMessageNightConfirm(targetPlayerId);
+      if (state.isConfirm !== true) {
+        state.isConfirm = true;
+        if (
+          state.gameStatus.phase === "DAY_DISCUSSION" ||
+          state.gameStatus.phase === "DAY_ELIMINATION"
+        ) {
+          sendMessageConfirm(targetPlayerId);
+        } else if (state.gameStatus.phase === "NIGHT_VOTE") {
+          sendMessageNightConfirm(targetPlayerId);
+        }
       }
     }
 
