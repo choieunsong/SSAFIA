@@ -243,7 +243,6 @@ export default {
           state.publisher = undefined;
           state.subscribers = [];
           state.OV = undefined;
-
       }
     };
 
@@ -558,15 +557,12 @@ export default {
         } else {
           state.isHost = false;
         }
-<<<<<<< HEAD
       } else if (message.type === "LEAVE") {
         if (message.hostId === state.playerId) {
           state.isHost = true;
         } else {
           state.isHost = false;
         }
-=======
->>>>>>> 484015d (feat: 닉네임 페이지에서 다시 접속하는 유저인지 확인하는 기능 추가 및 playerMap.vote변경으로 인한 데이터 갱신 업데이트 로직 변경)
       } else if (message.type === "PHASE_CHANGED") {
         console.log("start game status", message.gameStatus.phase);
         switch (message.gameStatus.phase) {
@@ -581,7 +577,6 @@ export default {
             if (state.role !== "observer") {
               state.message =
                 "낮 투표시간이 되었습니다. \n 각자 의심되는 사람을 지목해 주세요. \n 최다 득표를 한 사람들은 최종투표에 나가게 됩니다.";
-<<<<<<< HEAD
             } else {
               state.message =
                 "당신은 관전자입니다. \n 게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
@@ -615,7 +610,6 @@ export default {
             } else {
               if (message.gameStatus.victime) {
                 let victimNickname = "";
-<<<<<<< HEAD
               if (message.gameStatus.victim === state.playerMe.playerId) {
                 victimNickname = state.playerMe.nickname;
               } else {
@@ -626,23 +620,11 @@ export default {
                   ) {
                     victimNickname = state.playersGameInfo[i].nickname;
                     break;
-=======
-                if (message.gameStatus.victim === state.playerMe.playerId) {
-                  victimNickname = state.playerMe.nickname;
-                } else {
-                  for (let i = 0; i < state.subscribers.length; i++) {
-                    if (
-                      state.subscribers[i].playerId ===
-                      message.gameStatus.victim
-                    ) {
-                      victimNickname = state.subscribers[i].nickname;
-                      break;
-                    }
->>>>>>> 6dd8c0e (feat: confirm 한번만 되도록 state.isConfirm 추가)
                   }
                 }
                 const victimJob = message.victimIsMafia ? "마피아" : "시민";
                 state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다. \n ${victimNickname}님의 직업은 ${victimJob}이였습니다 \n 곧 밤으로 넘어갑니다.`;
+              }
               } else {
                 state.message =
                   "최종투표로 인해 아무도 죽지 않았습니다. 밤으로 넘어갑니다.";
@@ -668,13 +650,10 @@ export default {
                 "밤이 되었습니다. 경찰은 의심되는 사람을 지목하여 그 사람의 직업을 확인해보시기 바랍니다.";
             } else if (state.role === "CIVILIAN") {
               state.message = "밤이 되었습니다. 마이크와 비디오가 중단됩니다.";
-=======
->>>>>>> 484015d (feat: 닉네임 페이지에서 다시 접속하는 유저인지 확인하는 기능 추가 및 playerMap.vote변경으로 인한 데이터 갱신 업데이트 로직 변경)
             } else {
               state.message =
                 "당신은 관전자입니다. \n 게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
             }
-<<<<<<< HEAD
             if (state.role === "MAFIA") {
               for (let i; i < state.subscribers.length; i++) {
                 if (state.playersGameInfo[i].isMafia !== true) {
@@ -700,56 +679,20 @@ export default {
           case "NIGHT_TO_DAY": {
             state.vote = null;
             if (message.gameStatus.victim) {
-=======
-            state.gameStatus = message.gameStatus;
-            infoUpdater("alive", message);
-            store.dispatch("ingame/setGameStatus", state.gameStatus);
-            break;
-          }
-          case "DAY_ELIMINATION": {
-            if (state.role !== "observer") {
-              state.message =
-                "최종투표시간이 되었습니다. \n 최종투표 후보자들 중에 제거할 사람에게 투표해 주세요. \n 최다득표자는 제거되게 됩니다.";
-            } else {
-              state.message =
-                "당신은 관전자입니다. \n 게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
-            }
-            state.gameStatus = message.gameStatus;
-            infoUpdater("suspicious", message);
-            infoUpdater("voters", null);
-            state.isConfirm = false;
-            store.dispatch("ingame/setGameStatus", state.gameStatus);
-            break;
-          }
-          case "DAY_TO_NIGHT": {
-            if (state.gameStatus === "DAY_DISCUSSION") {
-              state.message =
-                "최다 득표자가 너무 많거나 또는 무효투표자가 너무 많은 관계로,\n  최종 투표를 스킵하고 밤으로 넘어갑니다.";
-            } else {
->>>>>>> 484015d (feat: 닉네임 페이지에서 다시 접속하는 유저인지 확인하는 기능 추가 및 playerMap.vote변경으로 인한 데이터 갱신 업데이트 로직 변경)
               let victimNickname = "";
               if (message.gameStatus.victim === state.playerMe.playerId) {
                 victimNickname = state.playerMe.nickname;
               } else {
-<<<<<<< HEAD
                 for (let i = 0; i < state.playersGameInfo.length; i++) {
                   if (
                     state.playersGameInfo[i].playerId ===
                     message.gameStatus.victim
                   ) {
                     victimNickname = state.playersGameInfo[i].nickname;
-=======
-                for (let i = 0; i < state.subscribers.length; i++) {
-                  if (
-                    state.subscribers[i].playerId === message.gameStatus.victim
-                  ) {
-                    victimNickname = state.subscribers[i].nickname;
->>>>>>> 484015d (feat: 닉네임 페이지에서 다시 접속하는 유저인지 확인하는 기능 추가 및 playerMap.vote변경으로 인한 데이터 갱신 업데이트 로직 변경)
                     break;
                   }
                 }
               }
-<<<<<<< HEAD
               const victimJob = message.gameStatus.victimIsMafia
                 ? "마피아"
                 : "시민";
@@ -793,88 +736,10 @@ export default {
                 state.playerNum--;
               }
             }
-=======
-              const victimJob = message.victimIsMafia ? "마피아" : "시민";
-              state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다. \n ${victimNickname}님의 직업은 ${victimJob}이였습니다 \n 곧 밤으로 넘어갑니다.`;
-            }
-            state.gameStatus = message.gameStatus;
-            infoUpdater("alive", message);
-            infoUpdater("suspicious", null);
-            infoUpdater("voters", null);
-            state.isConfirm = false;
-            store.dispatch("ingame/setGameStatus", state.gameStatus);
-            break;
-          }
-          case "NIGHT_VOTE": {
-            if (state.role === "mafia") {
-              state.message =
-                "밤이 되었습니다. 마피아는 시민 중 제거할 사람을 투표하여 주시기 바랍니다.";
-            } else if (state.role === "doctor") {
-              state.message =
-                "밤이 되었습니다. 의사는 시민 중 제거당할 것 같은 사람에게 투표하여 주시기 바랍니다.";
-            } else if (state.role === "police") {
-              state.message =
-                "밤이 되었습니다. 경찰은 의심되는 사람을 지목하여 그 사람의 직업을 확인해보시기 바랍니다.";
-            } else if (state.role === "civilian") {
-              state.message = "밤이 되었습니다. 마이크와 비디오가 중단됩니다.";
-            } else {
-              state.message =
-                "당신은 관전자입니다. \n 게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
-            }
-            if (state.role === "mafia") {
-              for (let i; i < state.subscribers.length; i++) {
-                if (state.playersGameInfo[i].isMafia !== true) {
-                  state.subscribers[i].subscribeToAudio(false);
-                  state.subscribers[i].subscribeToVideo(false);
-                }
-              }
-            } else if (state.role === "observer") {
-              for (let i; i < state.subscribers.length; i++) {
-                state.subscribers[i].subscribeToAudio(true);
-                state.subscribers[i].subscribeToVideo(true);
-              }
-            } else {
-              for (let i; i < state.subscribers.length; i++) {
-                state.subscribers[i].subscribeToAudio(false);
-                state.subscribers[i].subscribeToVideo(false);
-              }
-            }
-            state.gameStatus = message.gameStatus;
-            store.dispatch("ingame/setGameStatus", state.gameStatus);
-            break;
-          }
-          case "NIGHT_TO_DAY": {
-            if (message.gameStatus.victim) {
-              let victimNickname = "";
-              if (message.gameStatus.victim === state.playerMe.playerId) {
-                victimNickname = state.playerMe.nickname;
-              } else {
-                for (let i = 0; i < state.subscribers.length; i++) {
-                  if (
-                    state.subscribers[i].playerId === message.gameStatus.victim
-                  ) {
-                    victimNickname = state.subscribers[i].nickname;
-                    break;
-                  }
-                }
-              }
-              const victimJob = message.gameStatus.victimIsMafia
-                ? "마피아"
-                : "시민";
-              state.message = `밤의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다. \n ${victimNickname}님의 직업은 ${victimJob}이였습니다 \n 곧 낮으로 넘어갑니다.`;
-            } else {
-              state.message = "밤의 투표 결과, 아무도 죽지 않았습니다.";
-            }
-            state.gameStatus = message.gameStatus;
-            infoUpdater("alive", message);
-            infoUpdater("voters", null);
-            state.isConfirm = false;
->>>>>>> 484015d (feat: 닉네임 페이지에서 다시 접속하는 유저인지 확인하는 기능 추가 및 playerMap.vote변경으로 인한 데이터 갱신 업데이트 로직 변경)
             for (let i; i < state.subscribers.length; i++) {
               state.subscribers[i].subscribeToAudio(true);
               state.subscribers[i].subscribeToVideo(true);
             }
-<<<<<<< HEAD
 
             infoUpdater("alive", null);
             infoUpdater("suspicious", null);
@@ -974,48 +839,9 @@ export default {
           state.isConfirm = false;
           store.dispatch("ingame/setGameStatus", state.gameStatus);
         }
-=======
-            store.dispatch("ingame/setGameStatus", state.gameStatus);
-            break;
-          }
-          case "END": {
-            let winner =
-              message.gameStatus.winner === "mafia" ? "마피아" : "시민";
-            state.message = `게임이 종료되었습니다. 최종승자는 ${winner}입니다.`;
-
-            // 초기화
-            state.role = undefined;
-            state.gameStatus = {
-              date: 0,
-              phase: "ready",
-              timer: 0,
-              aliveMafia: 0,
-            };
-            state.jobClient = undefined;
-            state.mafias = undefined;
-            state.message = undefined;
-            state.submessage = "";
-            for (let i; i < state.subscribers.length; i++) {
-              state.subscribers[i].subscribeToAudio(true);
-              state.subscribers[i].subscribeToVideo(true);
-            }
-            infoUpdater("alive", null);
-            infoUpdater("suspicious", null);
-            infoUpdater("voters", null);
-            infoUpdater("isMafia", null);
-            state.isConfirm = false;
-            store.dispatch("ingame/setGameStatus", state.gameStatus);
-            break;
-          }
-        }
-      } else if (message.type === "UPDATE") {
-        infoUpdater("voters", message);
-      } else {
-        console.log(
-          `sorry, unexpected message type. this is what we'v got ${message.type}`
-        );
       }
     }
+            
     // 개인 메세지 채널로 온 메세지에 따라 할 일
     function onPersonalMessageReceived(payload) {
       const message = JSON.parse(payload.body);
@@ -1077,7 +903,25 @@ export default {
           infoUpdater("suspicious", message);
         }
         infoUpdater("alive", message);
->>>>>>> 484015d (feat: 닉네임 페이지에서 다시 접속하는 유저인지 확인하는 기능 추가 및 playerMap.vote변경으로 인한 데이터 갱신 업데이트 로직 변경)
+        if (state.gameStatus.phase === "READY") {
+          state.role = undefined;
+          state.gameStatus = {
+            date: 0,
+            phase: "ready",
+            timer: 0,
+            aliveMafia: 0,
+          };
+          state.jobClient = undefined;
+          state.mafias = undefined;
+          state.message = `Room: ${state.mySessionId}에 오신 걸 환영합니다. \n 부디 SSAFIA를 즐겨주시기 바랍니다`;
+          state.submessage = "";
+          infoUpdater("alive", null);
+          infoUpdater("suspicious", null);
+          infoUpdater("voters", null);
+          infoUpdater("isMafia", null);
+          state.isConfirm = false;
+          store.dispatch("ingame/setGameStatus", state.gameStatus);
+        }
       }
     }
     // 직업 채널로 온 메세지에 따라 할 일
@@ -1087,15 +931,9 @@ export default {
         infoUpdater("voters", message);
       } else if (state.role === "POLICE") {
         let targetNickname = "";
-<<<<<<< HEAD
         for (let i = 0; i < state.playersGameInfo.length; i++) {
           if (state.playersGameInfo[i].playerId === message.vote) {
             targetNickname = state.playersGameInfo[i].nickname;
-=======
-        for (let i = 0; i < state.subscribers.length; i++) {
-          if (state.subscribers[i].playerId === message.vote) {
-            targetNickname = state.subscribers[i].nickname;
->>>>>>> 484015d (feat: 닉네임 페이지에서 다시 접속하는 유저인지 확인하는 기능 추가 및 playerMap.vote변경으로 인한 데이터 갱신 업데이트 로직 변경)
             break;
           }
         }
@@ -1105,15 +943,10 @@ export default {
     }
     // 게임 페이지 떠날 때 할일
     function leaveGame() {
-<<<<<<< HEAD
       if (state.gameStatus.phase === "READY") {
         state.stompClient.send(`/pub/${state.mySessionId}/leave`, {});
         state.stompClient.disconnect();
       }
-=======
-      state.stompClient.send(`/pub/${state.mySessionId}/leave`, {});
-      state.stompClient.disconnect();
->>>>>>> 484015d (feat: 닉네임 페이지에서 다시 접속하는 유저인지 확인하는 기능 추가 및 playerMap.vote변경으로 인한 데이터 갱신 업데이트 로직 변경)
     }
 
     function leave() {
@@ -1154,7 +987,6 @@ export default {
         state.gameStatus.phase === "DAY_DISCUSSION" ||
         state.gameStatus.phase === "DAY_ELIMINATION"
       ) {
-<<<<<<< HEAD
         if (state.vote === targetPlayerId) {
           state.vote = null;
           targetPlayerId = null;
@@ -1172,16 +1004,10 @@ export default {
           state.vote = targetPlayerId;
           sendMessageNightVote(targetPlayerId);
         }
-=======
-        sendMessageVote(targetPlayerId);
-      } else if (state.gameStatus.phase === "NIGHT_VOTE") {
-        sendMessageNightVote(targetPlayerId);
->>>>>>> 484015d (feat: 닉네임 페이지에서 다시 접속하는 유저인지 확인하는 기능 추가 및 playerMap.vote변경으로 인한 데이터 갱신 업데이트 로직 변경)
       }
     }
 
     function emitConfirmDataUpdate(targetPlayerId) {
-<<<<<<< HEAD
       if (state.isConfirm !== true) {
         state.isConfirm = true;
         if (
@@ -1192,16 +1018,6 @@ export default {
         } else if (state.gameStatus.phase === "NIGHT_VOTE") {
           sendMessageNightConfirm(targetPlayerId);
         }
-=======
-      state.isConfirm = true;
-      if (
-        state.gameStatus.phase === "DAY_DISCUSSION" ||
-        state.gameStatus.phase === "DAY_ELIMINATION"
-      ) {
-        sendMessageConfirm(targetPlayerId);
-      } else if (state.gameStatus.phase === "NIGHT_VOTE") {
-        sendMessageNightConfirm(targetPlayerId);
->>>>>>> 484015d (feat: 닉네임 페이지에서 다시 접속하는 유저인지 확인하는 기능 추가 및 playerMap.vote변경으로 인한 데이터 갱신 업데이트 로직 변경)
       }
     }
 
