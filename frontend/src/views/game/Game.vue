@@ -156,7 +156,7 @@
 import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
 import UserVideo from "@/views/game/components/UserVideo";
-import { computed, reactive } from "vue";
+import { computed, reactive, watch } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { API_BASE_URL } from "@/constant/index";
@@ -209,7 +209,7 @@ export default {
       gameStatus: {
         day: 0,
         phase: "READY",
-        timer: 100,
+        timer: 0,
         aliveMafia: 0,
       },
       stompClient: undefined,
@@ -235,19 +235,16 @@ export default {
     // 세션 나가기
     var leaveSession = function() {
       // --- Leave the session by calling 'disconnect' method over the Session object ---
-      if (state.gameStatus.phase === "READY") {
-        if (state.session) state.session.disconnect();
+      if (state.session) state.session.disconnect();
 
-        state.session = undefined;
-        state.publisher = undefined;
-        state.subscribers = [];
-        state.OV = undefined;
-      }
+      state.session = undefined;
+      state.publisher = undefined;
+      state.subscribers = [];
+      state.OV = undefined;
     };
 
     // 세션 참가하기
     var joinSession = function() {
-      console.log("joinsession");
       // --- Get an OpenVidu object ---
       state.OV = new OpenVidu();
 
@@ -262,25 +259,23 @@ export default {
         subscriber.nickname = tmp[0];
         subscriber.playerId = tmp[1];
         let index = false;
-        for (let i; i < state.subscribers.length; i++) {
+        for (let i = 0; i < state.subscribers.length; i++) {
           if (subscriber.playerId === state.subscribers[i].playerId) {
             index = i;
             break;
           }
         }
         if (index !== false) {
-          for (let j; j < state.removeList.length; j++) {
+          for (let j = 0; j < state.removeList.length; j++) {
             if (state.removeList[j] === index) {
               state.removeList.splice(j, 1);
             }
           }
-          state.subscribers.splice(index, 1);
-          state.subscribers.splice(index, 0, subscriber);
+          state.subscribers.splice(index, 1, subscriber);
         } else {
           state.subscribers.push(subscriber);
           //subscribers의 info 세팅
           let idx = state.playersGameInfo.length;
-          console.log("enter new player, idx: ", idx);
           state.playersGameInfo.push({
             playerId: tmp[1],
             nickname: tmp[0],
@@ -292,27 +287,24 @@ export default {
           });
           // 플레이어 수 1 증가
           state.playerNum += 1;
-          console.log("player game info", state.playersGameInfo);
         }
-        console.log(state.subscribers);
       });
 
       // 플레이어 나갔을 때
       state.session.on("streamDestroyed", ({ stream }) => {
         if (state.gameStatus.phase === "READY") {
           const index = state.subscribers.indexOf(stream.streamManager, 0);
-          console.log("remove idx ", index);
           if (index >= 0) {
             state.subscribers.splice(index, 1);
             state.playersGameInfo.splice(index, 1);
           }
+          console.log(state.subxcribers);
           // 한명 제거
           state.playerNum -= 1;
-
-          console.log("playersGameInfo", state.playersGameInfo);
         } else {
           const index = state.subscribers.indexOf(stream.streamManager, 0);
           state.removeList.push(index);
+          console.log(state.removeList)
         }
       });
 
@@ -320,7 +312,6 @@ export default {
         console.warn(exception);
       });
 
-      console.log(state.openviduToken);
       state.session
         .connect(state.openviduToken, {
           clientData: `${state.myUserName},${state.playerId}`,
@@ -331,7 +322,7 @@ export default {
           let publisher = state.OV.initPublisher(undefined, {
             audioSource: undefined, // The source of audio. If undefined default microphone
             videoSource: undefined, // The source of video. If undefined default webcam
-            publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+            publishAudio: false, // Whether you want to start publishing with your audio unmuted or not
             publishVideo: true, // Whether you want to start publishing with your video enabled or not
             resolution: "311x170", // The resolution of your video
             frameRate: 30, // The frame rate of your video
@@ -353,7 +344,6 @@ export default {
             color: null,
             isMafia: null,
           };
-          console.log(state.playerMe);
         })
         .catch((error) => {
           console.log(
@@ -448,8 +438,6 @@ export default {
       //응답 받고
       // startCountDownAnimation();
       state.closeInviteUrl = true;
-      console.log("game Start");
-      console.log(state.gameStatus.phase);
     }
 
     // 밤 투표 메세지 보내는 함수
@@ -483,7 +471,6 @@ export default {
 
     // playersGameInfo 업데이트용 함수
     function infoUpdater(key, message) {
-      console.log(message);
       if (key === "voters") {
         if (message === null) {
           state.playerMe[key] = [];
@@ -546,10 +533,10 @@ export default {
 
     // 공통 채널에서 메세지를 받았을 경우 할 일
     function onMessageReceived(payload) {
-      let msg = "";
       var message = JSON.parse(payload.body);
       if (message.type === "JOIN") {
-        console.log("join", message);
+        console.log(state.subscribers);
+        console.log(state.subscribers.length);
         infoUpdater("color", message);
         if (message.hostId === state.playerId) {
           state.isHost = true;
@@ -557,18 +544,20 @@ export default {
           state.isHost = false;
         }
       } else if (message.type === "LEAVE") {
+        console.log(state.subscribers);
+        console.log(state.subscribers.length);
         if (message.hostId === state.playerId) {
           state.isHost = true;
         } else {
           state.isHost = false;
         }
+        console.log(state.subscribers);
       } else if (message.type === "PHASE_CHANGED") {
-        console.log("start game status", message.gameStatus.phase);
         switch (message.gameStatus.phase) {
           case "START": {
             state.gameStatus = message.gameStatus;
             infoUpdater("alive", message);
-            store.dispatch("ingame/setGameStatus", state.gameStatus);
+            store.dispatch("ingame/setPhase", state.gameStatus.phase);
             break;
           }
           case "DAY_DISCUSSION": {
@@ -582,7 +571,7 @@ export default {
             }
             state.gameStatus = message.gameStatus;
             infoUpdater("alive", message);
-            store.dispatch("ingame/setGameStatus", state.gameStatus);
+            store.dispatch("ingame/setPhase", state.gameStatus.phase);
             break;
           }
           case "DAY_ELIMINATION": {
@@ -598,7 +587,7 @@ export default {
             infoUpdater("suspicious", message);
             infoUpdater("voters", null);
             state.isConfirm = false;
-            store.dispatch("ingame/setGameStatus", state.gameStatus);
+            store.dispatch("ingame/setPhase", state.gameStatus.phase);
             break;
           }
           case "DAY_TO_NIGHT": {
@@ -634,7 +623,7 @@ export default {
             infoUpdater("suspicious", null);
             infoUpdater("voters", null);
             state.isConfirm = false;
-            store.dispatch("ingame/setGameStatus", state.gameStatus);
+            store.dispatch("ingame/setPhase", state.gameStatus.phase);
             break;
           }
           case "NIGHT_VOTE": {
@@ -654,25 +643,25 @@ export default {
                 "당신은 관전자입니다. \n 게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
             }
             if (state.role === "MAFIA") {
-              for (let i; i < state.subscribers.length; i++) {
+              for (let i = 0; i < state.subscribers.length; i++) {
                 if (state.playersGameInfo[i].isMafia !== true) {
                   state.subscribers[i].subscribeToAudio(false);
                   state.subscribers[i].subscribeToVideo(false);
                 }
               }
             } else if (state.role === "OBSERVER") {
-              for (let i; i < state.subscribers.length; i++) {
+              for (let i = 0; i < state.subscribers.length; i++) {
                 state.subscribers[i].subscribeToAudio(true);
                 state.subscribers[i].subscribeToVideo(true);
               }
             } else {
-              for (let i; i < state.playersGameInfo.length; i++) {
+              for (let i = 0; i < state.subscribers.length; i++) {
                 state.subscribers[i].subscribeToAudio(false);
                 state.subscribers[i].subscribeToVideo(false);
               }
             }
             state.gameStatus = message.gameStatus;
-            store.dispatch("ingame/setGameStatus", state.gameStatus);
+            store.dispatch("ingame/setPhase", state.gameStatus.phase);
             break;
           }
           case "NIGHT_TO_DAY": {
@@ -703,11 +692,11 @@ export default {
             infoUpdater("alive", message);
             infoUpdater("voters", null);
             state.isConfirm = false;
-            for (let i; i < state.subscribers.length; i++) {
+            for (let i = 0; i < state.subscribers.length; i++) {
               state.subscribers[i].subscribeToAudio(true);
               state.subscribers[i].subscribeToVideo(true);
             }
-            store.dispatch("ingame/setGameStatus", state.gameStatus);
+            store.dispatch("ingame/setPhase", state.gameStatus.phase);
             break;
           }
           case "END": {
@@ -719,7 +708,7 @@ export default {
             state.role = undefined;
             state.gameStatus = {
               date: 0,
-              phase: "ready",
+              phase: "READY",
               timer: 0,
               aliveMafia: 0,
             };
@@ -728,14 +717,14 @@ export default {
             state.message = `Room: ${state.mySessionId}에 오신 걸 환영합니다. \n 부디 SSAFIA를 즐겨주시기 바랍니다`;
             state.submessage = "";
 
-            for (let j; j < state.removeList.length; j++) {
+            for (let j = 0; j < state.removeList.length; j++) {
               if (state.removeList.includes(j)) {
                 state.subscribers.splice(j, 1);
                 state.playersGameInfo.splice(j, 1);
                 state.playerNum--;
               }
             }
-            for (let i; i < state.subscribers.length; i++) {
+            for (let i = 0; i < state.subscribers.length; i++) {
               state.subscribers[i].subscribeToAudio(true);
               state.subscribers[i].subscribeToVideo(true);
             }
@@ -746,7 +735,7 @@ export default {
             infoUpdater("isMafia", null);
             state.vote = null;
             state.isConfirm = false;
-            store.dispatch("ingame/setGameStatus", state.gameStatus);
+            store.dispatch("ingame/setPhase", state.gameStatus.phase);
             break;
           }
         }
@@ -761,7 +750,6 @@ export default {
     // 개인 메세지 채널로 온 메세지에 따라 할 일
     function onPersonalMessageReceived(payload) {
       const message = JSON.parse(payload.body);
-      console.log(message);
       if (message.type === "ROLE") {
         state.role = message.role;
         state.mafias = message.mafias;
@@ -771,7 +759,7 @@ export default {
               "게임이 시작되었습니다. \n 당신은 마피아입니다. \n 마피아 동료와 함께 시민의 수를 마피아의 수와 같게 만들면 당신의 승리입니다. \n 밤마다 마피아 동료들과 상의해 시민을 한명씩 제거해나가세요. \n 마피아는 당신 한명 입니다";
           } else {
             let mafiaNicknames = [];
-            for (let i; i < state.playersGameInfo.length; i++) {
+            for (let i = 0; i < state.playersGameInfo.length; i++) {
               if (state.mafias.includes(state.playersGameInfo[i].playerId)) {
                 mafiaNicknames.push(state.playersGameInfo[i].nickname);
               }
@@ -793,7 +781,7 @@ export default {
             "당신은 관전자입니다. \n 게임에 개입할 수는 없지만, 일어나고 있는 일들에 대한 모든 정보를 받아볼 수 있습니다.";
           state.publisher.publishAudio(false);
           state.publisher.publishVideo(false);
-          for (let i; i < state.subscribers.length; i++) {
+          for (let i = 0; i < state.subscribers.length; i++) {
             state.subscribers[i].subscribeToAudio(true);
             state.subscribers[i].subscribeToVideo(true);
           }
@@ -801,7 +789,7 @@ export default {
         if (state.mafias === null) {
           infoUpdater("isMafia", null);
         } else {
-          for (let i; i < state.playersGameInfo.length; i++) {
+          for (let i = 0; i < state.playersGameInfo.length; i++) {
             if (state.mafia.includes(state.playersGameInfo[i].playerId)) {
               state.playersGameInfo[i].isMafia = true;
             } else {
@@ -823,7 +811,7 @@ export default {
           state.role = undefined;
           state.gameStatus = {
             date: 0,
-            phase: "ready",
+            phase: "READY",
             timer: 0,
             aliveMafia: 0,
           };
@@ -836,7 +824,7 @@ export default {
           infoUpdater("voters", null);
           infoUpdater("isMafia", null);
           state.isConfirm = false;
-          store.dispatch("ingame/setGameStatus", state.gameStatus);
+          store.dispatch("ingame/setPhase", state.gameStatus.phase);
         }
       }
     }
@@ -942,42 +930,31 @@ export default {
     }
     // 게임 페이지 떠날 때 할일
     function leaveGame() {
-      if (state.gameStatus.phase === "READY") {
-        state.stompClient.send(`/pub/${state.mySessionId}/leave`, {});
-        state.stompClient.disconnect();
-      }
+      state.stompClient.send(`/pub/${state.mySessionId}/leave`, {});
+      state.stompClient.disconnect();
     }
 
     function leave() {
-      if (confirm("정말 나가시겠습니까?")) {
-        leaveSession();
-        leaveGame();
-      }
+      leaveSession();
+      leaveGame();
     }
-    window.addEventListener("beforeunload", leave);
 
     /////////////////set url//////////////
     state.inviteUrl = "https://localhost:8081/nickname/" + route.params.roomId;
 
     //////////// 플레이어 수에 따라 그리드 변경
     const getJustifyClassFirstRow = computed(() => {
-      console.log("getJustifyClassFirstRow, ", state.playerNum);
       if (state.playerNum <= 2) {
-        console.log("justift center", state.playerNum);
         return "justify-content-center";
       } else {
-        console.log("justift between", state.playerNum);
         return "justify-content-between";
       }
     });
 
     const getJustifyClassThirdRow = computed(() => {
-      console.log("getJustifyClassThirdRow, ", state.playerNum);
       if (state.playerNum <= 3) {
-        console.log("justift center", state.playerNum);
         return "justify-content-center";
       } else {
-        console.log("justift between", state.playerNum);
         return "justify-content-between";
       }
     });
@@ -1034,9 +1011,15 @@ export default {
     state.openviduToken = store.getters["token/getOpenviduToken"];
     state.myUserName = store.getters["token/getNickname"];
     state.playerId = store.getters["token/getPlayerId"];
-    store.dispatch("token/setRoomId", route.params.roomId);
     joinSession();
     setTimeout(connect, 500);
+    window.onbeforeunload = function(event) {
+      leave();
+      return ''
+    };
+    store.dispatch("token/setRoomId", route.params.roomId);
+    console.log(state.gameStatus.phase)
+    store.dispatch('ingame/setPhase', state.gameStatus.phase)
 
     return {
       state,
@@ -1047,7 +1030,15 @@ export default {
       getJustifyClassThirdRow,
       sendMessageStart,
       copyUrl,
+      leave,
     };
+  },
+  watch: {
+    $route(to, from) {
+      if (confirm("정말 나가시겠습니까?")) {
+        this.leave();
+      }
+    },
   },
 };
 </script>

@@ -95,7 +95,7 @@ export default {
     onMounted(() => {
       if (
         store.getters["token/roomId"] === route.params.roomId &&
-        store.getters["ingame/getGameStatus"] !== "READY"
+        store.getters["ingame/getPhase"] !== "READY"
       ) {
         const url = API_BASE_URL + `/api/gamesession/${route.params.roomId}`;
         axios
@@ -116,17 +116,17 @@ export default {
                 );
             } else {
               if (data.code === "fail") {
-                if (data.message === "없는 리소스입니다") {
-                  router.push({ name: "NotFound" });
-                } else {
                   state.errorMessage = data.message;
                   state.isError = true;
                 }
               }
-            }
           })
-          .catch((error) => {
-            console.log(error);
+          .catch(({ response }) => {
+            if (response.data.message === "방 정보를 찾을 수 없습니다") {
+              router.push({ path: "/:catchAll(.*)" });
+            } else {
+              console.log(response);
+            }
           });
       } else {
         axios({
@@ -135,16 +135,17 @@ export default {
         })
           .then(({ data }) => {
             if (data.code === "fail") {
-              if (data.message === "없는 리소스입니다") {
-                router.push({ name: "NotFound" });
-              } else {
                 state.errorMessage = data.message;
                 state.isError = true;
               }
             }
-          })
-          .catch((err) => {
-            console.log(err);
+          )
+          .catch(({ response }) => {
+            if (response.data.message === "방 정보를 찾을 수 없습니다") {
+              router.push({ path: "/:catchAll(.*)" });
+            } else {
+              console.log(response);
+            }
           });
         setTimeout(() => {
           isShow.value = true;
@@ -152,7 +153,6 @@ export default {
       }
     });
     const validateNickname = (rule, value, callback) => {
-      console.log(rule.message);
       if (value == "" || value.length < 3) {
         // rule.message = '닉네임은 3자 이상 15자 이하여야 합니다';
         callback(new Error("Please input nickname"));
@@ -165,7 +165,6 @@ export default {
       // nickname validation
       nickname.value.validate((valid) => {
         if (valid) {
-          console.log("nickname:", state.form.nickname);
           axios({
             method: "POST",
             url: API_BASE_URL + "/api/gamesession/" + roomId,
@@ -178,19 +177,25 @@ export default {
                 state.errorMessage = data.message;
                 state.isError = true;
               } else {
-                store.dispatch("token/setPlayerId", data.data.playerId);
+                console.log('data')
+                console.log(data.data)
+                store.dispatch("token/setPlayerId", data.data.userId);
                 store.dispatch("token/setOpenviduToken", data.data.token);
                 store
                   .dispatch("token/setNickname", state.form.nickname)
                   .then(() => {
-                    console.log(store.getters["token/getNickname"]);
+                    console.log(store.getters['token/getPlayerId'])
                     router.push({ name: "Game", params: route.params.roomId });
                   });
               }
             })
-            .catch((err) => {
-              console.log(err);
-            });
+            .catch(({ response }) => {
+            if (response.data.message === "방 정보를 찾을 수 없습니다") {
+              router.push({ path: "/:catchAll(.*)" });
+            } else {
+              console.log(response);
+            }
+          });
         } else {
           alert("Validate error");
         }
