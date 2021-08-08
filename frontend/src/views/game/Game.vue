@@ -216,7 +216,7 @@ export default {
       message: "인원수가 4명이 넘어가면 호스트가 게임을 시작할 수 있습니다.",
       submessage: "",
       isConfirm: false,
-      vote: undefined,
+      removeList: [],
 
       playerNum: 1,
       playerMe: undefined, //publisher
@@ -278,16 +278,21 @@ export default {
 
       // 플레이어 나갔을 때
       state.session.on("streamDestroyed", ({ stream }) => {
-        const index = state.subscribers.indexOf(stream.streamManager, 0);
-        console.log("remove idx ", index);
-        if (index >= 0) {
-          state.subscribers.splice(index, 1);
-          state.playersGameInfo.splice(index, 1);
-        }
-        // 한명 제거
-        state.playerNum -= 1;
+        if (state.gameStatus.phase === "READY") {
+          const index = state.subscribers.indexOf(stream.streamManager, 0);
+          console.log("remove idx ", index);
+          if (index >= 0) {
+            state.subscribers.splice(index, 1);
+            state.playersGameInfo.splice(index, 1);
+          }
+          // 한명 제거
+          state.playerNum -= 1;
 
-        console.log("playersGameInfo", state.playersGameInfo);
+          console.log("playersGameInfo", state.playersGameInfo);
+        } else {
+          const index = state.subscribers.indexOf(stream.streamManager, 0);
+          state.removeList.push(index);
+        }
       });
 
       state.session.on("exception", ({ exception }) => {
@@ -462,25 +467,23 @@ export default {
       console.log(message);
       if (key === "voters") {
         if (message === null) {
-          state.playerMe[key] = null;
+          state.playerMe[key] = [];
           for (let i = 0; i < state.playersGameInfo.length; i++) {
-            state.playersGameInfo[i][key] = null;
+            state.playersGameInfo[i][key] = [];
           }
         } else {
           // 내 voters 갱신하는 로직
           let tmp = [];
           if (
-            message.playerMap[state.playerMe.playerId][key].includes(
-              state.playerMe.playerId
-            )
+            message.playerMap[state.playerMe.playerId].vote ===
+            state.playerMe.playerId
           ) {
             tmp.push(state.playerMe.color);
           }
           for (let i = 0; i < state.playersGameInfo.length; i++) {
             if (
-              message.playerMap[state.playerMe.playerId][key].includes(
-                state.playersGameInfo[i].playerId
-              )
+              message.playerMap[state.playersGameInfo[i].playerId].vote ===
+              state.playerMe.playerId
             ) {
               tmp.push(state.playersGameInfo[i].color);
             }
@@ -490,22 +493,20 @@ export default {
           for (let i = 0; i < state.playersGameInfo.length; i++) {
             let tmp = [];
             if (
-              message.playerMap[state.playersGameInfo[i].playerId][
-                key
-              ].includes(state.playerMe.playerId)
+              message.playerMap[state.playerMe.playerId].vote ===
+              state.playersGameInfo[i].playerId
             ) {
-              tmp.push(state.playerMe.color);
+              tmp.push(playerMe.color);
             }
-            for (let j = 0; j < state.playersGameInfo.length; j++) {
+            for (let j = 0; i < state.playersGameInfo.length; j++) {
               if (
-                message.playerMap[state.playersGameInfo[i].playerId][
-                  key
-                ].includes(state.playersGameInfo[j].playerId)
+                message.playerMap[state.playersGameInfo[j].playerId].vote ===
+                state.playersGameInfo[i].playerId
               ) {
                 tmp.push(state.playersGameInfo[j].color);
               }
+              state.playersGameInfo[i][key] = tmp;
             }
-            state.playersGameInfo[i][key] = tmp;
           }
         }
       } else {
@@ -810,12 +811,6 @@ export default {
       state.stompClient.disconnect();
     }
 
-    state.openviduToken = store.getters["token/getOpenviduToken"];
-    state.myUserName = store.getters["token/getNickname"];
-    state.playerId = store.getters["token/getPlayerId"];
-    joinSession();
-
-    setTimeout(connect, 500);
     function leave() {
       confirm("정말 나가시겠습니까?");
       leaveSession();
@@ -895,6 +890,13 @@ export default {
       urlInput.select();
       document.execCommand("copy");
     }
+
+    state.openviduToken = store.getters["token/getOpenviduToken"];
+    state.myUserName = store.getters["token/getNickname"];
+    state.playerId = store.getters["token/getPlayerId"];
+    store.dispatch("token/setRoomId", route.params.roomId);
+    joinSession();
+    setTimeout(connect, 500);
 
     return {
       state,
