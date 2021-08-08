@@ -236,13 +236,12 @@ export default {
     var leaveSession = function() {
       // --- Leave the session by calling 'disconnect' method over the Session object ---
       if (state.gameStatus.phase === "READY") {
-        if (state.session) {
-          state.session.disconnect();
-        }
-          state.session = undefined;
-          state.publisher = undefined;
-          state.subscribers = [];
-          state.OV = undefined;
+        if (state.session) state.session.disconnect();
+
+        state.session = undefined;
+        state.publisher = undefined;
+        state.subscribers = [];
+        state.OV = undefined;
       }
     };
 
