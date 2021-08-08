@@ -37,7 +37,8 @@ public class RoleUtils {
 
   }
 
-  public static List<String> assignRole(Map<GameRole, Integer> roleNum, Map<String, Player> players) {
+  public static List<String> assignRole(Map<GameRole, Integer> roleNum,
+      Map<String, Player> players) {
 
     List<String> mafias = new ArrayList<>();
 
@@ -54,7 +55,7 @@ public class RoleUtils {
         mafias.add(player.getId());
       }
     });
-    
+
     return mafias;
   }
 }

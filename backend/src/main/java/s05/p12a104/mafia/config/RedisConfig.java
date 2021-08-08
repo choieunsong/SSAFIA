@@ -11,8 +11,10 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import s05.p12a104.mafia.redispubsub.DayDiscussionFinSubscriber;
 import s05.p12a104.mafia.redispubsub.StartFinSubscriber;
 
 @Configuration
@@ -39,10 +41,11 @@ public class RedisConfig {
   @Bean
   public RedisMessageListenerContainer redisMessageListener(
       RedisConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter,
-      ChannelTopic topicStartFin) {
+      MessageListenerAdapter dayDisculistenerAdapter, ChannelTopic topicStartFin) {
     RedisMessageListenerContainer container = new RedisMessageListenerContainer();
     container.setConnectionFactory(connectionFactory);
     container.addMessageListener(listenerAdapter, topicStartFin);
+    container.addMessageListener(dayDisculistenerAdapter, new ChannelTopic("DAY_DISCUSSION_FIN"));
     return container;
   }
 
@@ -52,11 +55,18 @@ public class RedisConfig {
   }
 
   @Bean
+  public MessageListenerAdapter dayDisculistenerAdapter(DayDiscussionFinSubscriber subscriber) {
+    return new MessageListenerAdapter(subscriber, "sendMessage");
+  }
+
+  @Bean
   public RedisTemplate<?, ?> redisTemplate() {
     RedisTemplate<byte[], byte[]> redisTemplate = new RedisTemplate<>();
     redisTemplate.setConnectionFactory(redisConnectionFactory());
     redisTemplate.setKeySerializer(new StringRedisSerializer());
     redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
+    redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+    redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
     return redisTemplate;
   }
 

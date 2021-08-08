@@ -2,7 +2,6 @@ package s05.p12a104.mafia.redispubsub;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,28 +14,26 @@ import s05.p12a104.mafia.stomp.response.GameStatusRes;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class StartFinSubscriber {
+public class DayDiscussionFinSubscriber {
 
   private final ObjectMapper objectMapper;
   private final SimpMessagingTemplate template;
   private final GameSessionService gameSessionService;
-  private final GameSessionVoteService gameSessionVoteService;
 
   public void sendMessage(String redisMessageStr) {
     try {
       String roomId = objectMapper.readValue(redisMessageStr, String.class);
       GameSession gameSession = gameSessionService.findById(roomId);
-      gameSession.setPhase(GamePhase.DAY_DISCUSSION);
+      gameSession.setPhase(GamePhase.DAY_ELIMINATION);
       gameSession.setTimer(100);
       gameSessionService.update(gameSession);
 
+      log.info("DAY_DISCUSSION 투표 종료!");
       template.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));
 
-      gameSessionVoteService.startVote(roomId, gameSession.getPhase(), gameSession.getTimer());
-      log.info("DAY_DISCUSSION 투표 생성!");
-    } catch (JsonProcessingException e) {
+    } catch (Exception e) {
       e.printStackTrace();
     }
-  }
 
+  }
 }
