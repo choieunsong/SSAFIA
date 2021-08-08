@@ -369,14 +369,15 @@ export default {
       );
 
       // 구독했다고 서버에 알리기, 나갔다 오면 다른 경로로
-      if (store.getters["ingame/getGameStatus"]) {
-        const localGameStatus = store.getters["ingame/getGameStatus"];
-        if (localGameStatus.phase === "READY") {
+      if (store.getters["ingame/getPhase"]) {
+        const localPhase = store.getters["ingame/getPhase"];
+        const localDate = store.getters['ingame/getDate'];
+        if (localPhase === "READY") {
           state.stompClient.send(`/pub/${state.mySessionId}/join`, {});
         } else {
           const message = {
-            date: localGameStatus.date,
-            phase: localGameStatus.phase,
+            date: localDate,
+            phase: localPhase,
           };
           state.stompClient.send(
             `/pub/${state.mySessionId}/rejoin`,
@@ -535,8 +536,6 @@ export default {
     function onMessageReceived(payload) {
       var message = JSON.parse(payload.body);
       if (message.type === "JOIN") {
-        console.log(state.subscribers);
-        console.log(state.subscribers.length);
         infoUpdater("color", message);
         if (message.hostId === state.playerId) {
           state.isHost = true;
@@ -544,8 +543,6 @@ export default {
           state.isHost = false;
         }
       } else if (message.type === "LEAVE") {
-        console.log(state.subscribers);
-        console.log(state.subscribers.length);
         if (message.hostId === state.playerId) {
           state.isHost = true;
         } else {
@@ -558,6 +555,7 @@ export default {
             state.gameStatus = message.gameStatus;
             infoUpdater("alive", message);
             store.dispatch("ingame/setPhase", state.gameStatus.phase);
+            store.dispatch("ingame/setDate", state.gameStatus.date);
             break;
           }
           case "DAY_DISCUSSION": {
@@ -572,6 +570,7 @@ export default {
             state.gameStatus = message.gameStatus;
             infoUpdater("alive", message);
             store.dispatch("ingame/setPhase", state.gameStatus.phase);
+            store.dispatch("ingame/setDate", state.gameStatus.date);
             break;
           }
           case "DAY_ELIMINATION": {
@@ -588,6 +587,7 @@ export default {
             infoUpdater("voters", null);
             state.isConfirm = false;
             store.dispatch("ingame/setPhase", state.gameStatus.phase);
+            store.dispatch("ingame/setDate", state.gameStatus.date);
             break;
           }
           case "DAY_TO_NIGHT": {
@@ -624,6 +624,7 @@ export default {
             infoUpdater("voters", null);
             state.isConfirm = false;
             store.dispatch("ingame/setPhase", state.gameStatus.phase);
+            store.dispatch("ingame/setDate", state.gameStatus.date);
             break;
           }
           case "NIGHT_VOTE": {
@@ -662,6 +663,7 @@ export default {
             }
             state.gameStatus = message.gameStatus;
             store.dispatch("ingame/setPhase", state.gameStatus.phase);
+            store.dispatch("ingame/setDate", state.gameStatus.date);
             break;
           }
           case "NIGHT_TO_DAY": {
@@ -697,6 +699,7 @@ export default {
               state.subscribers[i].subscribeToVideo(true);
             }
             store.dispatch("ingame/setPhase", state.gameStatus.phase);
+            store.dispatch("ingame/setDate", state.gameStatus.date);
             break;
           }
           case "END": {
@@ -717,7 +720,7 @@ export default {
             state.message = `Room: ${state.mySessionId}에 오신 걸 환영합니다.  부디 SSAFIA를 즐겨주시기 바랍니다`;
             state.submessage = "";
 
-            for (let j = 0; j < state.removeList.length; j++) {
+            for (let j = 0; j < state.subscribers.length; j++) {
               if (state.removeList.includes(j)) {
                 state.subscribers.splice(j, 1);
                 state.playersGameInfo.splice(j, 1);
@@ -736,6 +739,7 @@ export default {
             state.vote = null;
             state.isConfirm = false;
             store.dispatch("ingame/setPhase", state.gameStatus.phase);
+            store.dispatch("ingame/setDate", state.gameStatus.date);
             break;
           }
         }
@@ -824,8 +828,28 @@ export default {
           infoUpdater("voters", null);
           infoUpdater("isMafia", null);
           state.isConfirm = false;
-          store.dispatch("ingame/setPhase", state.gameStatus.phase);
+        } else if (state.gameStatus.phase === "NiGHT_VOTE") {
+          if (state.role === "MAFIA") {
+              for (let i = 0; i < state.subscribers.length; i++) {
+                if (state.playersGameInfo[i].isMafia !== true) {
+                  state.subscribers[i].subscribeToAudio(false);
+                  state.subscribers[i].subscribeToVideo(false);
+                }
+              }
+            } else if (state.role === "OBSERVER") {
+              for (let i = 0; i < state.subscribers.length; i++) {
+                state.subscribers[i].subscribeToAudio(true);
+                state.subscribers[i].subscribeToVideo(true);
+              }
+            } else {
+              for (let i = 0; i < state.subscribers.length; i++) {
+                state.subscribers[i].subscribeToAudio(false);
+                state.subscribers[i].subscribeToVideo(false);
+              }
+            }
         }
+        store.dispatch("ingame/setPhase", state.gameStatus.phase);
+        store.dispatch("ingame/setDate", state.gameStatus.date);
       }
     }
             

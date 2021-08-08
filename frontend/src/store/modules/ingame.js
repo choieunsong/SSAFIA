@@ -2,12 +2,15 @@ import { INGAME } from "../mutation-types";
 
 const state = {
   phase: "READY",
-
+  date: 0,
 };
 
 const getters = {
   getPhase: (state) => {
     return state.phase;
+  },
+  getDate: (state) => {
+    return state.date
   }
 };
 
@@ -20,12 +23,23 @@ const actions = {
       }, 0);
     });
   },
+  setPhase({ commit }, date) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        commit(INGAME.SET_DATE, date);
+        resolve();
+      }, 0);
+    });
+  },
 };
 
 const mutations = {
   [INGAME.SET_PHASE](state, phase) {
     state.phase = phase;
   },
+  [INGAEM.SET_DATE](state, date) {
+    state.date = date;
+  }
 };
 
 export default {

@@ -10,7 +10,8 @@ const TOKEN = {
 }
 
 const INGAME = {
-    SET_PHASE: 'SET_PHASE'
+    SET_PHASE: 'SET_PHASE',
+    SET_DATE: 'SET_DATE',
 }
 
 export {
