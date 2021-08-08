@@ -356,7 +356,7 @@ export default {
 
     // 게임 관련 소켓통신
     function onConnected() {
-      state.message = `Room: ${state.mySessionId}에 오신 걸 환영합니다. \n 부디 SSAFIA를 즐겨주시기 바랍니다`;
+      state.message = `Room: ${state.mySessionId}에 오신 걸 환영합니다.  부디 SSAFIA를 즐겨주시기 바랍니다`;
       // 개인 채널 구독
       state.stompClient.subscribe(
         `/sub/${state.mySessionId}/${state.playerId}`,
@@ -564,10 +564,10 @@ export default {
             state.submessage = "";
             if (state.role !== "observer") {
               state.message =
-                "낮 투표시간이 되었습니다. \n 각자 의심되는 사람을 지목해 주세요. \n 최다 득표를 한 사람들은 최종투표에 나가게 됩니다.";
+                "낮 투표시간이 되었습니다.  각자 의심되는 사람을 지목해 주세요.  최다 득표를 한 사람들은 최종투표에 나가게 됩니다.";
             } else {
               state.message =
-                "당신은 관전자입니다. \n 게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
+                "당신은 관전자입니다.  게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
             }
             state.gameStatus = message.gameStatus;
             infoUpdater("alive", message);
@@ -578,10 +578,10 @@ export default {
             state.vote = null;
             if (state.role !== "observer") {
               state.message =
-                "최종투표시간이 되었습니다. \n 최종투표 후보자들 중에 제거할 사람에게 투표해 주세요. \n 최다득표자는 제거되게 됩니다.";
+                "최종투표시간이 되었습니다.  최종투표 후보자들 중에 제거할 사람에게 투표해 주세요.  최다득표자는 제거되게 됩니다.";
             } else {
               state.message =
-                "당신은 관전자입니다. \n 게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
+                "당신은 관전자입니다.  게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
             }
             state.gameStatus = message.gameStatus;
             infoUpdater("suspicious", message);
@@ -594,7 +594,7 @@ export default {
             state.vote = null;
             if (state.gameStatus === "DAY_DISCUSSION") {
               state.message =
-                "최다 득표자가 너무 많거나 또는 무효투표자가 너무 많은 관계로,\n  최종 투표를 스킵하고 밤으로 넘어갑니다.";
+                "최다 득표자가 너무 많거나 또는 무효투표자가 너무 많은 관계로,  최종 투표를 스킵하고 밤으로 넘어갑니다.";
             } else {
               if (message.gameStatus.victime) {
                 let victimNickname = "";
@@ -611,7 +611,7 @@ export default {
                   }
                 }
                 const victimJob = message.victimIsMafia ? "마피아" : "시민";
-                state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다. \n ${victimNickname}님의 직업은 ${victimJob}이였습니다 \n 곧 밤으로 넘어갑니다.`;
+                state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${victimNickname}님의 직업은 ${victimJob}이였습니다  곧 밤으로 넘어갑니다.`;
               }
               } else {
                 state.message =
@@ -640,7 +640,7 @@ export default {
               state.message = "밤이 되었습니다. 마이크와 비디오가 중단됩니다.";
             } else {
               state.message =
-                "당신은 관전자입니다. \n 게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
+                "당신은 관전자입니다.  게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
             }
             if (state.role === "MAFIA") {
               for (let i = 0; i < state.subscribers.length; i++) {
@@ -684,7 +684,7 @@ export default {
               const victimJob = message.gameStatus.victimIsMafia
                 ? "마피아"
                 : "시민";
-              state.message = `밤의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다. \n ${victimNickname}님의 직업은 ${victimJob}이였습니다 \n 곧 낮으로 넘어갑니다.`;
+              state.message = `밤의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${victimNickname}님의 직업은 ${victimJob}이였습니다  곧 낮으로 넘어갑니다.`;
             } else {
               state.message = "밤의 투표 결과, 아무도 죽지 않았습니다.";
             }
@@ -714,7 +714,7 @@ export default {
             };
             state.jobClient = undefined;
             state.mafias = undefined;
-            state.message = `Room: ${state.mySessionId}에 오신 걸 환영합니다. \n 부디 SSAFIA를 즐겨주시기 바랍니다`;
+            state.message = `Room: ${state.mySessionId}에 오신 걸 환영합니다.  부디 SSAFIA를 즐겨주시기 바랍니다`;
             state.submessage = "";
 
             for (let j = 0; j < state.removeList.length; j++) {
@@ -756,7 +756,7 @@ export default {
         if (state.role === "MAFIA") {
           if (state.mafias.length === 1) {
             state.message =
-              "게임이 시작되었습니다. \n 당신은 마피아입니다. \n 마피아 동료와 함께 시민의 수를 마피아의 수와 같게 만들면 당신의 승리입니다. \n 밤마다 마피아 동료들과 상의해 시민을 한명씩 제거해나가세요. \n 마피아는 당신 한명 입니다";
+              "게임이 시작되었습니다.  당신은 마피아입니다.  마피아 동료와 함께 시민의 수를 마피아의 수와 같게 만들면 당신의 승리입니다.  밤마다 마피아 동료들과 상의해 시민을 한명씩 제거해나가세요.  마피아는 당신 한명 입니다";
           } else {
             let mafiaNicknames = [];
             for (let i = 0; i < state.playersGameInfo.length; i++) {
@@ -765,20 +765,20 @@ export default {
               }
             }
             const mafiaNicknameString = mafiaNicknames.join(" , ");
-            state.message = `게임이 시작되었습니다. \n 당신은 마피아입니다. \n 마피아 동료와 함께 시민의 수를 마피아의 수와 같게 만들면 당신의 승리입니다. \n 밤마다 마피아 동료들과 상의해 시민을 한명씩 제거해나가세요. \n 당신의 마피아 동료는 ${mafiaNicknameString}들입니다`;
+            state.message = `게임이 시작되었습니다.  당신은 마피아입니다.  마피아 동료와 함께 시민의 수를 마피아의 수와 같게 만들면 당신의 승리입니다.  밤마다 마피아 동료들과 상의해 시민을 한명씩 제거해나가세요.  당신의 마피아 동료는 ${mafiaNicknameString}들입니다`;
           }
         } else if (state.role === "POLICE") {
           state.message =
-            "게임이 시작되었습니다. \n 당신은 경찰입니다. \n 시민을 도와 마피아를 모두 제거하면 당신의 승리입니다. \n 밤마다 의심가는 사람 한 명을 지목하여 그 사람의 직업을 알아낼 수 있습니다.";
+            "게임이 시작되었습니다.  당신은 경찰입니다.  시민을 도와 마피아를 모두 제거하면 당신의 승리입니다.  밤마다 의심가는 사람 한 명을 지목하여 그 사람의 직업을 알아낼 수 있습니다.";
         } else if (state.role === "DOCTOR") {
           state.message =
-            "게임이 시작되었습니다. \n 당신은 의사입니다. \n 시민을 도와 마피아를 모두 제거하면 당신의 승리입니다. \n 밤마다 죽을 것 같은 사람에게 투표하여 그 사람을 구할 수 있습니다.";
+            "게임이 시작되었습니다.  당신은 의사입니다.  시민을 도와 마피아를 모두 제거하면 당신의 승리입니다.  밤마다 죽을 것 같은 사람에게 투표하여 그 사람을 구할 수 있습니다.";
         } else if (state.role === "CIVILIAN") {
           state.message =
-            "게임이 시작되었습니다. \n 당신은 시민입니다. \n 다른 시민과 함께 마피아를 모두 제거하면 당신의 승리입니다.";
+            "게임이 시작되었습니다.  당신은 시민입니다.  다른 시민과 함께 마피아를 모두 제거하면 당신의 승리입니다.";
         } else {
           state.message =
-            "당신은 관전자입니다. \n 게임에 개입할 수는 없지만, 일어나고 있는 일들에 대한 모든 정보를 받아볼 수 있습니다.";
+            "당신은 관전자입니다.  게임에 개입할 수는 없지만, 일어나고 있는 일들에 대한 모든 정보를 받아볼 수 있습니다.";
           state.publisher.publishAudio(false);
           state.publisher.publishVideo(false);
           for (let i = 0; i < state.subscribers.length; i++) {
@@ -817,7 +817,7 @@ export default {
           };
           state.jobClient = undefined;
           state.mafias = undefined;
-          state.message = `Room: ${state.mySessionId}에 오신 걸 환영합니다. \n 부디 SSAFIA를 즐겨주시기 바랍니다`;
+          state.message = `Room: ${state.mySessionId}에 오신 걸 환영합니다.  부디 SSAFIA를 즐겨주시기 바랍니다`;
           state.submessage = "";
           infoUpdater("alive", null);
           infoUpdater("suspicious", null);
@@ -839,7 +839,7 @@ export default {
         if (state.role === "MAFIA") {
           if (state.mafias.length === 1) {
             state.message =
-              "게임이 시작되었습니다. \n 당신은 마피아입니다. \n 마피아 동료와 함께 시민의 수를 마피아의 수와 같게 만들면 당신의 승리입니다. \n 밤마다 마피아 동료들과 상의해 시민을 한명씩 제거해나가세요. \n 마피아는 당신 한명 입니다";
+              "게임이 시작되었습니다.  당신은 마피아입니다.  마피아 동료와 함께 시민의 수를 마피아의 수와 같게 만들면 당신의 승리입니다.  밤마다 마피아 동료들과 상의해 시민을 한명씩 제거해나가세요.  마피아는 당신 한명 입니다";
           } else {
             let mafiaNicknames = [];
             for (let i; i < state.playersGameInfo.length; i++) {
@@ -848,20 +848,20 @@ export default {
               }
             }
             const mafiaNicknameString = mafiaNicknames.join(" , ");
-            state.message = `게임이 시작되었습니다. \n 당신은 마피아입니다. \n 마피아 동료와 함께 시민의 수를 마피아의 수와 같게 만들면 당신의 승리입니다. \n 밤마다 마피아 동료들과 상의해 시민을 한명씩 제거해나가세요. \n 당신의 마피아 동료는 ${mafiaNicknameString}들입니다`;
+            state.message = `게임이 시작되었습니다.  당신은 마피아입니다.  마피아 동료와 함께 시민의 수를 마피아의 수와 같게 만들면 당신의 승리입니다.  밤마다 마피아 동료들과 상의해 시민을 한명씩 제거해나가세요.  당신의 마피아 동료는 ${mafiaNicknameString}들입니다`;
           }
         } else if (state.role === "POLICE") {
           state.message =
-            "게임이 시작되었습니다. \n 당신은 경찰입니다. \n 시민을 도와 마피아를 모두 제거하면 당신의 승리입니다. \n 밤마다 의심가는 사람 한 명을 지목하여 그 사람의 직업을 알아낼 수 있습니다.";
+            "게임이 시작되었습니다. 당신은 경찰입니다. 시민을 도와 마피아를 모두 제거하면 당신의 승리입니다. 밤마다 의심가는 사람 한 명을 지목하여 그 사람의 직업을 알아낼 수 있습니다.";
         } else if (state.role === "DOCTOR") {
           state.message =
-            "게임이 시작되었습니다. \n 당신은 의사입니다. \n 시민을 도와 마피아를 모두 제거하면 당신의 승리입니다. \n 밤마다 죽을 것 같은 사람에게 투표하여 그 사람을 구할 수 있습니다.";
+            "게임이 시작되었습니다.  당신은 의사입니다.  시민을 도와 마피아를 모두 제거하면 당신의 승리입니다.  밤마다 죽을 것 같은 사람에게 투표하여 그 사람을 구할 수 있습니다.";
         } else if (state.role === "CIVILIAN") {
           state.message =
-            "게임이 시작되었습니다. \n 당신은 시민입니다. \n 다른 시민과 함께 마피아를 모두 제거하면 당신의 승리입니다.";
+            "게임이 시작되었습니다.  당신은 시민입니다.  다른 시민과 함께 마피아를 모두 제거하면 당신의 승리입니다.";
         } else {
           state.message =
-            "당신은 관전자입니다. \n 게임에 개입할 수는 없지만, 일어나고 있는 일들에 대한 모든 정보를 받아볼 수 있습니다.";
+            "당신은 관전자입니다.  게임에 개입할 수는 없지만, 일어나고 있는 일들에 대한 모든 정보를 받아볼 수 있습니다.";
           state.publisher.publishAudio(false);
           state.publisher.publishVideo(false);
           for (let i; i < state.subscribers.length; i++) {
@@ -900,7 +900,7 @@ export default {
           };
           state.jobClient = undefined;
           state.mafias = undefined;
-          state.message = `Room: ${state.mySessionId}에 오신 걸 환영합니다. \n 부디 SSAFIA를 즐겨주시기 바랍니다`;
+          state.message = `Room: ${state.mySessionId}에 오신 걸 환영합니다.  부디 SSAFIA를 즐겨주시기 바랍니다`;
           state.submessage = "";
           infoUpdater("alive", null);
           infoUpdater("suspicious", null);
