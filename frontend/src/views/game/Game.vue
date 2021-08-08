@@ -73,9 +73,11 @@
 
           <!--정보박스-->
           <div id="info-box" class="font-jua typing-txt">
-            <span v-if="!state.doCountDownAnimation" class="info-text">{{
-              state.message
-            }}</span>
+            <span v-if="!state.doCountDownAnimation" class="info-text"
+              >{{ state.message }}
+              <br />
+              {{ state.submessage }}
+            </span>
 
             <!-- 시작 애니메이션 -->
             <span v-if="state.doCountDownAnimation" class="start-animation">{{
@@ -233,14 +235,13 @@ export default {
     // 세션 나가기
     var leaveSession = function() {
       // --- Leave the session by calling 'disconnect' method over the Session object ---
-      if (state.gameStatus.phase === "READY")
-      {
-          if (state.session) state.session.disconnect();
-  
-          state.session = undefined;
-          state.publisher = undefined;
-          state.subscribers = [];
-          state.OV = undefined;
+      if (state.gameStatus.phase === "READY") {
+        if (state.session) state.session.disconnect();
+
+        state.session = undefined;
+        state.publisher = undefined;
+        state.subscribers = [];
+        state.OV = undefined;
       }
     };
 
@@ -632,30 +633,30 @@ export default {
             break;
           }
           case "NIGHT_VOTE": {
-            if (state.role === "mafia") {
+            if (state.role === "MAFIA") {
               state.message =
                 "밤이 되었습니다. 마피아는 시민 중 제거할 사람을 투표하여 주시기 바랍니다.";
-            } else if (state.role === "doctor") {
+            } else if (state.role === "DOCTOR") {
               state.message =
                 "밤이 되었습니다. 의사는 시민 중 제거당할 것 같은 사람에게 투표하여 주시기 바랍니다.";
-            } else if (state.role === "police") {
+            } else if (state.role === "POLICE") {
               state.message =
                 "밤이 되었습니다. 경찰은 의심되는 사람을 지목하여 그 사람의 직업을 확인해보시기 바랍니다.";
-            } else if (state.role === "civilian") {
+            } else if (state.role === "CIVILIAN") {
               state.message = "밤이 되었습니다. 마이크와 비디오가 중단됩니다.";
             } else {
               state.message =
                 "당신은 관전자입니다. \n 게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
             }
-            if (state.role === "mafia") {
-              for (let i; i < state.playersGameInfo.length; i++) {
+            if (state.role === "MAFIA") {
+              for (let i; i < state.subscribers.length; i++) {
                 if (state.playersGameInfo[i].isMafia !== true) {
                   state.subscribers[i].subscribeToAudio(false);
                   state.subscribers[i].subscribeToVideo(false);
                 }
               }
-            } else if (state.role === "observer") {
-              for (let i; i < state.playersGameInfo.length; i++) {
+            } else if (state.role === "OBSERVER") {
+              for (let i; i < state.subscribers.length; i++) {
                 state.subscribers[i].subscribeToAudio(true);
                 state.subscribers[i].subscribeToVideo(true);
               }
@@ -733,7 +734,7 @@ export default {
               state.subscribers[i].subscribeToAudio(true);
               state.subscribers[i].subscribeToVideo(true);
             }
-            
+
             infoUpdater("alive", null);
             infoUpdater("suspicious", null);
             infoUpdater("voters", null);
@@ -853,10 +854,10 @@ export default {
     }
     // 게임 페이지 떠날 때 할일
     function leaveGame() {
-        if (state.gameStatus.phase === "READY") {
-            state.stompClient.send(`/pub/${state.mySessionId}/leave`, {});
-            state.stompClient.disconnect();
-        }
+      if (state.gameStatus.phase === "READY") {
+        state.stompClient.send(`/pub/${state.mySessionId}/leave`, {});
+        state.stompClient.disconnect();
+      }
     }
 
     function leave() {
