@@ -29,6 +29,7 @@ public class DayDiscussionFinSubscriber {
   private final RedisPublisher redisPublisher;
   private final GameSessionService gameSessionService;
   private final GameSessionVoteService gameSessionVoteService;
+  private final ChannelTopic topicDayEliminationFin;
 
   public void sendMessage(String message) {
     try {
@@ -78,7 +79,7 @@ public class DayDiscussionFinSubscriber {
   private void setDayToNight(String roomId) {
     log.info("no suspiciousList", roomId);
     DayEliminationMessage dayEliminationMessage = new DayEliminationMessage(roomId, null);
-    redisPublisher.publish(new ChannelTopic("DAY_ELIMINATION_FIN"), dayEliminationMessage);
+    redisPublisher.publish(topicDayEliminationFin, dayEliminationMessage);
   }
 
 }

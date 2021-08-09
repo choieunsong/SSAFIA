@@ -2,6 +2,7 @@ package s05.p12a104.mafia.stomp.controller;
 
 
 import java.util.Timer;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -28,6 +29,7 @@ public class RoomController {
   private final GameSessionService gameSessionService;
   private final SimpMessagingTemplate simpMessagingTemplate;
   private final RedisPublisher redisPublisher;
+  private final ChannelTopic topicStartFin;
 
   @MessageMapping("/{roomId}/join")
   public void joinGameSession(@DestinationVariable String roomId) {
@@ -58,7 +60,7 @@ public class RoomController {
     gameSessionService.startGame(gameSession);
 
     Timer timer = new Timer();
-    StartFinTimerTask task = new StartFinTimerTask(redisPublisher);
+    StartFinTimerTask task = new StartFinTimerTask(redisPublisher, topicStartFin);
     task.setRoomId(roomId);
     timer.schedule(task, gameSession.getTimer() * 1000);
 

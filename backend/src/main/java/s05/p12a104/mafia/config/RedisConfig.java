@@ -35,15 +35,32 @@ public class RedisConfig {
   }
 
   @Bean
+  public ChannelTopic topicStartFin() {
+    return new ChannelTopic("START_FIN");
+  }
+
+  @Bean
+  public ChannelTopic topicDayDiscussionFin() {
+    return new ChannelTopic("DAY_DISCUSSION_FIN");
+  }
+
+  @Bean
+  public ChannelTopic topicDayEliminationFin() {
+    return new ChannelTopic("DAY_ELIMINAION_FIN");
+  }
+
+  @Bean
   public RedisMessageListenerContainer redisMessageListener(
       RedisConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter,
       MessageListenerAdapter dayDisculistenerAdapter,
-      MessageListenerAdapter dayEliminationlistenerAdapter) {
+      MessageListenerAdapter dayEliminationlistenerAdapter, ChannelTopic topicStartFin,
+      ChannelTopic topicDayDiscussionFin, ChannelTopic topicDayEliminationFin) {
     RedisMessageListenerContainer container = new RedisMessageListenerContainer();
     container.setConnectionFactory(connectionFactory);
-    container.addMessageListener(listenerAdapter, new ChannelTopic("START_FIN"));
-    container.addMessageListener(dayDisculistenerAdapter, new ChannelTopic("DAY_DISCUSSION_FIN"));
-    container.addMessageListener(dayEliminationlistenerAdapter, new ChannelTopic("DAY_ELIMINAION_FIN"));
+    container.addMessageListener(listenerAdapter, topicStartFin);
+    container.addMessageListener(dayDisculistenerAdapter, topicDayDiscussionFin);
+    container.addMessageListener(dayEliminationlistenerAdapter,
+        topicDayEliminationFin);
     return container;
   }
 

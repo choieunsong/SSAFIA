@@ -28,6 +28,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   private final RedisPublisher redisPublisher;
   private final VoteRepository voteRepository;
   private final GameSessionService gameSessionService;
+  private final ChannelTopic topicDayDiscussionFin;
 
   @Override
   public void startVote(String roomId, GamePhase phase, int time, Map players) {
@@ -99,7 +100,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     if (gameSession.getPhase() == GamePhase.DAY_DISCUSSION) {
       DayDiscussionMessage dayDiscussionMessage =
           new DayDiscussionMessage(roomId, getSuspiciousList(gameSession, vote.getVoteResult()));
-      redisPublisher.publish(new ChannelTopic("DAY_DISCUSSION_FIN"), dayDiscussionMessage);
+      redisPublisher.publish(topicDayDiscussionFin, dayDiscussionMessage);
     }
   }
 
