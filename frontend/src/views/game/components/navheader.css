@@ -81,12 +81,16 @@
     position: absolute;
     right: 30px;
     cursor: pointer;
+    transition: transform 0.3s ease-out, color 0.3s ease-out;
 }
 
 #rule-book:hover {
-    animation-name: hover-scale-up;
-    animation-duration: 1s;
-    animation-iteration-count: infinite;
+    transform: scale(1.1);
+    color: gray;
+}
+
+#rule-book:active {
+    transform: scale(1.1);
     color: black;
 }
 
@@ -103,13 +107,15 @@
     color: white;
     border: 5px solid #00bfff;
     border-radius: 25px;
+}
 
+.confirm-button-active {
     cursor: pointer;
     transition: transform 0.2s ease-out;
     transition: color 0.2s ease-out;
 }
 
-#confirm-button:hover {
+.confirm-button-active:hover {
     transform: scale(0.9);
     background-color: darken(#1e90ff, 5%);
     box-shadow: 0 5px 20px rgba(25, 13, 90, 0.5);
@@ -124,6 +130,41 @@
 
 .progress-bar {
     background-image: linear-gradient(to right, #152fc0, #9c16a8);
+}
+
+.overlay {
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.rulebook-modal {
+    position: relative;
+    width: 60%;
+    height: 60%;
+    z-index: 1001;
+    margin: 10% auto;
+
+    background-color: #535353;
+    opacity: 0.9;
+    border-radius: 40px;
+    border: 6px solid #9b9b9b;
+
+    color: white;
+    line-height: 1.7em;
+    overflow: scroll;
+}
+
+.rulebook-modal-description {
+    text-align: left;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 1.5em;
+    letter-spacing: 2px;
 }
 
 @keyframes hover-scale-down {

@@ -16,7 +16,7 @@
     width: 30rem;
     color: snow;
     margin-top: 0.5rem;
-    animation-duration: 1s;
+    animation-duration: 0.5s;
     animation-name: fade-in;
     display: inline-block;
     border-radius: 3%;

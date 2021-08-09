@@ -7,30 +7,60 @@
     }
 }
 
-@keyframes sunpulse {
+@keyframes sun-effect {
     from {
-        box-shadow: 0 0 150px #ff0, 0 0 150px #ff0;
+        box-shadow: 0 0 10px rgb(255, 245, 194), 0 0 50px rgb(255, 245, 194),
+            0 0 75px rgb(247, 222, 102), 0 0 0 20px rgba(255, 231, 164, 0.1),
+            0 0 0 40px rgba(255, 240, 163, 0.07), 0 0 0 70px rgba(247, 223, 102, 0.03);
     }
     to {
-        box-shadow: 0 0 100px #ff0, 0 0 85px #ff0;
+        box-shadow: 0 0 10px rgb(255, 245, 194), 0 0 50px rgb(255, 245, 194),
+            0 0 75px rgb(247, 222, 102), 0 0 8px 30px rgba(255, 249, 232, 0.08),
+            0 0 10px 70px rgba(255, 247, 210, 0.05), 0 0 20px 100px rgba(255, 248, 214, 0.03);
     }
 }
+
+@keyframes gradient-animation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes day-elimination {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.animation-day {
+    background: linear-gradient(270deg, #69bef7 0%, #479dee 50%, #3795ff 100%);
+    animation: gradient-animation 10s ease infinite;
+}
+
+.animation-day-elimination {
+    background: -webkit-linear-gradient(-45deg, #eaa954 0%, #ea5c54 50%, #bb6dec 100%);
+    opacity: 0;
+    animation: day-elimination 1s linear forwards, gradient-animation 10s ease infinite;
+}
+
 #animtaion-wrap {
     position: absolute;
     width: 100%;
     height: 100%;
     z-index: -1;
     overflow: hidden;
+    background-size: 300% 300%;
 }
-#animation-body {
-    position: absolute;
-    background: linear-gradient(#e5fbff, #6ac8ff);
-    width: 100%;
-    height: 100%;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-}
+
 .sun {
     width: 15vw;
     height: 15vw;
@@ -41,11 +71,10 @@
     bottom: -9vw;
     right: 7vw;
     transform-origin: -28vw 7vw;
-    animation: sunpulse 2s alternate infinite;
+    animation: sun-effect 2s alternate infinite;
 }
 
 body {
-    background: #00b4ff;
     color: #333;
     font: 100% Arial, Sans Serif;
     height: 100vh;
@@ -66,51 +95,15 @@ body {
 
 /* KEYFRAMES */
 
-@-moz-keyframes animateCloud {
-    0% {
-        margin-left: -100px;
-    }
-    100% {
-        margin-left: 100%;
-    }
-}
-
 @keyframes animateCloud {
     0% {
-        margin-left: -100px;
-    }
-    100% {
-        margin-left: 100%;
-    }
-}
-
-@-moz-keyframes animateCloud2 {
-    0% {
         margin-left: 0px;
     }
-    25% {
+    50% {
         margin-left: 100%;
     }
-    50% {
-        margin-left: -1000px;
-    }
     100% {
-        margin-left: 0%;
-    }
-}
-
-@-moz-keyframes animateCloud2 {
-    0% {
-        margin-left: 0px;
-    }
-    25% {
-        margin-left: 100%;
-    }
-    50% {
-        margin-left: -1000px;
-    }
-    100% {
-        margin-left: 0%;
+        margin-left: -200px;
     }
 }
 /* ANIMATIONS */

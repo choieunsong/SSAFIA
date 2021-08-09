@@ -8,6 +8,19 @@
                 <span class="font-jua">방 만들기</span>
             </el-button>
         </div>
+        <!-- <vue-typer
+            class="display-3"
+            :text="['안녕하세요.', '김정훈의 포트폴리오입니다!!!', '방문 감사합니다!!!']"
+            :repeat="Infinity"
+            initial-action="typing"
+            :pre-type-delay="100"
+            :type-delay="200"
+            :pre-erase-delay="1500"
+            :erase-delay="250"
+            erase-style="backspace"
+            :erase-on-complete="false"
+            caret-animation="blink"
+        ></vue-typer> -->
         <Login />
     </div>
 </template>
@@ -19,22 +32,12 @@ import { router } from "@/router/router.js";
 import { ElMessage } from "element-plus";
 import { useStore } from "vuex";
 import { computed } from "vue";
-// import { onMounted } from '@vue/runtime-core';
 
 export default {
     name: "Home",
     components: {
         Login,
     },
-    // created() {
-    //   const token = localStorage.getItem("token");
-    //   if (token) {
-    //     this.$store.dispatch("token/setIsLogin", true);
-    //     this.$store.dispatch("token/setToken", token);
-    //   } else {
-    //     this.$store.dispatch("token/setIsLogin", false);
-    //   }
-    // },
     setup() {
         const store = useStore();
         const isLogin = computed(() => store.getters["token/getIsLogin"]);
@@ -49,18 +52,6 @@ export default {
         return {
             moveToNickname,
         };
-        // const store = useStore();
-
-        // onMounted(() => {
-        //     const Token = localStorage.getItem("token");
-        //     console.log('Token',Token);
-        //     if(Token){
-        //         store.dispatch('token/setIsLogin', true);
-        //         store.dispatch('token/setToken', Token);
-        //     }else{
-        //         store.dispatch('token/setIsLogin', false);
-        //     }
-        // })
     },
 };
 </script>
