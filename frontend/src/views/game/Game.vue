@@ -829,6 +829,7 @@ export default {
             subscriber.nickname = "";
             subscriber.playerId = key;
             state.subscribers.push(subscriber);
+            state.removeList.push(state.playerNum)
             //subscribers의 info 세팅
             state.playersGameInfo.push({
               playerId: key,
