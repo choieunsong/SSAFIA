@@ -160,19 +160,6 @@ import "./Game.css";
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
-var colorCode = [
-    { RED: "#DC143C" },
-    { YELLOW: "#FFFF00" },
-    { GREEN: "#FFFF00" },
-    { PURPLE: "#800080" },
-    { ORANGE: "#FF8C00" },
-    { PINK: "#F08080" },
-    { BROWN: "#A52A2A" },
-    { MINT_GREEN: "#7FFFD4" },
-    { SKY_BLUE: "#0000CD" },
-    { INDIGO: "#BA55D3" },
-];
-
 export default {
     name: "Game",
     components: {
@@ -400,8 +387,8 @@ export default {
                 console.log("send vote", JSON.stringify(Message));
                 state.stompClient.send(
                     `/pub/${state.mySessionId}/vote`,
-                    {},
-                    JSON.stringify(Message)
+                    JSON.stringify(Message),
+                    {}
                 );
             }
         }
@@ -413,8 +400,8 @@ export default {
                 };
                 state.stompClient.send(
                     `/pub/${state.mySessionId}/confirm`,
-                    {},
-                    JSON.stringify(Message)
+                    JSON.stringify(Message),
+                    {}
                 );
             }
         }
@@ -469,14 +456,12 @@ export default {
                 } else {
                     // 내 voters 갱신하는 로직
                     let tmp = [];
-                    if (
-                        message.playerMap[state.playerMe.playerId].vote === state.playerMe.playerId
-                    ) {
+                    if (message.playerMap[state.playerMe.playerId] === state.playerMe.playerId) {
                         tmp.push(state.playerMe.color);
                     }
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
                         if (
-                            message.playerMap[state.playersGameInfo[i].playerId].vote ===
+                            message.playerMap[state.playersGameInfo[i].playerId] ===
                             state.playerMe.playerId
                         ) {
                             tmp.push(state.playersGameInfo[i].color);
@@ -487,14 +472,14 @@ export default {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
                         let tmp = [];
                         if (
-                            message.playerMap[state.playerMe.playerId].vote ===
+                            message.playerMap[state.playerMe.playerId] ===
                             state.playersGameInfo[i].playerId
                         ) {
                             tmp.push(state.playerMe.color);
                         }
-                        for (let j = 0; i < state.playersGameInfo.length; j++) {
+                        for (let j = 0; j < state.playersGameInfo.length; j++) {
                             if (
-                                message.playerMap[state.playersGameInfo[j].playerId].vote ===
+                                message.playerMap[state.playersGameInfo[j].playerId] ===
                                 state.playersGameInfo[i].playerId
                             ) {
                                 tmp.push(state.playersGameInfo[j].color);
@@ -503,6 +488,7 @@ export default {
                         }
                     }
                 }
+                console.log("vote result", message);
             } else if (key === "isHost") {
                 if (state.playerId === message.hostId) {
                     state.amIHost = true;
@@ -528,13 +514,8 @@ export default {
                 } else {
                     state.playerMe[key] = message.playerMap[state.playerMe.playerId][key];
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
-                        console.log(
-                            "color",
-                            message.playerMap[state.playersGameInfo[i].playerId][key]
-                        );
-                        let col = message.playerMap[state.playersGameInfo[i].playerId][key];
-                        console.log("colorcode", colorCode[col]);
-                        state.playersGameInfo[i][key] = col;
+                        state.playersGameInfo[i][key] =
+                            message.playerMap[state.playersGameInfo[i].playerId][key];
                     }
                 }
             }
@@ -543,6 +524,7 @@ export default {
         // 공통 채널에서 메세지를 받았을 경우 할 일
         function onMessageReceived(payload) {
             var message = JSON.parse(payload.body);
+            console.log("onmessageReceived", message);
             if (message.type === "JOIN") {
                 infoUpdater("color", message);
                 infoUpdater("isHost", message);
@@ -595,7 +577,7 @@ export default {
                                 "최다 득표자가 너무 많거나 또는 무효투표자가 너무 많은 관계로,<br/>최종 투표를 스킵하고 밤으로 넘어갑니다.";
                         } else {
                             if (message.gameStatus.victime) {
-                                let victimNickname = "";
+                                let victimNickname = "nickname";
                                 if (message.gameStatus.victim === state.playerMe.playerId) {
                                     victimNickname = state.playerMe.nickname;
                                 } else {
@@ -615,8 +597,6 @@ export default {
                                 state.message =
                                     "최종투표로 인해 아무도 죽지 않았습니다. 밤으로 넘어갑니다.";
                             }
-                            const victimJob = message.victimIsMafia ? "마피아" : "시민";
-                            state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다. <br/>${victimNickname}님의 직업은 ${victimJob}이였습니다 <br/>곧 밤으로 넘어갑니다.`;
                         }
                         state.gameStatus = message.gameStatus;
                         infoUpdater("alive", message);
@@ -741,6 +721,7 @@ export default {
                     }
                 }
             } else if (message.type === "UPDATE") {
+                console.log("update voters", message);
                 infoUpdater("voters", message);
             } else {
                 console.log(
