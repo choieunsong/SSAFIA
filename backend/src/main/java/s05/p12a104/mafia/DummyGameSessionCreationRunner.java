@@ -1,14 +1,14 @@
 package s05.p12a104.mafia;
 
-import io.openvidu.java.client.OpenVidu;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import io.openvidu.java.client.OpenVidu;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.domain.dao.GameSessionDao;
 import s05.p12a104.mafia.domain.enums.AccessType;
 import s05.p12a104.mafia.domain.enums.GameState;
@@ -33,7 +33,10 @@ public class DummyGameSessionCreationRunner implements ApplicationRunner {
         .finishedTime(createdTime)
         .state(GameState.WAIT)
         .sessionId(openVidu.createSession().getSessionId())
-        .playerMap(new HashMap<>())
+        .playerMap(new HashMap())
+        //지우기
+        .hostId("dummy")
+        .alivePlayer(1)
         .build();
 
     GameSessionDao saved = gameSessionRedisRepository.save(newGameSessionDao);
