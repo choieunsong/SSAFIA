@@ -518,7 +518,7 @@ export default {
             }
           }
         }
-      } else if ("isHost") {
+      } else if (key === "isHost") {
         if (state.playerId === message.hostId) {
           state.amIHost = true;
           state.playerMe.isHost = true;
