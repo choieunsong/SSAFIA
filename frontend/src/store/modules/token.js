@@ -65,7 +65,7 @@ const actions = {
         console.log(roomId);
         commit(TOKEN.SET_ROOMID, roomId);
         resolve();
-      }, 100)
+      }, 0)
     })
   },
   setPlayerId({ commit }, playerId) {
@@ -74,7 +74,7 @@ const actions = {
         console.log(playerId);
         commit(TOKEN.SET_PLAYERID, playerId);
         resolve();
-      }, 100)
+      }, 0)
     })
   },
   setNickname({ commit }, nickname) {
@@ -83,7 +83,7 @@ const actions = {
         console.log(nickname);
         commit(TOKEN.SET_NICKNAME, nickname);
         resolve();
-      }, 100)
+      }, 0)
     })
   },
   setOpenviduToken({ commit }, openviduToken) {
@@ -92,7 +92,7 @@ const actions = {
         console.log(openviduToken);
         commit(TOKEN.SET_OPENVIDUTOKEN, openviduToken);
         resolve();
-      }, 100)
+      }, 0)
     })
   }
 };
