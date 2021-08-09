@@ -1,13 +1,13 @@
 package s05.p12a104.mafia.api.service;
 
+import java.util.Map;
 import s05.p12a104.mafia.domain.entity.Vote;
 import s05.p12a104.mafia.domain.enums.GamePhase;
 import s05.p12a104.mafia.stomp.request.GameSessionVoteReq;
 
 public interface GameSessionVoteService {
-  void createVote(String roomId, GamePhase phase);
 
-  void startVote(String roomId, GamePhase phase, int time);
+  void startVote(String roomId, GamePhase phase, int time, Map players);
 
   void endVote(String voteId, GamePhase phase);
 

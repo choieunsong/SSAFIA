@@ -1,5 +1,7 @@
 package s05.p12a104.mafia.redispubsub;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -32,7 +34,16 @@ public class StartFinSubscriber {
 
       template.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));
 
-      gameSessionVoteService.startVote(roomId, gameSession.getPhase(), gameSession.getTimer());
+      Map<String, String> players = new HashMap();
+
+      gameSession.getPlayerMap().forEach((playerId, player) -> {
+        if (player.isAlive()) {
+          players.put(playerId, null);
+        }
+      });
+
+      gameSessionVoteService.startVote(roomId, gameSession.getPhase(), gameSession.getTimer(),
+          players);
       log.info("DAY_DISCUSSION 투표 생성!");
     } catch (JsonProcessingException e) {
       e.printStackTrace();

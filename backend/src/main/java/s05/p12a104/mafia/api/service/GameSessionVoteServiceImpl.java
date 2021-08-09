@@ -1,5 +1,6 @@
 package s05.p12a104.mafia.api.service;
 
+import java.util.Map;
 import java.util.Timer;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
@@ -21,8 +22,8 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   private final VoteRepository voteRepository;
 
   @Override
-  public void startVote(String roomId, GamePhase phase, int time) {
-    createVote(roomId, phase);
+  public void startVote(String roomId, GamePhase phase, int time, Map players) {
+    voteRepository.createVote(roomId, phase, players);
     Timer timer = new Timer();
     DayDiscussionVoteFinTimerTask task = new DayDiscussionVoteFinTimerTask(this);
     task.setRoomId(roomId);
@@ -63,13 +64,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   public int confirmVote(String roomId, String playerId, GameSessionVoteReq req) {
 
     String voteId = getVoteId(roomId, req);
-
     return voteRepository.confirm(voteId, playerId);
-  }
-
-  @Override
-  public void createVote(String roomId, GamePhase phase) {
-    voteRepository.createVote(roomId, phase);
   }
 
   @Override
