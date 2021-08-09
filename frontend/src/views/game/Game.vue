@@ -829,11 +829,11 @@ export default {
             subscriber.nickname = "";
             subscriber.playerId = key;
             state.subscribers.push(subscriber);
-            state.removeList.push(state.playerNum)
+            state.removeList.push(state.playerNum);
             //subscribers의 info 세팅
             state.playersGameInfo.push({
               playerId: key,
-              nickname: '',
+              nickname: "",
               alive: null,
               suspicious: null,
               voters: [],
@@ -846,8 +846,8 @@ export default {
           }
         }
         infoUpdater("color", message);
-        infoUpdater('nickname', message);
-        infoUpdater('isHost', message)
+        infoUpdater("nickname", message);
+        infoUpdater("isHost", message);
         switch (message.gameStatus.phase) {
           case "START": {
             state.gameStatus = message.gameStatus;
@@ -1039,6 +1039,28 @@ export default {
             store.dispatch("ingame/setPhase", state.gameStatus.phase);
             store.dispatch("ingame/setDate", state.gameStatus.date);
             break;
+          }
+          case "READY": {
+            state.role = undefined;
+            state.gameStatus = {
+              date: 0,
+              phase: "READY",
+              timer: 0,
+              aliveMafia: 0,
+            };
+            state.jobClient = undefined;
+            state.mafias = undefined;
+            state.message = `Room: ${state.mySessionId}에 오신 걸 환영합니다.  부디 SSAFIA를 즐겨주시기 바랍니다`;
+            state.submessage = "";
+
+            infoUpdater("alive", null);
+            infoUpdater("suspicious", null);
+            infoUpdater("voters", null);
+            infoUpdater("isMafia", null);
+            state.vote = null;
+            state.isConfirm = false;
+            store.dispatch("ingame/setPhase", state.gameStatus.phase);
+            store.dispatch("ingame/setDate", state.gameStatus.date);
           }
         }
       } else {
