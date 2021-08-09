@@ -107,30 +107,28 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   public List<String> getSuspiciousList(GameSession gameSession, Map<String, String> voteResult) {
     List<String> suspiciousList = new ArrayList<>();
 
-    final String INVALID_VOTE = "INVALID_VOTE";
-    Map<String, Integer> result = new HashMap<String, Integer>();
-    result.put(INVALID_VOTE, 0);
-    voteResult.forEach((playerId, vote) -> {
-      if (vote == null) {
-        result.put(INVALID_VOTE, result.get(INVALID_VOTE) + 1);
-        return;
-      }
-      result.put(vote, result.getOrDefault(vote, 0) + 1);
-    });
-
-    int alivePlayer = gameSession.getAlivePlayer();
+    Map<String, Integer> voteNum = new HashMap<String, Integer>();
+    int voteCnt = 0;
+    for (String vote : voteResult.values()) {
+      if(vote == null)
+        continue;
+      
+      voteCnt++;
+      voteNum.put(vote, voteNum.getOrDefault(vote, 0) + 1);
+    }
+    
     // 의심자 찾기
-    if (result.get(INVALID_VOTE) <= alivePlayer / 2) {
-      List<String> keyList = new ArrayList<>(result.keySet());
-      keyList.remove(INVALID_VOTE);
+    int alivePlayer = gameSession.getAlivePlayer();
+    if (voteCnt >= alivePlayer / 2) {
+      List<String> suspects = new ArrayList<>(voteNum.keySet());
       // 투표수 오름차순
-      Collections.sort(keyList, (o1, o2) -> result.get(o2).compareTo(result.get(o1)));
+      Collections.sort(suspects, (o1, o2) -> voteNum.get(o2).compareTo(voteNum.get(o1)));
 
       Map<String, Player> playerMap = gameSession.getPlayerMap();
-      int voteMax = result.get(keyList.get(0));
-      for (String suspect : keyList) {
+      int voteMax = voteNum.get(suspects.get(0));
+      for (String suspect : suspects) {
         // 동점자가 아니면 더이상 동점자가 없기때문에 끝내기
-        if (result.get(suspect) != voteMax)
+        if (voteNum.get(suspect) != voteMax)
           break;
 
         // 중간 나간 사람이 포함되어 있을 수 있으므로 살아있는지 체크
@@ -140,7 +138,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
 
       // 살아있는 사람 기준으로 6명이상이면 3명까지 5이하면 2명까지
       if (suspiciousList.size() > 3 || (alivePlayer <= 5 && suspiciousList.size() > 2))
-        suspiciousList = new ArrayList<String>();
+        suspiciousList.clear();
     }
 
     return suspiciousList;
