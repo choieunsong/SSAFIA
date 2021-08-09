@@ -831,6 +831,8 @@ export default {
             state.subscribers.push(subscriber);
             state.removeList.push(state.playerNum);
             //subscribers의 info 세팅
+            // 플레이어 수 1 증가
+            state.playerNum += 1;
             state.playersGameInfo.push({
               playerId: key,
               nickname: "",
@@ -841,8 +843,7 @@ export default {
               color: null,
               isHost: false,
             });
-            // 플레이어 수 1 증가
-            state.playerNum += 1;
+            
           }
         }
         infoUpdater("color", message);
