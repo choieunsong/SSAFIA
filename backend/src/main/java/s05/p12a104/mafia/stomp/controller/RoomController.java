@@ -17,8 +17,10 @@ import s05.p12a104.mafia.domain.enums.GameState;
 import s05.p12a104.mafia.redispubsub.RedisPublisher;
 import s05.p12a104.mafia.stomp.response.GameSessionStompJoinRes;
 import s05.p12a104.mafia.stomp.response.GameSessionStompLeaveRes;
+import s05.p12a104.mafia.stomp.response.GameSessionStompRejoinRes;
 import s05.p12a104.mafia.stomp.response.GameStatusRes;
 import s05.p12a104.mafia.stomp.response.PlayerRoleRes;
+import s05.p12a104.mafia.stomp.response.StompRejoinPlayer;
 import s05.p12a104.mafia.stomp.task.StartFinTimerTask;
 
 @Slf4j
@@ -45,6 +47,18 @@ public class RoomController {
     GameSession gameSession = gameSessionService.removeUser(roomId, playerId);
     GameSessionStompLeaveRes res = new GameSessionStompLeaveRes(gameSession.getHostId(), playerId);
     simpMessagingTemplate.convertAndSend("/sub/" + roomId, res);
+  }
+
+  @MessageMapping("/{roomId}/rejoin")
+  public void rejoinGameSession(SimpMessageHeaderAccessor accessor,
+      @DestinationVariable String roomId) {
+    String playerId = accessor.getUser().getName();
+    GameSession gameSession = gameSessionService.findById(roomId);
+    GameSessionStompRejoinRes publicRes = GameSessionStompRejoinRes.of(gameSession, playerId);
+    simpMessagingTemplate.convertAndSend("/sub/" + roomId, publicRes);
+
+    StompRejoinPlayer privateRes = StompRejoinPlayer.of(gameSession.getPlayerMap().get(playerId));
+    simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + playerId, privateRes);
   }
 
   @MessageMapping("/{roomId}/start")
