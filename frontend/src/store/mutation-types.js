@@ -10,10 +10,8 @@ const TOKEN = {
 }
 
 const INGAME = {
-    SET_GAMESTATUS: 'SET_GAMESTATUS',
-    SET_ROLE: 'SET_ROLE',
-    JOIN_PLAYER: 'JOIN_PLAYER',
-    LEAVE_PLAYER: 'LEAVE_PLAYER',
+    SET_PHASE: 'SET_PHASE',
+    SET_DATE: 'SET_DATE',
 }
 
 export {

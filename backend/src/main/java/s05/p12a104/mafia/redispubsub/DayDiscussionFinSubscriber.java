@@ -28,7 +28,6 @@ public class DayDiscussionFinSubscriber {
       gameSession.setTimer(100);
       gameSessionService.update(gameSession);
 
-      log.info("DAY_DISCUSSION 투표 종료!");
       template.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));
 
     } catch (Exception e) {

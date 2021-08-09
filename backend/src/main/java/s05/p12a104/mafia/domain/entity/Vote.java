@@ -34,8 +34,8 @@ public class Vote implements Serializable {
     return ++this.confirmCnt;
   }
 
-  public static Vote builder(String voteId, GamePhase phase) {
-    return new VoteBuilder().voteId(voteId).phase(phase).confirmCnt(0).voteResult(new HashMap())
+  public static Vote builder(String voteId, GamePhase phase, Map players) {
+    return new VoteBuilder().voteId(voteId).phase(phase).confirmCnt(0).voteResult(players)
         .build();
   }
 

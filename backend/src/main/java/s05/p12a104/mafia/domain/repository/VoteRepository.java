@@ -37,9 +37,9 @@ public class VoteRepository {
     return opsHashVote.get(key, voteId);
   }
 
-  public Vote createVote(String roomId, GamePhase phase) {
+  public Vote createVote(String roomId, GamePhase phase, Map players) {
     String voteId = roomId + phase.toString();
-    Vote vote = Vote.builder(voteId, phase);
+    Vote vote = Vote.builder(voteId, phase, players);
     opsHashVote.put(key, voteId, vote);
     return vote;
   }

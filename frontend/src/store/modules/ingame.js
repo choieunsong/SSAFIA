@@ -1,70 +1,45 @@
 import { INGAME } from "../mutation-types";
 
 const state = {
-  role: undefined,
-  gameStatus: {
-    date: 0,
-    phase: "READY",
-    timer: 0,
-    aliveMafia: 0,
-    victim: undefined,
-    victimIsMafia: undefined,
-    playerNum: 1,
-  },
+  phase: "READY",
+  date: 0,
 };
 
 const getters = {
-  getGameStatus: (state) => {
-    return state.gameStatus;
+  getPhase: (state) => {
+    return state.phase;
   },
-  getRole: (state) => {
-    return state.role;
-  },
-  getPlayerNum: (state) => {
-    return state.gameStatus.playerNum;
-  },
+  getDate: (state) => {
+    return state.date
+  }
 };
 
 const actions = {
-  setGameStatus({ commit }, gameStatus) {
+  setPhase({ commit }, phase) {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        console.log(gameStatus);
-        commit(INGAME.SER_GAMESTATUS, gameStatus);
+        commit(INGAME.SET_PHASE, phase);
         resolve();
       }, 0);
     });
   },
-  setRole({ commit }, role) {
+  setDate({ commit }, date) {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        console.log(role);
-        commit(INGAME.SET_ROLE, role);
+        commit(INGAME.SET_DATE, date);
         resolve();
       }, 0);
     });
-  },
-  joinPlayer({ commit }) {
-    commit(INGAME.JOIN_PLAYER);
-  },
-  leavePlayer({ commit }) {
-    commit(INGAME.LEAVE_PLAYER);
   },
 };
 
 const mutations = {
-  [INGAME.SET_GAMESTATUS](state, gameStatus) {
-    state.gameStatus = gameStatus;
+  [INGAME.SET_PHASE](state, phase) {
+    state.phase = phase;
   },
-  [INGAME.SET_ROLE](state, role) {
-    state.rolel = role;
-  },
-  [INGAME.JOIN_PLAYER](state) {
-    state.gameStatus.playerNum += 1;
-  },
-  [INGAME.LEAVE_PLAYER](state) {
-    state.gameStatus.playerNum -= 1;
-  },
+  [INGAME.SET_DATE](state, date) {
+    state.date = date;
+  }
 };
 
 export default {

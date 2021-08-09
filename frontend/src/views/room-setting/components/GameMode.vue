@@ -72,7 +72,6 @@ export default defineComponent({
                 },
             })
                 .then(({ data }) => {
-                    console.log(data);
                     if (data.code === "success") {
                         store.dispatch("token/setRoomId", data.data.id);
                         router.push({ name: "Nickname", params: { roomId: data.data.id } });
@@ -89,7 +88,6 @@ export default defineComponent({
         const chooseRoomType = (type) => {
             state.roomType = type;
             getRoomIdFromServer();
-            // router.push({ name: "Nickname", params: { roomId: state.roomId } });
         };
         const goBack = () => {
             state.isLast = false;
