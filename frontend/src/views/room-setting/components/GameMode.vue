@@ -76,8 +76,7 @@ export default defineComponent({
                         store.dispatch("token/setRoomId", data.data.id);
                         router.push({ name: "Nickname", params: { roomId: data.data.id } });
                     } else if (data.code === "fail") {
-                        state.isError = true;
-                        state.errorMessage = data.message;
+                        ElMessage.error("방 생성 개수를 초과했습니다.(1시간 2개까지 가능)");
                     }
                 })
                 .catch((error) => {

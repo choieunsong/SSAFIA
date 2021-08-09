@@ -13,15 +13,13 @@ export default {
     mounted() {
         this.streamManager.addVideoElement(this.$el);
     },
+    updated() {
+        this.streamManager.addVideoElement(this.$el);
+    },
 };
 </script>
 <style>
 .video-size {
-    /* position: absolute;
-    width: 93%;
-
-    left: 10px;
-    top: 10px; */
     position: absolute;
     left: 0;
     width: 100%;

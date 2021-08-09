@@ -1,5 +1,5 @@
 <template>
-    <div id="animtaion-wrap">
+    <div id="animtaion-wrap" ref="background">
         <div class="sun" ref="sun"></div>
         <div class="x1" ref="c1">
             <div class="cloud c1"></div>
@@ -29,6 +29,9 @@ export default {
     props: {
         phase: String,
     },
+    mounted() {
+        this.$refs.background.classList.add("animation-day");
+    },
     watch: {
         phase: {
             handler() {
@@ -39,6 +42,10 @@ export default {
                     this.$refs.c3.classList.add("move-cloud");
                     this.$refs.c4.classList.add("move-cloud");
                     this.$refs.c5.classList.add("move-cloud");
+                } else if (this.phase == "DAY_ELIMINATION") {
+                    console.log("day elimination");
+                    this.$refs.background.classList.remove("animation-day");
+                    this.$refs.background.classList.add("animation-day-elimination");
                 } else if (this.phase == "NIGHT") {
                     this.$refs.sun.classList.remove("sun-rise");
                 }
@@ -49,12 +56,10 @@ export default {
 </script>
 <style>
 .sun-rise {
-    animation: suntrack 20s infinite forwards linear;
+    animation: suntrack 30s infinite forwards linear, sun-effect 2s alternate infinite;
 }
 
 .move-cloud {
-    -webkit-animation: animateCloud 105s linear infinite;
-    -moz-animation: animateCloud 150s linear infinite;
-    animation: animateCloud 105s linear infinite;
+    animation: animateCloud 105s linear alternate infinite;
 }
 </style>

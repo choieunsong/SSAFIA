@@ -17,7 +17,7 @@
             <!-- playerNum가 4 이상 됐을 때 활성화 되기 -->
             <button
                 v-if="
-                    (this.currentPlayerNum < 4 || !this.isHost) && this.gameStatus.phase == 'READY'
+                    (this.currentPlayerNum < 1 || !this.isHost) && this.gameStatus.phase == 'READY'
                 "
                 class="font-jua"
                 id="start-button-inactive"
@@ -46,9 +46,18 @@
             </button>
 
             <span id="timer" class="font-jua">{{ this.time }}</span>
-            <i @click="openRuleBook" class="fas fa-info-circle fa-2x" id="rule-book"></i>
+            <i
+                @click="this.showRuleBook = true"
+                class="fas fa-info-circle fa-2x"
+                id="rule-book"
+            ></i>
         </nav>
 
+        <!-- rulebook -->
+        <rule-book
+            :showRuleBook="this.showRuleBook"
+            @closeRuleBook="this.showRuleBook = false"
+        ></rule-book>
         <!-- progress bar -->
         <div class="progress">
             <div
@@ -65,8 +74,12 @@
 
 <script>
 import "./navheader.css";
+import RuleBook from "./RuleBook.vue";
 export default {
     name: "NavHeader",
+    components: {
+        RuleBook,
+    },
     props: {
         currentPlayerNum: Number,
         isHost: Boolean,
@@ -83,9 +96,11 @@ export default {
                 } else if (this.gameStatus.phase == "START") {
                     console.log("watch start");
                     this.clickStartButton = true;
-
                     this.startCountDown();
                 } else if (this.gameStatus.phase == "DAY_DISCUSSION") {
+                    this.$refs.confirm.classList.add("confirm-button-active");
+                    this.startCountDown();
+                } else if (this.gameStatus.phase == "DAY_ELIMINATION") {
                     this.$refs.confirm.classList.remove("unhover");
                     this.startCountDown();
                 }
@@ -99,6 +114,7 @@ export default {
             multiplier: 0,
             minPlayerNumToPlay: 4,
             clickStartButton: false,
+            showRuleBook: false,
         };
     },
     computed: {
@@ -117,7 +133,6 @@ export default {
         // this.isHost = true;
     },
     methods: {
-        openRuleBook() {},
         gameStart() {
             //Game.vue에 게임 시작 전송
             console.log("start");
@@ -156,7 +171,12 @@ export default {
         },
         confirmVote() {
             //투표 확정
-            this.$refs.confirm.classList.add("unhover");
+            if (
+                this.gameStatus.phase == "DAY_DISCUSSION" ||
+                this.gameStatus.phase == "DAY_DISCUSSION"
+            ) {
+                this.$refs.confirm.classList.add("unhover");
+            }
         },
     },
 };
