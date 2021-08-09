@@ -1,15 +1,22 @@
 package s05.p12a104.mafia.api.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import s05.p12a104.mafia.domain.entity.GameSession;
+import s05.p12a104.mafia.domain.entity.Player;
 import s05.p12a104.mafia.domain.entity.Vote;
 import s05.p12a104.mafia.domain.enums.GamePhase;
 import s05.p12a104.mafia.domain.repository.VoteRepository;
 import s05.p12a104.mafia.redispubsub.RedisPublisher;
+import s05.p12a104.mafia.redispubsub.message.DayDiscussionMessage;
 import s05.p12a104.mafia.stomp.request.GameSessionVoteReq;
 import s05.p12a104.mafia.stomp.task.DayDiscussionVoteFinTimerTask;
 
@@ -20,6 +27,8 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
 
   private final RedisPublisher redisPublisher;
   private final VoteRepository voteRepository;
+  private final GameSessionService gameSessionService;
+  private final ChannelTopic topicDayDiscussionFin;
 
   @Override
   public void startVote(String roomId, GamePhase phase, int time, Map players) {
@@ -34,10 +43,11 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   @Override
   public void endVote(String roomId, GamePhase phase) {
     String voteId = getVoteId(roomId, phase);
-    if (voteRepository.findVoteById(voteId) == null) {
+    Vote vote = voteRepository.findVoteById(voteId);
+    if (vote == null) {
       return;
     } else {
-      publishRedis(roomId);
+      publishRedis(roomId, vote);
       voteRepository.deleteVote(voteId);
     }
   }
@@ -82,7 +92,55 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     return voteId;
   }
 
-  private void publishRedis(String roomId) {
-    redisPublisher.publish(new ChannelTopic("DAY_DISCUSSION_FIN"), roomId);
+  private void publishRedis(String roomId, Vote vote) {
+    GameSession gameSession = gameSessionService.findById(roomId);
+    
+    // TODO: 여기에서 나간사람 체크
+    
+    if (gameSession.getPhase() == GamePhase.DAY_DISCUSSION) {
+      DayDiscussionMessage dayDiscussionMessage =
+          new DayDiscussionMessage(roomId, getSuspiciousList(gameSession, vote.getVoteResult()));
+      redisPublisher.publish(topicDayDiscussionFin, dayDiscussionMessage);
+    }
+  }
+
+  public List<String> getSuspiciousList(GameSession gameSession, Map<String, String> voteResult) {
+    List<String> suspiciousList = new ArrayList<>();
+
+    Map<String, Integer> voteNum = new HashMap<String, Integer>();
+    int voteCnt = 0;
+    for (String vote : voteResult.values()) {
+      if(vote == null)
+        continue;
+      
+      voteCnt++;
+      voteNum.put(vote, voteNum.getOrDefault(vote, 0) + 1);
+    }
+    
+    // 의심자 찾기
+    int alivePlayer = gameSession.getAlivePlayer();
+    if (voteCnt > alivePlayer / 2) {
+      List<String> suspects = new ArrayList<>(voteNum.keySet());
+      // 투표수 오름차순
+      Collections.sort(suspects, (o1, o2) -> voteNum.get(o2).compareTo(voteNum.get(o1)));
+
+      Map<String, Player> playerMap = gameSession.getPlayerMap();
+      int voteMax = voteNum.get(suspects.get(0));
+      for (String suspect : suspects) {
+        // 동점자가 아니면 더이상 동점자가 없기때문에 끝내기
+        if (voteNum.get(suspect) != voteMax)
+          break;
+
+        // 중간 나간 사람이 포함되어 있을 수 있으므로 살아있는지 체크
+        if (playerMap.get(suspect).isAlive())
+          suspiciousList.add(suspect);
+      }
+
+      // 살아있는 사람 기준으로 6명이상이면 3명까지 5이하면 2명까지
+      if (suspiciousList.size() > 3 || (alivePlayer <= 5 && suspiciousList.size() > 2))
+        suspiciousList.clear();
+    }
+
+    return suspiciousList;
   }
 }
