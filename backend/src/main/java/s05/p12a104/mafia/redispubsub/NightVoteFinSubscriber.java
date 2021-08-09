@@ -10,39 +10,31 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.api.service.GameSessionService;
 import s05.p12a104.mafia.domain.entity.GameSession;
-import s05.p12a104.mafia.domain.entity.Player;
 import s05.p12a104.mafia.domain.enums.GamePhase;
-import s05.p12a104.mafia.domain.enums.GameRole;
-import s05.p12a104.mafia.redispubsub.message.DayEliminationMessage;
-import s05.p12a104.mafia.stomp.response.GameStatusKillRes;
+import s05.p12a104.mafia.redispubsub.message.NightVoteMessage;
 import s05.p12a104.mafia.stomp.task.StartFinTimerTask;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class DayEliminationFinSubscriber {
+public class NightVoteFinSubscriber {
 
   private final ObjectMapper objectMapper;
   private final SimpMessagingTemplate template;
   private final RedisPublisher redisPublisher;
   private final GameSessionService gameSessionService;
-  private final ChannelTopic topicDayToNightFin;
+  private final ChannelTopic topicNightToDayFin;
 
   public void sendMessage(String message) {
     try {
-      DayEliminationMessage dayEliminationMessage =
-          objectMapper.readValue(message, DayEliminationMessage.class);
-      String roomId = dayEliminationMessage.getRoomId();
-      String deadPlayerId = dayEliminationMessage.getDeadPlayerId();
+      NightVoteMessage nightVoteMessage = objectMapper.readValue(message, NightVoteMessage.class);
+      String roomId = nightVoteMessage.getRoomId();
+//      Map roleVote = nightVoteMessage.getRoleVoteResult();
       GameSession gameSession = gameSessionService.findById(roomId);
-      setDayToNight(gameSession, deadPlayerId);
-
-      Player dead = gameSession.getPlayerMap().get(deadPlayerId);
-      template.convertAndSend("/sub/" + roomId, GameStatusKillRes.of(gameSession, dead));
 
       // Timer를 돌릴 마땅한 위치가 없어서 추후에 통합 예정
       Timer timer = new Timer();
-      StartFinTimerTask task = new StartFinTimerTask(redisPublisher, topicDayToNightFin);
+      StartFinTimerTask task = new StartFinTimerTask(redisPublisher, topicNightToDayFin);
       task.setRoomId(roomId);
       timer.schedule(task, gameSession.getTimer() * 1000);
     } catch (JsonProcessingException e) {
@@ -50,21 +42,10 @@ public class DayEliminationFinSubscriber {
     }
   }
 
-  private void setDayToNight(GameSession gameSession, String deadPlayer) {
-    log.info("deadPlayer: ", deadPlayer);
-    gameSession.setPhase(GamePhase.DAY_TO_NIGHT);
+  private void setNightToDay(GameSession gameSession, String deadPlayer) {
+    gameSession.setPhase(GamePhase.NIGHT_TO_DAY);
     gameSession.setPhaseCount(gameSession.getPhaseCount() + 1);
     gameSession.setTimer(15);
-
-    // 사망 처리
-    if (deadPlayer != null) {
-      Player dead = gameSession.getPlayerMap().get(deadPlayer);
-      dead.setAlive(false);
-      gameSession.getPlayerMap().put(deadPlayer, dead);
-      if (dead.getRole() == GameRole.MAFIA) {
-        gameSession.setAliveMafia(gameSession.getAliveMafia() - 1);
-      }
-    }
 
     gameSessionService.update(gameSession);
   }

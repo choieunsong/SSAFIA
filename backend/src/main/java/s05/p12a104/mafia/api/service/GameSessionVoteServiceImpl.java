@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
+import java.util.stream.Collectors;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +15,14 @@ import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.entity.Player;
 import s05.p12a104.mafia.domain.entity.Vote;
 import s05.p12a104.mafia.domain.enums.GamePhase;
+import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.domain.repository.VoteRepository;
 import s05.p12a104.mafia.redispubsub.RedisPublisher;
 import s05.p12a104.mafia.redispubsub.message.DayDiscussionMessage;
+import s05.p12a104.mafia.redispubsub.message.DayEliminationMessage;
+import s05.p12a104.mafia.redispubsub.message.NightVoteMessage;
 import s05.p12a104.mafia.stomp.request.GameSessionVoteReq;
-import s05.p12a104.mafia.stomp.task.DayDiscussionVoteFinTimerTask;
+import s05.p12a104.mafia.stomp.task.VoteFinTimerTask;
 
 @Service
 @Slf4j
@@ -29,16 +33,19 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   private final VoteRepository voteRepository;
   private final GameSessionService gameSessionService;
   private final ChannelTopic topicDayDiscussionFin;
+  private final ChannelTopic topicDayEliminationFin;
+  private final ChannelTopic topicNightVoteFin;
 
   @Override
   public void startVote(String roomId, GamePhase phase, int time, Map players) {
     voteRepository.createVote(roomId, phase, players);
     Timer timer = new Timer();
-    DayDiscussionVoteFinTimerTask task = new DayDiscussionVoteFinTimerTask(this);
+    VoteFinTimerTask task = new VoteFinTimerTask(this);
     task.setRoomId(roomId);
-    task.setPhase(phase);;
+    task.setPhase(phase);
     timer.schedule(task, time * 1000);
   }
+
 
   @Override
   public void endVote(String roomId, GamePhase phase) {
@@ -94,13 +101,21 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
 
   private void publishRedis(String roomId, Vote vote) {
     GameSession gameSession = gameSessionService.findById(roomId);
-    
+
     // TODO: 여기에서 나간사람 체크
-    
+
     if (gameSession.getPhase() == GamePhase.DAY_DISCUSSION) {
       DayDiscussionMessage dayDiscussionMessage =
           new DayDiscussionMessage(roomId, getSuspiciousList(gameSession, vote.getVoteResult()));
       redisPublisher.publish(topicDayDiscussionFin, dayDiscussionMessage);
+    } else if (gameSession.getPhase() == GamePhase.DAY_ELIMINATION) {
+      DayEliminationMessage dayEliminationMessage = new DayEliminationMessage(roomId,
+          getEliminationPlayer(gameSession, vote.getVoteResult()));
+      redisPublisher.publish(topicDayEliminationFin, dayEliminationMessage);
+    } else if (gameSession.getPhase() == GamePhase.NIGHT_VOTE) {
+      NightVoteMessage nightVoteMessage =
+          new NightVoteMessage(roomId, getNightVoteResult(gameSession, vote.getVoteResult()));
+      redisPublisher.publish(topicNightVoteFin, nightVoteMessage);
     }
   }
 
@@ -110,13 +125,13 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     Map<String, Integer> voteNum = new HashMap<String, Integer>();
     int voteCnt = 0;
     for (String vote : voteResult.values()) {
-      if(vote == null)
+      if (vote == null)
         continue;
-      
+
       voteCnt++;
       voteNum.put(vote, voteNum.getOrDefault(vote, 0) + 1);
     }
-    
+
     // 의심자 찾기
     int alivePlayer = gameSession.getAlivePlayer();
     if (voteCnt > alivePlayer / 2) {
@@ -142,5 +157,42 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     }
 
     return suspiciousList;
+  }
+
+  private String getEliminationPlayer(GameSession gameSession, Map<String, String> voteResult) {
+    String deadPlayerId = null;
+    Map<String, Integer> voteNum = new HashMap<String, Integer>();
+    int voteCnt = 0;
+    for (String vote : voteResult.values()) {
+      if (vote == null)
+        continue;
+
+      voteCnt++;
+      voteNum.put(vote, voteNum.getOrDefault(vote, 0) + 1);
+    }
+
+    int alivePlayer = gameSession.getAlivePlayer();
+    if (voteCnt > alivePlayer / 2) {
+
+      // 최댓값 찾기
+      Integer max = voteNum.entrySet().stream()
+          .max((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1).get().getValue();
+
+      // 최댓값인 Player List
+      List deadList = voteNum.entrySet().stream().filter(entry -> entry.getValue() == max)
+          .map(Map.Entry::getKey).collect(Collectors.toList());
+
+      // 한명일 경우
+      if (deadList.size() == 1) {
+        deadPlayerId = deadList.get(0).toString();
+      }
+    }
+    return deadPlayerId;
+  }
+
+  private Map getNightVoteResult(GameSession gameSession, Map<String, String> voteResult) {
+    Map result = new HashMap<GameRole, String>();
+
+    return result;
   }
 }

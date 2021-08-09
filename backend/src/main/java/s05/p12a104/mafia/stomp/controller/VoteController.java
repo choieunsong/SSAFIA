@@ -48,7 +48,13 @@ public class VoteController {
     String playerId = accessor.getUser().getName();
 
     GameSession gameSession = gameSessionService.findById(roomId);
-
+    
+    //투표 존재여부 확인
+    if (gameSessionVoteService.getVote(roomId, req) == null) {
+      return;
+    }
+    
+    // 투표 확정 인원 확인
     if (gameSessionVoteService.confirmVote(roomId, playerId, req) == gameSession.getAlivePlayer()) {
       gameSessionVoteService.endVote(roomId, req.getPhase());
     }
