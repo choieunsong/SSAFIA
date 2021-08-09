@@ -1,17 +1,13 @@
 <template>
     <div v-if="streamManager" class="cell-box col-md-3" @click="votePlayer">
-        <div
-            class="cell col-md-12"
-            :style="'background-color: ' + this.playersGameInfo.color"
-            ref="cell"
-        >
+        <div class="cell col-md-12" :style="'background-color: ' + getColor" ref="cell">
             <div class="ov-video-wrap">
                 <ov-video :stream-manager="streamManager" />
             </div>
             <span id="nickname" class="font-jua">
                 {{ this.playersGameInfo.nickname }}
             </span>
-            <div class="vote-box">
+            <div class="vote-box" v-if="this.playersGameInfo.voters.length != 0">
                 <span
                     v-for="voter in this.playersGameInfo.voters"
                     :key="voter"
@@ -26,6 +22,19 @@
 <script>
 import OvVideo from "./OvVideo";
 import "./uservideo.css";
+
+var colorCode = {
+    RED: "#DC143C",
+    YELLOW: "#FFFF00",
+    GREEN: "#228B22",
+    PURPLE: "#9400D3",
+    ORANGE: "#FF8C00",
+    PINK: "#FF69B4",
+    BROWN: "#8B4513",
+    AQUAMARINE: "#00CED1",
+    BLUE: "#0000CD",
+    GRAY: "#778899",
+};
 export default {
     name: "UserVideo",
 
@@ -42,7 +51,20 @@ export default {
         playerMe: Boolean,
     },
 
-    computed: {},
+    computed: {
+        getColor() {
+            let color = colorCode[this.playersGameInfo.color];
+            console.log(
+                "nickname: ",
+                this.playersGameInfo.nickname,
+                "color: ",
+                this.playersGameInfo.color,
+                "colorCode",
+                color
+            );
+            return color;
+        },
+    },
 
     watch: {
         gameStatus: {
@@ -53,6 +75,13 @@ export default {
                         this.$refs.cell.classList.add("cell-hover");
                     }
                 }
+            },
+        },
+        playersGameInfo: {
+            deep: true,
+            handler() {
+                console.log("user video playersGameInfo change");
+                console.log(this.playersGameInfo.voters);
             },
         },
     },
