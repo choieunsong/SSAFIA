@@ -1,17 +1,18 @@
 package s05.p12a104.mafia.domain.entity;
 
-import io.openvidu.java.client.OpenViduRole;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.domain.enums.Color;
 import s05.p12a104.mafia.domain.enums.GameRole;
 
 @Slf4j
 @Getter
+@Setter
 @Builder
 public class Player implements Serializable {
 
@@ -26,31 +27,19 @@ public class Player implements Serializable {
 
   private final Color color;
 
-  private final String token;
+  private String token;
 
-  private final OpenViduRole openViduRole;
-  
   private boolean suspicious;
 
-  public void setRole(GameRole role) {
-    this.role = role;
-  }
+  // Player가 게임 진행 중 나간 시점의 phaseCount (phase 변환 시 해당 값을 확인하여 사망 처리하기 위한 목적)
+  private Integer leftPhaseCount;
 
-  public void setAlive(boolean alive) {
-    this.alive = alive;
-  }
-    
-  public void setSuspicious(boolean suspicious) {
-    this.suspicious = suspicious;
-  }
+  private List<String> mafias;
 
-  public static PlayerBuilder builder(String id, String nickname, Color color, String token,
-      OpenViduRole openViduRole) {
+  public static PlayerBuilder builder(String id, String nickname, Color color) {
     return new PlayerBuilder()
         .id(id)
         .nickname(nickname)
-        .color(color)
-        .token(token)
-        .openViduRole(openViduRole);
+        .color(color);
   }
 }

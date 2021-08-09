@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,19 +13,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import s05.p12a104.mafia.api.requset.GameSessionJoinReq;
-import s05.p12a104.mafia.api.requset.GameSessionLeaveReq;
 import s05.p12a104.mafia.api.requset.GameSessionPostReq;
 import s05.p12a104.mafia.api.response.GameSessionJoinRes;
 import s05.p12a104.mafia.api.response.GameSessionRes;
 import s05.p12a104.mafia.api.service.GameSessionService;
-import s05.p12a104.mafia.common.exception.BadRequestException;
 import s05.p12a104.mafia.common.exception.ResourceNotFoundException;
 import s05.p12a104.mafia.common.reponse.ApiResponseDto;
-import s05.p12a104.mafia.common.util.UrlUtils;
 import s05.p12a104.mafia.domain.entity.GameSession;
-import s05.p12a104.mafia.domain.enums.GameState;
 import s05.p12a104.mafia.domain.repository.UserRepository;
 import s05.p12a104.mafia.security.CurrentUser;
 import s05.p12a104.mafia.security.UserPrincipal;
@@ -60,20 +56,18 @@ public class GameSessionController {
     return ApiResponseDto.success(GameSessionRes.of(gameSession));
   }
 
-  @ApiOperation(value = "방 정보", notes = "방의 정보를 반환합니다.", response = ApiResponseDto.class)
+  @ApiOperation(value = "입장 가능 여부", notes = "플레이어가 방의 입장할 수 있는지 미리 확인합니다.", response = ApiResponseDto.class)
   @ApiResponses({@ApiResponse(code = 200, message = "성공"),
       @ApiResponse(code = 401, message = "인증 실패"), @ApiResponse(code = 404, message = "리소스 없음"),
       @ApiResponse(code = 500, message = "서버 오류")})
   @GetMapping("/{roomId}")
-  public ApiResponseDto<?> getGameSessionState(@PathVariable("roomId") String roomId) {
-    GameState gameState = gameSessionService.getGameSessionState(roomId);
-
-    HashMap<String, String> responseMap = new HashMap<>();
-    responseMap.put("state", gameState.toString().toLowerCase());
-    return ApiResponseDto.success(responseMap);
+  public ApiResponseDto<?> getGameSessionState(@PathVariable("roomId") String roomId,
+      @RequestParam(required = false) String playerId) {
+    GameSessionJoinRes res = gameSessionService.getPlayerJoinableState(roomId, playerId);
+    return ApiResponseDto.success(res);
   }
 
-  @ApiOperation(value = "입장 가능 여부", notes = "방에 입장할 수 있는지 확인합니다.", response = ApiResponseDto.class)
+  @ApiOperation(value = "입장 가능 여부", notes = "플레이어가 방에 입장할 수 있는지 확인합니다.", response = ApiResponseDto.class)
   @ApiResponses({@ApiResponse(code = 200, message = "성공"),
       @ApiResponse(code = 401, message = "인증 실패"), @ApiResponse(code = 404, message = "리소스 없음"),
       @ApiResponse(code = 500, message = "서버 오류")})
@@ -85,16 +79,4 @@ public class GameSessionController {
     return ApiResponseDto.success(res);
   }
 
-  @PostMapping("/{roomId}/leave")
-  public ApiResponseDto<String> leaveGameSession(@PathVariable("roomId") String roomId,
-      @RequestBody GameSessionLeaveReq req) {
-    String token = req.getToken();
-    if (!token.startsWith("wss://") || !UrlUtils.getUrlQueryParam(token, "session").isPresent()
-        || !UrlUtils.getUrlQueryParam(token, "token").isPresent()) {
-      throw new BadRequestException("잘못된 형식의 토큰입니다. - reqeusted token : " + token);
-    }
-
-    GameSession gameSession = gameSessionService.removeUser(roomId, req.getUserId());
-    return ApiResponseDto.DEFAULT_SUCCESS;
-  }
 }
