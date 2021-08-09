@@ -50,7 +50,7 @@ public class VoteController {
     GameSession gameSession = gameSessionService.findById(roomId);
 
     if (gameSessionVoteService.confirmVote(roomId, playerId, req) == gameSession.getAlivePlayer()) {
-      gameSessionVoteService.endVote(roomId, req);
+      gameSessionVoteService.endVote(roomId, req.getPhase());
     }
   }
 

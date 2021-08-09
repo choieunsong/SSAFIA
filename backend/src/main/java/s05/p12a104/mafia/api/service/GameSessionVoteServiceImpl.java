@@ -31,13 +31,6 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   }
 
   @Override
-  public void endVote(String roomId, GameSessionVoteReq req) {
-    String voteId = getVoteId(roomId, req);
-    publishRedis(roomId);
-    voteRepository.deleteVote(voteId);
-  }
-
-  @Override
   public void endVote(String roomId, GamePhase phase) {
     String voteId = getVoteId(roomId, phase);
     if (voteRepository.findVoteById(voteId) == null) {
