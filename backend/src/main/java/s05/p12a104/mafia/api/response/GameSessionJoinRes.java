@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class GameSessionJoinRes {
+  private final PlayerJoinRoomState state;
   private final String token;
-  private final String userId;
+  private final String playerId;
 }

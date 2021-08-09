@@ -15,6 +15,7 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import s05.p12a104.mafia.redispubsub.DayDiscussionFinSubscriber;
+import s05.p12a104.mafia.redispubsub.DayEliminationFinSubscriber;
 import s05.p12a104.mafia.redispubsub.StartFinSubscriber;
 
 @Configuration
@@ -39,13 +40,27 @@ public class RedisConfig {
   }
 
   @Bean
+  public ChannelTopic topicDayDiscussionFin() {
+    return new ChannelTopic("DAY_DISCUSSION_FIN");
+  }
+
+  @Bean
+  public ChannelTopic topicDayEliminationFin() {
+    return new ChannelTopic("DAY_ELIMINAION_FIN");
+  }
+
+  @Bean
   public RedisMessageListenerContainer redisMessageListener(
       RedisConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter,
-      MessageListenerAdapter dayDisculistenerAdapter, ChannelTopic topicStartFin) {
+      MessageListenerAdapter dayDisculistenerAdapter,
+      MessageListenerAdapter dayEliminationlistenerAdapter, ChannelTopic topicStartFin,
+      ChannelTopic topicDayDiscussionFin, ChannelTopic topicDayEliminationFin) {
     RedisMessageListenerContainer container = new RedisMessageListenerContainer();
     container.setConnectionFactory(connectionFactory);
     container.addMessageListener(listenerAdapter, topicStartFin);
-    container.addMessageListener(dayDisculistenerAdapter, new ChannelTopic("DAY_DISCUSSION_FIN"));
+    container.addMessageListener(dayDisculistenerAdapter, topicDayDiscussionFin);
+    container.addMessageListener(dayEliminationlistenerAdapter,
+        topicDayEliminationFin);
     return container;
   }
 
@@ -56,6 +71,12 @@ public class RedisConfig {
 
   @Bean
   public MessageListenerAdapter dayDisculistenerAdapter(DayDiscussionFinSubscriber subscriber) {
+    return new MessageListenerAdapter(subscriber, "sendMessage");
+  }
+
+  @Bean
+  public MessageListenerAdapter dayEliminationlistenerAdapter(
+      DayEliminationFinSubscriber subscriber) {
     return new MessageListenerAdapter(subscriber, "sendMessage");
   }
 

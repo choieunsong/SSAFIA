@@ -12,10 +12,11 @@ public class StartFinTimerTask extends TimerTask {
 
   private String roomId;
   private final RedisPublisher redisPublisher;
+  private final ChannelTopic topicStartFin;
 
   @Override
   public void run() {
-    redisPublisher.publish(new ChannelTopic("START_FIN"), roomId);
+    redisPublisher.publish(topicStartFin, roomId);
   }
 
   public void setRoomId(String roomId) {
