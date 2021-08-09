@@ -119,7 +119,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     
     // 의심자 찾기
     int alivePlayer = gameSession.getAlivePlayer();
-    if (voteCnt >= alivePlayer / 2) {
+    if (voteCnt > alivePlayer / 2) {
       List<String> suspects = new ArrayList<>(voteNum.keySet());
       // 투표수 오름차순
       Collections.sort(suspects, (o1, o2) -> voteNum.get(o2).compareTo(voteNum.get(o1)));
