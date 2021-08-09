@@ -95,7 +95,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   private void publishRedis(String roomId, Vote vote) {
     GameSession gameSession = gameSessionService.findById(roomId);
     
-    // 여기에서 나간사람 체크
+    // TODO: 여기에서 나간사람 체크
     
     if (gameSession.getPhase() == GamePhase.DAY_DISCUSSION) {
       DayDiscussionMessage dayDiscussionMessage =
@@ -107,22 +107,22 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   public List<String> getSuspiciousList(GameSession gameSession, Map<String, String> voteResult) {
     List<String> suspiciousList = new ArrayList<>();
 
+    final String INVALID_VOTE = "INVALID_VOTE";
     Map<String, Integer> result = new HashMap<String, Integer>();
-    result.put("null", 0);
+    result.put(INVALID_VOTE, 0);
     voteResult.forEach((playerId, vote) -> {
       if (vote == null) {
-        result.put("null", result.get("null") + 1);
+        result.put(INVALID_VOTE, result.get(INVALID_VOTE) + 1);
         return;
       }
-
       result.put(vote, result.getOrDefault(vote, 0) + 1);
     });
 
     int alivePlayer = gameSession.getAlivePlayer();
     // 의심자 찾기
-    if (result.get("null") <= alivePlayer / 2) {
+    if (result.get(INVALID_VOTE) <= alivePlayer / 2) {
       List<String> keyList = new ArrayList<>(result.keySet());
-      keyList.remove("null");
+      keyList.remove(INVALID_VOTE);
       // 투표수 오름차순
       Collections.sort(keyList, (o1, o2) -> result.get(o2).compareTo(result.get(o1)));
 
