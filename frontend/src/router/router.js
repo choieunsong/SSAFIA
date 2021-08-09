@@ -53,10 +53,29 @@ router.beforeEach((to, from, next) => {
   vuex = JSON.parse(vuex);
   if (to.name === "RoomSetting") {
     if (vuex === null) {
-      return next({ name: "Home" });
+      next({ name: "Home" });
     } else if (vuex.token.isLogin === false) {
-      return next({ name: "Home" });
-    } 
+      next({ name: "Home" });
+    } else {
+      next()
+    }
+  } else if (to.name === "Game") {
+      if (from.name === "Nickname") {
+        if (from.params.roomId === to.params.roomId) {
+          next()
+        } else {
+          next({ name: "Nickname", params:{ roomId: to.params.roomId }})
+        }
+      } else if (from.name === "Game") {
+        if (from.params.roomId === to.params.roomId) {
+          next()
+        } else {
+          next({ name: "Nickname", params:{ roomId: to.params.roomId }})
+        }
+      } else {
+        next({ name: "Nickname", params:{ roomId: to.params.roomId }})
+      }
+  } else {
+    next()
   }
-  return next()
 });
