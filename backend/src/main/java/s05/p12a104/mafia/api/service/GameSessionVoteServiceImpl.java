@@ -218,11 +218,14 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     // 마피아가 아닌 직업들 결과에 담기
     result = voteResult.entrySet().stream()
         .filter(e -> playerMap.get(e.getKey()).getRole() != GameRole.MAFIA)
+        .filter(e -> e.getValue() != null)
         .collect(Collectors.toMap(e -> playerMap.get(e.getKey()).getRole(), e -> e.getValue()));
 
     // 마피아들의 투표만 추려서 Map<투표 받은 사람,List<투표한사람>>으로 저장
     Map<String, List<String>> mafiaVote =
-        voteResult.keySet().stream().filter(key -> playerMap.get(key).getRole() == GameRole.MAFIA)
+        voteResult.keySet().stream()
+        .filter(key -> playerMap.get(key).getRole() == GameRole.MAFIA)
+        .filter(key -> voteResult.get(key) != null)
             .collect(Collectors.groupingBy(key -> voteResult.get(key)));
 
     // 최다 득표 수 구하기

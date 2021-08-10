@@ -34,12 +34,12 @@ public class NightVoteFinSubscriber {
     try {
       NightVoteMessage nightVoteMessage = objectMapper.readValue(message, NightVoteMessage.class);
       String roomId = nightVoteMessage.getRoomId();
-      Map roleVote = nightVoteMessage.getRoleVoteResult();
+      Map<GameRole, String> roleVote = nightVoteMessage.getRoleVoteResult();
       GameSession gameSession = gameSessionService.findById(roomId);
 
-      String deadPlayerId = roleVote.get(GameRole.MAFIA).toString();
-      String protectedPlayerId = roleVote.get(GameRole.DOCTOR).toString();
-      String suspectPlayerId = roleVote.get(GameRole.POLICE).toString();
+      String deadPlayerId = roleVote.get(GameRole.MAFIA);
+      String protectedPlayerId = roleVote.get(GameRole.DOCTOR);
+      String suspectPlayerId = roleVote.get(GameRole.POLICE);
 
       setNightToDay(gameSession, deadPlayerId, protectedPlayerId);
 
@@ -55,7 +55,9 @@ public class NightVoteFinSubscriber {
       Player suspectPlayer = gameSession.getPlayerMap().get(suspectPlayerId);
 
       // 용의자 Role 결과
-      template.convertAndSend("/sub/" + roomId + "/police", SuspectVoteRes.of(suspectPlayer));
+      if (suspectPlayer != null) {
+        template.convertAndSend("/sub/" + roomId + "/police", SuspectVoteRes.of(suspectPlayer));
+      }
 
       // Timer를 돌릴 마땅한 위치가 없어서 추후에 통합 예정
       Timer timer = new Timer();
