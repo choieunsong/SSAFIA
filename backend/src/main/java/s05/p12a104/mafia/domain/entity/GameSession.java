@@ -112,6 +112,22 @@ public class GameSession {
     }
   }
 
+  public void changePhase(GamePhase phase, int timer) {
+    this.phase = phase;
+    this.phaseCount++;
+    setTimer(timer);
+
+    Map<String, Player> playerMap = getPlayerMap();
+    playerMap.forEach((playerId, player) -> {
+      Integer leftPhaseCount = player.getLeftPhaseCount();
+      if (leftPhaseCount == null || leftPhaseCount >= this.phaseCount) {
+        return;
+      }
+      player.setLeftPhaseCount(null);
+      eliminatePlayer(playerId);
+    });
+  }
+
   public static GameSession of(GameSessionDao dao, OpenVidu openVidu) {
     Session entitySession = null;
     for (Session session : openVidu.getActiveSessions()) {
