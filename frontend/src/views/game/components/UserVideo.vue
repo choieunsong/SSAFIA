@@ -81,7 +81,7 @@ export default {
             deep: true,
             handler() {
                 console.log("user video playersGameInfo change");
-                console.log(this.playersGameInfo.voters);
+                // console.log(this.playersGameInfo.voters);
             },
         },
     },
