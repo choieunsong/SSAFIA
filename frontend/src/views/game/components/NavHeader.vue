@@ -38,7 +38,7 @@
                 v-else
                 @click="confirmVote"
                 type="button"
-                class="font-jua"
+                class="font-jua unhover"
                 id="confirm-button"
                 ref="confirm"
             >
@@ -98,6 +98,7 @@ export default {
                     this.clickStartButton = true;
                     this.startCountDown();
                 } else if (this.gameStatus.phase == "DAY_DISCUSSION") {
+                    this.$refs.confirm.classList.remove("unhover");
                     this.$refs.confirm.classList.add("confirm-button-active");
                     this.startCountDown();
                 } else if (this.gameStatus.phase == "DAY_ELIMINATION") {
@@ -171,10 +172,8 @@ export default {
         },
         confirmVote() {
             //투표 확정
-            if (
-                this.gameStatus.phase == "DAY_DISCUSSION" ||
-                this.gameStatus.phase == "DAY_DISCUSSION"
-            ) {
+            if (this.gameStatus.phase == "DAY_DISCUSSION") {
+                this.$emit("emitConfirmDataUpdate");
                 this.$refs.confirm.classList.add("unhover");
             }
         },

@@ -3,6 +3,7 @@
     <div class="overlay" v-if="this.showRuleBook" @click="closeRuleBook()">
         <!-- rulebook -->
         <div class="rulebook-modal font-jua" v-if="this.showRuleBook">
+            <i class="far fa-times-circle fa-2x rulebook-close" @click="closeRuleBook"></i>
             <h3 class="mt-3">싸피아 규칙</h3>
             <div class="rulebook-modal-description">
                 <p>

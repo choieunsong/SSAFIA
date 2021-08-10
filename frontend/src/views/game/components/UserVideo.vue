@@ -7,6 +7,16 @@
             <span id="nickname" class="font-jua">
                 {{ this.playersGameInfo.nickname }}
             </span>
+            <div
+                v-if="this.gameStatus.phase == 'READY' && this.playersGameInfo.isHost"
+                class="host"
+            >
+                <img
+                    class="crown"
+                    src="https://image.flaticon.com/icons/png/512/1980/1980126.png"
+                />
+                <span class="host-title font-jua">호스트</span>
+            </div>
             <div class="vote-box" v-if="this.playersGameInfo.voters.length != 0">
                 <span
                     v-for="voter in this.playersGameInfo.voters"
@@ -54,14 +64,6 @@ export default {
     computed: {
         getColor() {
             let color = colorCode[this.playersGameInfo.color];
-            console.log(
-                "nickname: ",
-                this.playersGameInfo.nickname,
-                "color: ",
-                this.playersGameInfo.color,
-                "colorCode",
-                color
-            );
             return color;
         },
     },
@@ -84,6 +86,11 @@ export default {
                 // console.log(this.playersGameInfo.voters);
             },
         },
+        isConfirm: {
+            handler() {
+                this.$refs.cell.classList.remove("cell-hover");
+            },
+        },
     },
     methods: {
         getConnectionData() {
@@ -100,7 +107,11 @@ export default {
 </script>
 <style>
 .cell-hover {
-    box-shadow: 5px 10px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
     cursor: pointer;
+}
+
+.cell-hover:hover {
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
 }
 </style>
