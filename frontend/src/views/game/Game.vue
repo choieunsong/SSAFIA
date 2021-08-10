@@ -749,7 +749,9 @@ export default {
                     case "END": {
                         let winner = message.gameStatus.winner === "mafia" ? "마피아" : "시민";
                         state.message = `게임이 종료되었습니다. 최종승자는 ${winner}입니다.`;
-
+                        break;
+                    }
+                    case "READY": {
                         // 초기화
                         state.role = undefined;
                         state.gameStatus = {
@@ -779,6 +781,7 @@ export default {
                         infoUpdater("suspicious", null);
                         infoUpdater("voters", null);
                         infoUpdater("isMafia", null);
+                        infoUpdater("isHost", message)
                         state.vote = null;
                         state.isConfirm = false;
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
