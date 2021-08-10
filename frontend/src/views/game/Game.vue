@@ -300,10 +300,14 @@ export default {
         const array = event.connection.data.split('"');
         const tmp = array[3].split(",");
         const targetPlayerId = tmp[1];
-        for (let i = 0; i < state.playersGameInfo.length; i++) {
-          if (state.playersGameInfo[i].playerId === targetPlayerId) {
-            state.playersGameInfo[i].isTalking = true;
-            break;
+        if ((state.playerId = tmp[1])) {
+          state.playerMe.isTalking = true;
+        } else {
+          for (let i = 0; i < state.playersGameInfo.length; i++) {
+            if (state.playersGameInfo[i].playerId === targetPlayerId) {
+              state.playersGameInfo[i].isTalking = true;
+              break;
+            }
           }
         }
       });
@@ -312,10 +316,14 @@ export default {
         const array = event.connection.data.split('"');
         const tmp = array[3].split(",");
         const targetPlayerId = tmp[1];
-        for (let i = 0; i < state.playersGameInfo.length; i++) {
-          if (state.playersGameInfo[i].playerId === targetPlayerId) {
-            state.playersGameInfo[i].isTalking = false;
-            break;
+        if ((state.playerIid = tmp[1])) {
+          state.playerMe.isTalking = false;
+        } else {
+          for (let i = 0; i < state.playersGameInfo.length; i++) {
+            if (state.playersGameInfo[i].playerId === targetPlayerId) {
+              state.playersGameInfo[i].isTalking = false;
+              break;
+            }
           }
         }
       });
@@ -1195,7 +1203,7 @@ export default {
       store.getters["token/getPlayerId"]
     );
     joinSession();
-    setTimeout(connect, 500)
+    setTimeout(connect, 500);
 
     window.onbeforeunload = function(event) {
       leave();
