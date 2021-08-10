@@ -178,6 +178,7 @@ export default {
                 console.log(data.data);
                 store.dispatch("token/setPlayerId", data.data.playerId);
                 store.dispatch("token/setOpenviduToken", data.data.token);
+                store.dispatch("ingame/setPhase", "READY")
                 store
                   .dispatch("token/setNickname", state.form.nickname)
                   .then(() => {
