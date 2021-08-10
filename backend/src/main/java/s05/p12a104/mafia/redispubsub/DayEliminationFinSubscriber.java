@@ -58,13 +58,7 @@ public class DayEliminationFinSubscriber {
 
     // 사망 처리
     if (deadPlayer != null) {
-      Player dead = gameSession.getPlayerMap().get(deadPlayer);
-      dead.setAlive(false);
-      gameSession.getPlayerMap().put(deadPlayer, dead);
-      if (dead.getRole() == GameRole.MAFIA) {
-        gameSession.setAliveMafia(gameSession.getAliveMafia() - 1);
-      }
-      gameSession.setAlivePlayer(gameSession.getAlivePlayer() - 1);
+      gameSession.eliminatePlayer(deadPlayer);
     }
 
     gameSessionService.update(gameSession);

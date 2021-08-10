@@ -76,13 +76,7 @@ public class NightVoteFinSubscriber {
     gameSession.setTimer(15);
 
     if (deadPlayerId != null && deadPlayerId != protectedPlayerId) {
-      Player deadPlayer = gameSession.getPlayerMap().get(deadPlayerId);
-      deadPlayer.setAlive(false);
-      gameSession.getPlayerMap().put(deadPlayerId, deadPlayer);
-      if (deadPlayer.getRole() == GameRole.MAFIA) {
-        gameSession.setAliveMafia(gameSession.getAliveMafia() - 1);
-      }
-      gameSession.setAlivePlayer(gameSession.getAlivePlayer() - 1);
+      gameSession.eliminatePlayer(deadPlayerId);
     }
 
     gameSessionService.update(gameSession);
