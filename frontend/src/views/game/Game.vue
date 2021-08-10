@@ -599,13 +599,16 @@ export default {
             } else if (message.type === "PHASE_CHANGED") {
                 switch (message.gameStatus.phase) {
                     case "START": {
+                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
+                        audio.play()
                         state.gameStatus = message.gameStatus;
                         infoUpdater("alive", message);
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
-                        store.dispatch("ingame/setDate", state.gameStatus.date);
                         break;
                     }
                     case "DAY_DISCUSSION": {
+                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
+                        audio.play()
                         state.submessage = "";
                         if (state.role !== "observer") {
                             state.message = `<span style='font-size: 25px; color:pink'>낮 투표시간</span>이 되었습니다. <br/> 각자 의심되는 사람을 지목해 주세요. <br/> 최다 득표를 한 사람들은 최종투표에 나가게 됩니다.`;
@@ -616,10 +619,11 @@ export default {
                         state.gameStatus = message.gameStatus;
                         infoUpdater("alive", message);
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
-                        store.dispatch("ingame/setDate", state.gameStatus.date);
                         break;
                     }
                     case "DAY_ELIMINATION": {
+                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
+                        audio.play()
                         state.vote = null;
                         if (state.role !== "observer") {
                             state.message =
@@ -633,10 +637,11 @@ export default {
                         infoUpdater("voters", null);
                         state.isConfirm = false;
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
-                        store.dispatch("ingame/setDate", state.gameStatus.date);
                         break;
                     }
                     case "DAY_TO_NIGHT": {
+                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
+                        audio.play()
                         state.vote = null;
                         if (state.gameStatus === "DAY_DISCUSSION") {
                             state.message =
@@ -670,10 +675,11 @@ export default {
                         infoUpdater("voters", null);
                         state.isConfirm = false;
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
-                        store.dispatch("ingame/setDate", state.gameStatus.date);
                         break;
                     }
                     case "NIGHT_VOTE": {
+                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
+                        audio.play()
                         if (state.role === "MAFIA") {
                             state.message =
                                 "밤이 되었습니다. 마피아는 시민 중 제거할 사람을 투표하여 주시기 바랍니다.";
@@ -709,10 +715,11 @@ export default {
                         }
                         state.gameStatus = message.gameStatus;
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
-                        store.dispatch("ingame/setDate", state.gameStatus.date);
                         break;
                     }
                     case "NIGHT_TO_DAY": {
+                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
+                        audio.play()
                         state.vote = null;
                         if (message.gameStatus.victim) {
                             let victimNickname = "";
@@ -743,10 +750,11 @@ export default {
                             state.subscribers[i].subscribeToVideo(true);
                         }
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
-                        store.dispatch("ingame/setDate", state.gameStatus.date);
                         break;
                     }
                     case "END": {
+                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
+                        audio.play()
                         let winner = message.gameStatus.winner === "mafia" ? "마피아" : "시민";
                         state.message = `게임이 종료되었습니다. 최종승자는 ${winner}입니다.`;
                         break;
@@ -785,7 +793,6 @@ export default {
                         state.vote = null;
                         state.isConfirm = false;
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
-                        store.dispatch("ingame/setDate", state.gameStatus.date);
                         break;
                     }
                 }
@@ -916,13 +923,16 @@ export default {
                 );
                 switch (message.gameStatus.phase) {
                     case "START": {
+                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
+                        audio.play()
                         state.gameStatus = message.gameStatus;
                         infoUpdater("alive", message);
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
-                        store.dispatch("ingame/setDate", state.gameStatus.date);
                         break;
                     }
                     case "DAY_DISCUSSION": {
+                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
+                        audio.play()
                         state.submessage = "";
                         if (state.role !== "observer") {
                             state.message =
@@ -934,10 +944,11 @@ export default {
                         state.gameStatus = message.gameStatus;
                         infoUpdater("alive", message);
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
-                        store.dispatch("ingame/setDate", state.gameStatus.date);
                         break;
                     }
                     case "DAY_ELIMINATION": {
+                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
+                        audio.play()
                         state.vote = null;
                         if (state.role !== "observer") {
                             state.message =
@@ -951,10 +962,11 @@ export default {
                         infoUpdater("voters", null);
                         state.isConfirm = false;
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
-                        store.dispatch("ingame/setDate", state.gameStatus.date);
                         break;
                     }
                     case "DAY_TO_NIGHT": {
+                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
+                        audio.play()
                         state.vote = null;
                         if (state.gameStatus === "DAY_DISCUSSION") {
                             state.message =
@@ -988,10 +1000,11 @@ export default {
                         infoUpdater("voters", null);
                         state.isConfirm = false;
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
-                        store.dispatch("ingame/setDate", state.gameStatus.date);
                         break;
                     }
                     case "NIGHT_VOTE": {
+                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
+                        audio.play()
                         if (state.role === "MAFIA") {
                             state.message =
                                 "밤이 되었습니다. 마피아는 시민 중 제거할 사람을 투표하여 주시기 바랍니다.";
@@ -1027,10 +1040,11 @@ export default {
                         }
                         state.gameStatus = message.gameStatus;
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
-                        store.dispatch("ingame/setDate", state.gameStatus.date);
                         break;
                     }
                     case "NIGHT_TO_DAY": {
+                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
+                        audio.play()
                         state.vote = null;
                         if (message.gameStatus.victim) {
                             let victimNickname = "";
@@ -1061,10 +1075,11 @@ export default {
                             state.subscribers[i].subscribeToVideo(true);
                         }
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
-                        store.dispatch("ingame/setDate", state.gameStatus.date);
                         break;
                     }
                     case "END": {
+                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
+                        audio.play()
                         let winner = message.gameStatus.winner === "mafia" ? "마피아" : "시민";
                         state.message = `게임이 종료되었습니다. 최종승자는 ${winner}입니다.`;
 
@@ -1100,7 +1115,6 @@ export default {
                         state.vote = null;
                         state.isConfirm = false;
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
-                        store.dispatch("ingame/setDate", state.gameStatus.date);
                         break;
                     }
                 }
