@@ -106,23 +106,21 @@ export default {
           })
           .then(({ data }) => {
             if (data.code === "success" && data.data.state === "REJOIN") {
-              store
-                .dispatch("setOpenviduToken", data.data.token)
-                .then(
-                  router.push({
-                    name: "Game",
-                    params: { roomId: route.params.roomId },
-                  })
-                );
+              store.dispatch("setOpenviduToken", data.data.token).then(
+                router.push({
+                  name: "Game",
+                  params: { roomId: route.params.roomId },
+                })
+              );
             } else {
               if (data.code === "fail") {
-                  state.errorMessage = data.message;
-                  state.isError = true;
-                }
+                state.errorMessage = data.message;
+                state.isError = true;
               }
+            }
           })
           .catch(({ response }) => {
-            if (response.data.message === "방 정보를 찾을 수 없습니다") {
+            if (response.status === 404) {
               router.push({ path: "/:catchAll(.*)" });
             } else {
               console.log(response);
@@ -135,13 +133,12 @@ export default {
         })
           .then(({ data }) => {
             if (data.code === "fail") {
-                state.errorMessage = data.message;
-                state.isError = true;
-              }
+              state.errorMessage = data.message;
+              state.isError = true;
             }
-          )
+          })
           .catch(({ response }) => {
-            if (response.data.message === "방 정보를 찾을 수 없습니다") {
+            if (response.status === 404) {
               router.push({ path: "/:catchAll(.*)" });
             } else {
               console.log(response);
@@ -177,25 +174,26 @@ export default {
                 state.errorMessage = data.message;
                 state.isError = true;
               } else {
-                console.log('data')
-                console.log(data.data)
-                store.dispatch("token/setPlayerId", data.data.userId);
+                console.log("data");
+                console.log(data.data);
+                store.dispatch("token/setPlayerId", data.data.playerId);
                 store.dispatch("token/setOpenviduToken", data.data.token);
+                store.dispatch("ingame/setPhase", "READY")
                 store
                   .dispatch("token/setNickname", state.form.nickname)
                   .then(() => {
-                    console.log(store.getters['token/getPlayerId'])
+                    console.log(store.getters["token/getPlayerId"]);
                     router.push({ name: "Game", params: route.params.roomId });
                   });
               }
             })
             .catch(({ response }) => {
-            if (response.data.message === "방 정보를 찾을 수 없습니다") {
+            if (response.status === 404) {
               router.push({ path: "/:catchAll(.*)" });
             } else {
               console.log(response);
             }
-          });
+            });
         } else {
           alert("Validate error");
         }
