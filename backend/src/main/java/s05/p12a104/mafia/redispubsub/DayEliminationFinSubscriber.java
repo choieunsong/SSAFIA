@@ -64,6 +64,7 @@ public class DayEliminationFinSubscriber {
       if (dead.getRole() == GameRole.MAFIA) {
         gameSession.setAliveMafia(gameSession.getAliveMafia() - 1);
       }
+      gameSession.setAlivePlayer(gameSession.getAlivePlayer() - 1);
     }
 
     gameSessionService.update(gameSession);

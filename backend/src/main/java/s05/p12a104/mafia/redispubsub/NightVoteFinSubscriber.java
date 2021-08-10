@@ -1,5 +1,6 @@
 package s05.p12a104.mafia.redispubsub;
 
+import java.util.Map;
 import java.util.Timer;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -10,8 +11,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.api.service.GameSessionService;
 import s05.p12a104.mafia.domain.entity.GameSession;
+import s05.p12a104.mafia.domain.entity.Player;
 import s05.p12a104.mafia.domain.enums.GamePhase;
+import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.redispubsub.message.NightVoteMessage;
+import s05.p12a104.mafia.stomp.response.GameStatusKillRes;
+import s05.p12a104.mafia.stomp.response.SuspectVoteRes;
 import s05.p12a104.mafia.stomp.task.StartFinTimerTask;
 
 @Slf4j
@@ -23,18 +28,38 @@ public class NightVoteFinSubscriber {
   private final SimpMessagingTemplate template;
   private final RedisPublisher redisPublisher;
   private final GameSessionService gameSessionService;
-  private final ChannelTopic topicNightToDayFin;
+  private final ChannelTopic topicStartFin;
 
   public void sendMessage(String message) {
     try {
       NightVoteMessage nightVoteMessage = objectMapper.readValue(message, NightVoteMessage.class);
       String roomId = nightVoteMessage.getRoomId();
-//      Map roleVote = nightVoteMessage.getRoleVoteResult();
+      Map roleVote = nightVoteMessage.getRoleVoteResult();
       GameSession gameSession = gameSessionService.findById(roomId);
+
+      String deadPlayerId = roleVote.get(GameRole.MAFIA).toString();
+      String protectedPlayerId = roleVote.get(GameRole.DOCTOR).toString();
+      String suspectPlayerId = roleVote.get(GameRole.POLICE).toString();
+
+      setNightToDay(gameSession, deadPlayerId, protectedPlayerId);
+
+      Player deadPlayer = gameSession.getPlayerMap().get(deadPlayerId);
+      // 의사가 살렸을 경우 부활
+      if (deadPlayerId == protectedPlayerId) {
+        deadPlayer = null;
+      }
+
+      // 밤투표 결과
+      template.convertAndSend("/sub/" + roomId, GameStatusKillRes.of(gameSession, deadPlayer));
+
+      Player suspectPlayer = gameSession.getPlayerMap().get(suspectPlayerId);
+
+      // 용의자 Role 결과
+      template.convertAndSend("/sub/" + roomId + "/police", SuspectVoteRes.of(suspectPlayer));
 
       // Timer를 돌릴 마땅한 위치가 없어서 추후에 통합 예정
       Timer timer = new Timer();
-      StartFinTimerTask task = new StartFinTimerTask(redisPublisher, topicNightToDayFin);
+      StartFinTimerTask task = new StartFinTimerTask(redisPublisher, topicStartFin);
       task.setRoomId(roomId);
       timer.schedule(task, gameSession.getTimer() * 1000);
     } catch (JsonProcessingException e) {
@@ -42,10 +67,21 @@ public class NightVoteFinSubscriber {
     }
   }
 
-  private void setNightToDay(GameSession gameSession, String deadPlayer) {
+  private void setNightToDay(GameSession gameSession, String deadPlayerId,
+      String protectedPlayerId) {
     gameSession.setPhase(GamePhase.NIGHT_TO_DAY);
     gameSession.setPhaseCount(gameSession.getPhaseCount() + 1);
     gameSession.setTimer(15);
+
+    if (deadPlayerId != null && deadPlayerId != protectedPlayerId) {
+      Player deadPlayer = gameSession.getPlayerMap().get(deadPlayerId);
+      deadPlayer.setAlive(false);
+      gameSession.getPlayerMap().put(deadPlayerId, deadPlayer);
+      if (deadPlayer.getRole() == GameRole.MAFIA) {
+        gameSession.setAliveMafia(gameSession.getAliveMafia() - 1);
+      }
+      gameSession.setAlivePlayer(gameSession.getAlivePlayer() - 1);
+    }
 
     gameSessionService.update(gameSession);
   }

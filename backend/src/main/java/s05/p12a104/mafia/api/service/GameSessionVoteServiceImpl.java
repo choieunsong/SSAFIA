@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.stream.Collectors;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -69,6 +70,25 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     }
 
     return voteRepository.vote(voteId, playerId, req.getVote());
+  }
+
+  @Override
+  public Vote nightVote(String roomId, String playerId, GameSessionVoteReq req, GameRole roleName) {
+
+    String voteId = getVoteId(roomId, GamePhase.NIGHT_VOTE);
+
+    if (voteRepository.findVoteById(voteId) == null) {
+      return null;
+    }
+
+    Vote vote = voteRepository.vote(voteId, playerId, req.getVote());
+    GameSession gameSession = gameSessionService.findById(roomId);
+    Map<String, Player> playerMap = gameSession.getPlayerMap();
+
+    vote.setVoteResult(vote.getVoteResult().entrySet().stream()
+        .filter(e -> playerMap.get(e.getKey()).getRole() == roleName)
+        .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue())));
+    return vote;
   }
 
   @Override
@@ -174,11 +194,11 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     int alivePlayer = gameSession.getAlivePlayer();
     if (voteCnt > alivePlayer / 2) {
 
-      // 최댓값 찾기
+      // 최다 득표 수 구하기
       Integer max = voteNum.entrySet().stream()
           .max((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1).get().getValue();
 
-      // 최댓값인 Player List
+      // 최다 득표한 Player List
       List deadList = voteNum.entrySet().stream().filter(entry -> entry.getValue() == max)
           .map(Map.Entry::getKey).collect(Collectors.toList());
 
@@ -191,7 +211,33 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   }
 
   private Map getNightVoteResult(GameSession gameSession, Map<String, String> voteResult) {
-    Map result = new HashMap<GameRole, String>();
+    Map<GameRole, String> result = new HashMap();
+
+    Map<String, Player> playerMap = gameSession.getPlayerMap();
+
+    // 마피아가 아닌 직업들 결과에 담기
+    result = voteResult.entrySet().stream()
+        .filter(e -> playerMap.get(e.getKey()).getRole() != GameRole.MAFIA)
+        .collect(Collectors.toMap(e -> playerMap.get(e.getKey()).getRole(), e -> e.getValue()));
+
+    // 마피아들의 투표만 추려서 Map<투표 받은 사람,List<투표한사람>>으로 저장
+    Map<String, List<String>> mafiaVote =
+        voteResult.keySet().stream().filter(key -> playerMap.get(key).getRole() == GameRole.MAFIA)
+            .collect(Collectors.groupingBy(key -> voteResult.get(key)));
+
+    // 최다 득표 수 구하기
+    int max = mafiaVote.entrySet().stream()
+        .max((entry1, entry2) -> entry1.getValue().size() > entry2.getValue().size() ? 1 : -1).get()
+        .getValue().size();
+
+    // 최다 득표한 Player List
+    List deadList = mafiaVote.entrySet().stream().filter(entry -> entry.getValue().size() == max)
+        .map(Map.Entry::getKey).collect(Collectors.toList());
+
+    // 한명일 경우
+    if (deadList.size() == 1) {
+      result.put(GameRole.MAFIA, deadList.get(0).toString());
+    }
 
     return result;
   }
