@@ -266,6 +266,7 @@ export default {
                         isMafia: null,
                         color: null,
                         isHost: false,
+                        isTalking: false,
                     });
                     // 플레이어 수 1 증가
                     state.playerNum += 1;
@@ -293,6 +294,31 @@ export default {
             state.session.on("exception", ({ exception }) => {
                 console.warn(exception);
             });
+
+            state.session.on("publisherStartSpeaking", (event) => {
+                console.log(event.connection.data)
+                const array = subscriber.stream.connection.data.split('"');
+                const tmp = array[3].split(",");
+                const targetPlayerId = tmp[1]
+                for (let i=0; i<state.playersGameInfo.length; i++) {
+                    if (state.playersGameInfo[i].playerId === targetPlayerId) {
+                        state.playersGameInfo[i].isTalking = true
+                        break
+                    }
+                }
+            })
+            state.session.on("publisherStopSpeaking", (event) => {
+                console.log(event.connection.data)
+                const array = subscriber.stream.connection.data.split('"');
+                const tmp = array[3].split(",");
+                const targetPlayerId = tmp[1]
+                for (let i=0; i<state.playersGameInfo.length; i++) {
+                    if (state.playersGameInfo[i].playerId === targetPlayerId) {
+                        state.playersGameInfo[i].isTalking = false
+                        break
+                    }
+                }
+            })
 
             state.session
                 .connect(state.openviduToken, {
@@ -326,6 +352,7 @@ export default {
                         color: "red",
                         isMafia: null,
                         isHost: false,
+                        isTalking: false,
                     };
                     connect();
                 })
