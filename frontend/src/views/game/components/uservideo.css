@@ -43,3 +43,25 @@
     margin-right: 10px;
     float: left;
 }
+
+.host {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.crown {
+    position: absolute;
+    width: 50px;
+    transform: rotate(-30deg);
+    top: -90%;
+    left: -5%;
+}
+
+.host-title {
+    position: relative;
+    color: #fff8dc;
+    font-size: 1.7rem;
+    letter-spacing: 3px;
+    top: 2%;
+}
