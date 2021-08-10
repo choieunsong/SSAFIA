@@ -124,6 +124,10 @@ public class GameSession {
     });
   }
 
+  public void passADay() {
+    this.day++;
+  }
+
   public static GameSession of(GameSessionDao dao, OpenVidu openVidu) {
     Session entitySession = null;
     for (Session session : openVidu.getActiveSessions()) {

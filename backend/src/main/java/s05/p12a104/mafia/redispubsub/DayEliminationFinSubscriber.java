@@ -50,15 +50,15 @@ public class DayEliminationFinSubscriber {
     }
   }
 
-  private void setDayToNight(GameSession gameSession, String deadPlayer) {
-    log.info("deadPlayer: ", deadPlayer);
+  private void setDayToNight(GameSession gameSession, String deadPlayerId) {
+    log.info("deadPlayer: " + deadPlayerId);
     gameSession.setPhase(GamePhase.DAY_TO_NIGHT);
     gameSession.setPhaseCount(gameSession.getPhaseCount() + 1);
     gameSession.setTimer(15);
 
     // 사망 처리
-    if (deadPlayer != null) {
-      gameSession.eliminatePlayer(deadPlayer);
+    if (deadPlayerId != null) {
+      gameSession.eliminatePlayer(deadPlayerId);
     }
 
     gameSessionService.update(gameSession);
