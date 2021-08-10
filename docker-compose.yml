@@ -30,8 +30,8 @@ services:
   openvidu:
     image: openvidu/openvidu-server-kms:2.19.0
     restart: always
-    ports:
-      - "3333:3333"
+    #ports:
+    # - "3333:3333"
     env_file: prod.env
     environment:
       HTTPS_PORT: 3333
@@ -66,6 +66,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "3333:3333"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
       - ./certbot/conf:/etc/letsencrypt
