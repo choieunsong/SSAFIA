@@ -2,6 +2,7 @@ package s05.p12a104.mafia.redispubsub;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,6 +32,9 @@ public class DayToNightFinSubscriber {
       GameSession gameSession = gameSessionService.findById(roomId);
       gameSession.setPhase(GamePhase.NIGHT_VOTE);
       gameSession.setTimer(30);
+      gameSession.setAliveNotCivilian(gameSession.getPlayerMap().entrySet().stream()
+          .filter(e -> e.getValue().getRole() != GameRole.CIVILIAN)
+          .filter(e -> e.getValue().isAlive()).collect(Collectors.toList()).size());
       gameSessionService.update(gameSession);
 
       template.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));

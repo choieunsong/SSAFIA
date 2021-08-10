@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisKeyValueTemplate;
@@ -70,8 +71,8 @@ public class GameSessionServiceImpl implements GameSessionService {
     }
 
     Session newSession = openVidu.createSession();
-    String newRoomId = RoomIdUtils.getIdPrefix(typeInfo.getAccessType())
-        + newSession.getSessionId().split("_")[1];
+    String newRoomId =
+        RoomIdUtils.getIdPrefix(typeInfo.getAccessType()) + newSession.getSessionId().split("_")[1];
 
     LocalDateTime createdTime = LocalDateTime.now();
     GameSession newGameSession = GameSession.builder(newRoomId, user.getEmail(),
@@ -128,8 +129,8 @@ public class GameSessionServiceImpl implements GameSessionService {
     String playerId = UrlUtils.getUrlQueryParam(token, "token")
         .orElseThrow(OpenViduRuntimeException::new).substring(4);
 
-    Player player = Player.builder(playerId, nickname, getNewColor(gameSession))
-        .token(token).build();
+    Player player =
+        Player.builder(playerId, nickname, getNewColor(gameSession)).token(token).build();
 
     gameSession.getPlayerMap().put(playerId, player);
     if (gameSession.getPlayerMap().size() == 1) {
@@ -167,7 +168,7 @@ public class GameSessionServiceImpl implements GameSessionService {
    * 게임 진행 중에 나간 Player 제거.
    *
    * @param gameSession : Player가 나간 Game Session
-   * @param player      : 나간 player
+   * @param player : 나간 player
    */
   private void removePlayer(GameSession gameSession, Player player) {
     if (!player.isAlive()) {
@@ -197,7 +198,7 @@ public class GameSessionServiceImpl implements GameSessionService {
    * 아직 게임이 시작하지 않은 방에서 나간 Player 제거.
    *
    * @param gameSession : Player가 나간 Game Session
-   * @param player      : 나간 player
+   * @param player : 나간 player
    */
   private void removeReadyUser(GameSession gameSession, Player player) {
     Map<String, Player> playerMap = gameSession.getPlayerMap();
@@ -283,6 +284,12 @@ public class GameSessionServiceImpl implements GameSessionService {
 
     // 역할 부여
     gameSession.setMafias(RoleUtils.assignRole(roleNum, gameSession.getPlayerMap()));
+
+    // alive Not Civilian 초기화
+    int notCivilianCnt = gameSession.getPlayerMap().entrySet().stream()
+        .filter(e -> e.getValue().getRole() != GameRole.CIVILIAN).collect(Collectors.toList())
+        .size();
+    gameSession.setAliveNotCivilian(notCivilianCnt);
 
     // redis에 저장
     update(gameSession);

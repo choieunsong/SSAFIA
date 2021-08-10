@@ -13,6 +13,7 @@ import s05.p12a104.mafia.api.service.GameSessionVoteService;
 import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.entity.Vote;
 import s05.p12a104.mafia.domain.enums.GamePhase;
+import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.stomp.request.GameSessionVoteReq;
 import s05.p12a104.mafia.stomp.response.VoteResultRes;
 
@@ -54,23 +55,25 @@ public class VoteController {
     }
   }
 
+
   @MessageMapping("/{roomId}/{roleName}/vote")
   public void nightVote(SimpMessageHeaderAccessor accessor, @DestinationVariable String roomId,
-      @DestinationVariable String roleName, @Payload GameSessionVoteReq req) {
+      @DestinationVariable GameRole roleName, @Payload GameSessionVoteReq req) {
     String playerId = accessor.getUser().getName();
 
     GameSession gameSession = gameSessionService.findById(roomId);
 
-    Vote vote = gameSessionVoteService.vote(roomId, playerId, req);
+    Vote vote = gameSessionVoteService.nightVote(roomId, playerId, req, roleName);
+
     if (vote != null) {
-      simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + roleName,
+      simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + roleName.toString(),
           VoteResultRes.of(vote));
     }
   }
 
   @MessageMapping("/{roomId}/{roleName}/confirm")
   public void confirmNightVote(SimpMessageHeaderAccessor accessor,
-      @DestinationVariable String roomId, @DestinationVariable String roleName) {
+      @DestinationVariable String roomId, @DestinationVariable GameRole roleName) {
     String playerId = accessor.getUser().getName();
 
     GameSession gameSession = gameSessionService.findById(roomId);
@@ -83,7 +86,8 @@ public class VoteController {
     }
 
     // 투표 확정 인원 확인
-    if (gameSessionVoteService.confirmVote(roomId, playerId, req) == gameSession.getAlivePlayer()) {
+    if (gameSessionVoteService.confirmVote(roomId, playerId, req) == gameSession
+        .getAliveNotCivilian()) {
       gameSessionVoteService.endVote(roomId, req.getPhase());
     }
   }

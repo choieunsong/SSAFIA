@@ -44,6 +44,8 @@ public class GameSession {
 
   private int alivePlayer;
 
+  private int aliveNotCivilian;
+
   private int timer;
 
   private List<String> mafias;
@@ -84,14 +86,8 @@ public class GameSession {
   public static GameSessionBuilder builder(String roomId, String creatorEmail,
       AccessType accessType, RoomType roomType, LocalDateTime createdTime, Session session,
       Map<String, Player> playerMap) {
-    return new GameSessionBuilder()
-        .roomId(roomId)
-        .creatorEmail(creatorEmail)
-        .accessType(accessType)
-        .roomType(roomType)
-        .createdTime(createdTime)
-        .session(session)
-        .state(GameState.WAIT)
+    return new GameSessionBuilder().roomId(roomId).creatorEmail(creatorEmail).accessType(accessType)
+        .roomType(roomType).createdTime(createdTime).session(session).state(GameState.WAIT)
         .playerMap(playerMap);
   }
 
@@ -150,12 +146,14 @@ public class GameSession {
       mafias = new ArrayList<>();
     }
 
-    GameSession gameSession = GameSession.builder(dao.getRoomId(), dao.getCreatorEmail(),
-        dao.getAccessType(), dao.getRoomType(), dao.getCreatedTime(), entitySession, playerMap)
+    GameSession gameSession = GameSession
+        .builder(dao.getRoomId(), dao.getCreatorEmail(), dao.getAccessType(), dao.getRoomType(),
+            dao.getCreatedTime(), entitySession, playerMap)
         .finishedTime(dao.getFinishedTime()).day(dao.getDay()).isNight(dao.isNight())
         .aliveMafia(dao.getAliveMafia()).timer(dao.getTimer()).phase(dao.getPhase())
         .lastEnter(dao.getLastEnter()).state(dao.getState()).mafias(mafias)
-        .alivePlayer(dao.getAlivePlayer()).hostId(dao.getHostId()).build();
+        .alivePlayer(dao.getAlivePlayer()).hostId(dao.getHostId())
+        .aliveNotCivilian(dao.getAliveNotCivilian()).build();
 
     return gameSession;
   }
