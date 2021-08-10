@@ -409,8 +409,8 @@ export default {
                     };
                     state.stompClient.send(
                         `/pub/${state.mySessionId}/rejoin`,
-                        {},
-                        JSON.stringify(message)
+                        JSON.stringify(message),
+                        {}
                     );
                 }
             } else {
@@ -450,8 +450,8 @@ export default {
                 };
                 state.stompClient.send(
                     `/pub/${state.mySessionId}/confirm`,
-                    JSON.stringify(Message),
-                    {}
+                    {},
+                    JSON.stringify(Message)
                 );
             }
         }
@@ -1170,7 +1170,7 @@ export default {
         });
 
         function emitVoteDataUpdate(targetPlayerId) {
-            if (state.isConfirm === false) {
+            if (!state.isConfirm) {
                 if (
                     state.gameStatus.phase === "DAY_DISCUSSION" ||
                     state.gameStatus.phase === "DAY_ELIMINATION"
@@ -1196,16 +1196,16 @@ export default {
             }
         }
 
-        function emitConfirmDataUpdate(targetPlayerId) {
+        function emitConfirmDataUpdate() {
             if (state.isConfirm !== true) {
                 state.isConfirm = true;
                 if (
                     state.gameStatus.phase === "DAY_DISCUSSION" ||
                     state.gameStatus.phase === "DAY_ELIMINATION"
                 ) {
-                    sendMessageConfirm(targetPlayerId);
+                    sendMessageConfirm();
                 } else if (state.gameStatus.phase === "NIGHT_VOTE") {
-                    sendMessageNightConfirm(targetPlayerId);
+                    sendMessageNightConfirm();
                 }
             }
         }
