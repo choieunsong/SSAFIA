@@ -150,6 +150,7 @@ import UserVideo from "@/views/game/components/UserVideo";
 import { computed, reactive, watch } from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
+import { API_CLIENT_URL } from "@/constant/index";
 import { API_BASE_URL } from "@/constant/index";
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
@@ -200,7 +201,7 @@ export default {
             removeList: [],
 
             playerNum: 1,
-            playerMe: undefined, //publisher
+            playerMe: {}, //publisher
             playersGameInfo: [], //player 정보 저장
 
             inviteUrl: "",
@@ -232,6 +233,7 @@ export default {
 
             // 새로운 player가 입장
             state.session.on("streamCreated", ({ stream }) => {
+                console.log("~~~~~~new subscriber in~~~~~~");
                 const subscriber = state.session.subscribe(stream);
                 const array = subscriber.stream.connection.data.split('"');
                 const tmp = array[3].split(",");
@@ -321,10 +323,11 @@ export default {
                         alive: null,
                         suspicious: null,
                         voters: [],
-                        color: null,
+                        color: "red",
                         isMafia: null,
                         isHost: false,
                     };
+                    connect();
                 })
                 .catch((error) => {
                     console.log(
@@ -447,6 +450,7 @@ export default {
 
         // playersGameInfo 업데이트용 함수
         function infoUpdater(key, message) {
+            console.log("infoUpdater key:", key, " message: ", message);
             if (key === "voters") {
                 if (message === null) {
                     state.playerMe[key] = [];
@@ -506,6 +510,7 @@ export default {
                 }
                 console.log("sub vote info", state.playersGameInfo);
             } else {
+                //color update
                 if (message === null) {
                     state.playerMe[key] = null;
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
@@ -1068,7 +1073,7 @@ export default {
         }
 
         /////////////////set url//////////////
-        state.inviteUrl = "https://localhost:8081/nickname/" + route.params.roomId;
+        state.inviteUrl = API_CLIENT_URL + "/game/" + route.params.roomId;
 
         //////////// 플레이어 수에 따라 그리드 변경
         const getJustifyClassFirstRow = computed(() => {
@@ -1139,8 +1144,14 @@ export default {
         state.openviduToken = store.getters["token/getOpenviduToken"];
         state.myUserName = store.getters["token/getNickname"];
         state.playerId = store.getters["token/getPlayerId"];
+        console.log(
+            "state.playerId:",
+            state.playerId,
+            "getters:",
+            store.getters["token/getPlayerId"]
+        );
         joinSession();
-        setTimeout(connect, 500);
+
         window.onbeforeunload = function(event) {
             leave();
             return "";
