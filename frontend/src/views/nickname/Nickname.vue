@@ -120,7 +120,7 @@ export default {
             }
           })
           .catch(({ response }) => {
-            if (response.data.message === "방 정보를 찾을 수 없습니다") {
+            if (response.status === 404) {
               router.push({ path: "/:catchAll(.*)" });
             } else {
               console.log(response);
@@ -138,9 +138,7 @@ export default {
             }
           })
           .catch(({ response }) => {
-            if (response.data.message === "방 정보를 찾을 수 없습니다") {
-              router.push({ path: "/:catchAll(.*)" });
-            } else if (response.data.message === 404) {
+            if (response.status === 404) {
               router.push({ path: "/:catchAll(.*)" });
             } else {
               console.log(response);
@@ -189,13 +187,11 @@ export default {
               }
             })
             .catch(({ response }) => {
-              if (response.data.message === "방 정보를 찾을 수 없습니다") {
-                router.push({ path: "/:catchAll(.*)" });
-              } else if (response.data.message === 404) {
-                router.push({ path: "/:catchAll(.*)" });
-              } else {
-                console.log(response);
-              }
+            if (response.status === 404) {
+              router.push({ path: "/:catchAll(.*)" });
+            } else {
+              console.log(response);
+            }
             });
         } else {
           alert("Validate error");
