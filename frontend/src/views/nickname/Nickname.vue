@@ -122,7 +122,7 @@ export default {
           .catch(({ response }) => {
             if (response.status === 500) {
               router.push({ path: "/:catchAll(.*)" });
-            } else if (response.data.message === 404) {
+            } else if (response.status === 404) {
               router.push({ path: "/:catchAll(.*)" });
             } else {
               console.log(response);
@@ -142,7 +142,7 @@ export default {
           .catch(({ response }) => {
             if (response.status === 500) {
               router.push({ path: "/:catchAll(.*)" });
-            } else if (response.data.message === 404) {
+            } else if (response.status === 404) {
               router.push({ path: "/:catchAll(.*)" });
             } else {
               console.log(response);
@@ -194,7 +194,7 @@ export default {
             .catch(({ response }) => {
               if (response.status === 500) {
                 router.push({ path: "/:catchAll(.*)" });
-              } else if (response.data.message === 404) {
+              } else if (response.status === 404) {
                 router.push({ path: "/:catchAll(.*)" });
               } else {
                 console.log(response);
