@@ -100,13 +100,13 @@ export default {
             deep: true,
             handler() {
                 console.log("user video playersGameInfo change");
-                // console.log(this.playersGameInfo.voters);
-                if (this.playersGameinfo.isTalking === true) {
-                    const video = document.querySelector('#' + this.playersGameinfo.playerId)
-                    video.classList.add('talking-border')
-                } else {
-                    const video = document.querySelector('#' + this.playersGameinfo.playerId)
-                    video.classList.remove('talking-border')
+                if (this.playersGameInfo !== undefined && this.$refs.cell !== undefined) {
+                    console.log(this.playersGameInfo)
+                    if (this.playersGameInfo.isTalking === true) {
+                        this.$refs.cell.classList.add('talking-border')
+                    } else {
+                        this.$refs.cell.classList.remove('talking-border')
+                    }
                 }
             },
         },
@@ -141,7 +141,7 @@ export default {
 }
 .talking-border {
     border-style: solid;
-    border-color: #32a8a2;
+    border-color: #00ff26;
     border-width: thick;
 }
 </style>

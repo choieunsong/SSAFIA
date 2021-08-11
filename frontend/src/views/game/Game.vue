@@ -310,8 +310,12 @@ export default {
                 const array = event.connection.data.split('"');
                 const tmp = array[3].split(",");
                 const targetPlayerId = tmp[1];
+                console.log(targetPlayerId)
+                console.log(state.playerId)
                 if (state.playerId === targetPlayerId) {
+                    console.log("playerMe")
                     state.playerMe.isTalking = true;
+                    console.log(state.playerMe)
                 } else {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
                         if (state.playersGameInfo[i].playerId === targetPlayerId) {
@@ -320,14 +324,15 @@ export default {
                         }
                     }
                 }
-                console.log(state.playerMe)
             });
             state.session.on("publisherStopSpeaking", (event) => {
                 const array = event.connection.data.split('"');
                 const tmp = array[3].split(",");
                 const targetPlayerId = tmp[1];
                 if (state.playerId === targetPlayerId) {
+                    console.log("playerMe")
                     state.playerMe.isTalking = false;
+                    console.log(state.playerMe)
                 } else {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
                         if (state.playersGameInfo[i].playerId === targetPlayerId) {
@@ -336,7 +341,6 @@ export default {
                         }
                     }
                 }
-                console.log(state.playerMe)
             });
 
             state.session
