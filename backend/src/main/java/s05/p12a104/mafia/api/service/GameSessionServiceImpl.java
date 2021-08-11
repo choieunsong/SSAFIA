@@ -79,7 +79,8 @@ public class GameSessionServiceImpl implements GameSessionService {
 
     Session newSession = openVidu.createSession();
     String newRoomId =
-        RoomIdUtils.getIdPrefix(typeInfo.getAccessType()) + newSession.getSessionId().split("_")[1];
+        RoomIdUtils.getIdPrefix(typeInfo.getAccessType())
+        + newSession.getSessionId().split("_")[1];
 
     LocalDateTime createdTime = LocalDateTime.now();
     GameSession newGameSession = GameSession.builder(newRoomId, user.getEmail(),
