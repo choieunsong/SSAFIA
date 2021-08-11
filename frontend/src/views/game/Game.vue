@@ -617,7 +617,7 @@ export default {
                         audio.play();
                         state.submessage = "";
                         if (state.role !== "observer") {
-                            state.message = `<span style='font-size: 25px; color:pink'>낮 투표시간</span>이 되었습니다. <br/> 각자 의심되는 사람을 지목해 주세요. <br/> 최다 득표를 한 사람들은 최종투표에 나가게 됩니다.`;
+                            state.message = `<span style='font-size: 25px; color:pink'>낮 투표시간</span>이 되었습니다. <br/> 각자 의심되는 사람을 지목해 주세요. <br/> 최다 득표를 한 사람들은 최종투표에 나가게 됩니다. <br/> 후보자가 과반수 이상일 시 무효처리 됩니다.`;
                         } else {
                             state.message =
                                 "당신은 <span style='font-size: 25px; color:pink'>관전자</span>입니다. <br/> 게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
@@ -635,7 +635,7 @@ export default {
                         state.vote = null;
                         if (state.role !== "observer") {
                             state.message =
-                                "<span style='font-size: 25px; color:pink'>최종투표시간</span>이 되었습니다. <br/> 최종투표 후보자들 중에 제거할 사람에게 투표해 주세요. <br/> 최다득표자는 제거됩니다.";
+                                "<span style='font-size: 25px; color:pink'>최종투표시간</span>이 되었습니다. <br/> 최종투표 후보자들 중에 제거할 사람을 클릭해 <span style='color:crimson;'>KILL</span>할 수 있습니다. <br/> 최다득표자는 제거됩니다.";
                         } else {
                             state.message =
                                 "당신은 관전자입니다. <br/> 게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
@@ -831,7 +831,7 @@ export default {
                 if (state.role === "MAFIA") {
                     if (state.mafias.length === 1) {
                         state.message =
-                            "게임이 시작되었습니다. <br/> 당신은 <span style='font-size: 25px; color:DodgerBlue'>마피아</span>입니다. <br/>마피아 동료와 함께 시민의 수를 마피아의 수와 같게 만들면 당신의 승리입니다. <br/>밤마다 마피아 동료들과 상의해 시민을 한명씩 제거해나가세요. \n 마피아는 당신 한명 입니다";
+                            "게임이 시작되었습니다. <br/> 당신은 <span style='font-size: 25px; color:DodgerBlue'>마피아</span>입니다. <br/>시민의 수를 마피아의 수와 같게 만들면 당신의 승리입니다. <br/>밤마다 마피아 동료들과 상의해 시민을 한명씩 제거해나가세요. \n 마피아는 당신 한명 입니다";
                     } else {
                         let mafiaNicknames = [];
                         for (let i = 0; i < state.playersGameInfo.length; i++) {
