@@ -241,21 +241,8 @@ export default {
                 const tmp = array[3].split(",");
                 subscriber.nickname = tmp[0];
                 subscriber.playerId = tmp[1];
-                let index = false;
-                for (let i = 0; i < state.subscribers.length; i++) {
-                    if (subscriber.playerId === state.subscribers[i].playerId) {
-                        index = i;
-                        break;
-                    }
-                }
-                if (index !== false) {
-                    for (let j = 0; j < state.removeList.length; j++) {
-                        if (state.removeList[j] === index) {
-                            state.removeList.splice(j, 1);
-                        }
-                    }
-                    state.subscribers.splice(index, 1, subscriber);
-                } else {
+
+                if (state.gameStatus.phase == "READY") {
                     state.subscribers.push(subscriber);
                     console.log(state.subscribers);
                     //subscribers의 info 세팅
@@ -281,6 +268,22 @@ export default {
                         state.tempPlayerMap = null;
                         state.newSubscriberOn = false;
                     }
+                } else {
+                    let index = false;
+                    for (let i = 0; i < state.subscribers.length; i++) {
+                        if (subscriber.playerId === state.subscribers[i].playerId) {
+                            index = i;
+                            break;
+                        }
+                    }
+                    if (index !== false) {
+                        for (let j = 0; j < state.removeList.length; j++) {
+                            if (state.removeList[j] === index) {
+                                state.removeList.splice(j, 1);
+                            }
+                        }
+                        state.subscribers.splice(index, 1, subscriber);
+                    }
                 }
             });
 
@@ -288,11 +291,12 @@ export default {
             state.session.on("streamDestroyed", ({ stream }) => {
                 if (state.gameStatus.phase === "READY") {
                     const index = state.subscribers.indexOf(stream.streamManager, 0);
+                    console.log("!!!!!!stream destroyed", index);
                     if (index >= 0) {
                         state.subscribers.splice(index, 1);
                         state.playersGameInfo.splice(index, 1);
                     }
-                    console.log(state.subxcribers);
+                    console.log(state.subscribers);
                     // 한명 제거
                     state.playerNum -= 1;
                 } else {
@@ -310,12 +314,12 @@ export default {
                 const array = event.connection.data.split('"');
                 const tmp = array[3].split(",");
                 const targetPlayerId = tmp[1];
-                console.log(targetPlayerId)
-                console.log(state.playerId)
+                console.log(targetPlayerId);
+                console.log(state.playerId);
                 if (state.playerId === targetPlayerId) {
-                    console.log("playerMe")
+                    console.log("playerMe");
                     state.playerMe.isTalking = true;
-                    console.log(state.playerMe)
+                    console.log(state.playerMe);
                 } else {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
                         if (state.playersGameInfo[i].playerId === targetPlayerId) {
@@ -330,9 +334,9 @@ export default {
                 const tmp = array[3].split(",");
                 const targetPlayerId = tmp[1];
                 if (state.playerId === targetPlayerId) {
-                    console.log("playerMe")
+                    console.log("playerMe");
                     state.playerMe.isTalking = false;
-                    console.log(state.playerMe)
+                    console.log(state.playerMe);
                 } else {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
                         if (state.playersGameInfo[i].playerId === targetPlayerId) {
@@ -447,8 +451,8 @@ export default {
                 };
                 state.stompClient.send(
                     `/pub/${state.mySessionId}/confirm`,
+                    JSON.stringify(Message),
                     {},
-                    JSON.stringify(Message)
                 );
             }
         }
@@ -472,8 +476,8 @@ export default {
                 };
                 state.stompClient.send(
                     `/pub/${state.mySessionId}/${state.role}/vote`,
-                    {},
-                    JSON.stringify(message)
+                    JSON.stringify(message),
+                    {},                    
                 );
             }
         }
@@ -486,8 +490,8 @@ export default {
                 };
                 state.stompClient.send(
                     `/pub/${state.mySessionId}/${state.role}/confirm`,
+                    JSON.stringify(message),
                     {},
-                    JSON.stringify(message)
                 );
             }
         }
@@ -553,11 +557,11 @@ export default {
                     }
                 }
             } else {
-                //color update
-                if (message === null) {
-                    state.playerMe[key] = null;
+                //color, suspicious, alive update
+                if (message === null || message === false) {
+                    state.playerMe[key] = message === null ? null : false;
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
-                        state.playersGameInfo[i][key] = null;
+                        state.playersGameInfo[i][key] = message === null ? null : false;
                     }
                 } else {
                     state.playerMe[key] = message.playerMap[state.playerMe.playerId][key];
@@ -632,7 +636,7 @@ export default {
                         state.vote = null;
                         if (state.role !== "observer") {
                             state.message =
-                                "<span style='font-size: 25px; color:pink'>최종투표시간</span>이 되었습니다. <br/> 최종투표 후보자들 중에 제거할 사람에게 투표해 주세요. <br/> 최다득표자는 제거됩니다.";
+                                "<span style='font-size: 25px; color:pink'>최종투표시간</span>이 되었습니다. <br/> 최종투표 후보자들 중에 제거할 사람을 클릭해 <span style='color:crimson;'>KILL</span>할 수 있습니다. <br/> 최다득표자는 제거됩니다.";
                         } else {
                             state.message =
                                 "당신은 관전자입니다. <br/> 게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
@@ -651,11 +655,13 @@ export default {
                         );
                         audio.play();
                         state.vote = null;
-                        if (state.gameStatus === "DAY_DISCUSSION") {
+                        console.log("day to night", state.gameStatus.phase);
+                        if (state.gameStatus.phase === "DAY_DISCUSSION") {
                             state.message =
                                 "최다 득표자가 너무 많거나 또는 무효투표자가 너무 많은 관계로,<br/>최종 투표를 스킵하고 밤으로 넘어갑니다.";
                         } else {
-                            if (message.gameStatus.victime) {
+                            if (message.gameStatus.victim) {
+                                console.log("day elimination", message);
                                 let victimNickname = "nickname";
                                 if (message.gameStatus.victim === state.playerMe.playerId) {
                                     victimNickname = state.playerMe.nickname;
@@ -671,15 +677,18 @@ export default {
                                     }
                                     const victimJob = message.victimIsMafia ? "마피아" : "시민";
                                     state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${victimNickname}님의 직업은 ${victimJob}이였습니다  곧 밤으로 넘어갑니다.`;
+
+                                    // 죽는 애니메이션
                                 }
                             } else {
                                 state.message =
-                                    "최종투표로 인해 아무도 죽지 않았습니다. 밤으로 넘어갑니다.";
+                                    "최다 득표자가 너무 많거나 또는 무효투표자가 너무 많은 관계로,<br/>최종 투표를 스킵하고 밤으로 넘어갑니다.";
                             }
                         }
                         state.gameStatus = message.gameStatus;
+                        state.newSubscriberOn = true;
                         infoUpdater("alive", message);
-                        infoUpdater("suspicious", null);
+                        infoUpdater("suspicious", false);
                         infoUpdater("voters", null);
                         state.isConfirm = false;
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);

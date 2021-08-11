@@ -46,6 +46,12 @@ public class DayDiscussionFinSubscriber {
 
       // DAY ELIMINATION으로
       setDayElimination(gameSession, suspiciousList);
+
+      // 종료 여부 체크
+      if (gameSessionService.isDone(gameSession)) {
+        return;
+      }
+
       template.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));
 
       Map<String, String> players = new HashMap<>();
@@ -66,14 +72,14 @@ public class DayDiscussionFinSubscriber {
 
   private void setDayElimination(GameSession gameSession, List<String> suspiciousList) {
     log.info("suspiciousList", suspiciousList.toString());
-    gameSession.setPhase(GamePhase.DAY_ELIMINATION);
-    gameSession.setPhaseCount(gameSession.getPhaseCount() + 1);
-    gameSession.setTimer(30);
-    Map<String, Player> playerMap = gameSession.getPlayerMap();
+    gameSession.changePhase(GamePhase.DAY_ELIMINATION, 30 * suspiciousList.size());
+
     // 의심자 체크
+    Map<String, Player> playerMap = gameSession.getPlayerMap();
     for (String suspicious : suspiciousList) {
       playerMap.get(suspicious).setSuspicious(true);
     }
+
     gameSessionService.update(gameSession);
   }
 

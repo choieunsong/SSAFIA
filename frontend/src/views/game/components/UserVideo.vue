@@ -121,6 +121,9 @@ export default {
                                 }
                             }
                         }
+                    } else if (this.gameStatus.phase == "DAY_TO_NIGHT") {
+                        this.$refs.cell.classList.remove("cell-unsuspicious");
+                        this.$refs.cell.classList.remove("cell-hover");
                     }
                 }
             },
@@ -129,19 +132,26 @@ export default {
             deep: true,
             handler() {
                 console.log("user video playersGameInfo change");
-                if (this.playersGameInfo !== undefined && this.$refs.cell !== undefined) {
+                if (
+                    this.streamManager &&
+                    this.playersGameInfo !== undefined &&
+                    this.$refs.cell !== undefined
+                ) {
+                    console.log(this.playersGameInfo);
                     if (this.playersGameInfo.isTalking === true) {
-                        this.$refs.cell.classList.add('talking-border')
+                        this.$refs.cell.classList.add("talking-border");
                     } else {
-                        this.$refs.cell.classList.remove('talking-border')
-                    } 
+                        this.$refs.cell.classList.remove("talking-border");
+                    }
                 }
             },
         },
         isConfirm: {
             handler() {
-                this.$refs.cell.classList.remove("cell-hover");
-                this.$refs.cell.removeEventListener('click', this.votePlayer)
+                if (this.playersGameInfo !== undefined && this.$refs.cell !== undefined) {
+                    this.$refs.cell.classList.remove("cell-hover");
+                    this.$refs.cell.removeEventListener("click", this.votePlayer)
+                }
             },
         },
     },
