@@ -4,7 +4,6 @@
             class="cell col-md-12"
             :style="'background-color: ' + getColor"
             ref="cell"
-            @click="votePlayer"
         >
             <span v-if="this.playersGameInfo.suspicious" class="cell-suspicious"></span>
             <div class="ov-video-wrap">
@@ -83,14 +82,32 @@ export default {
             deep: true,
             handler() {
                 if (this.streamManager) {
-                    if (this.gameStatus.phase == "DAY_DISCUSSION") {
-                        this.$refs.cell.classList.add("cell-hover");
-                    } else if (this.gameStatus.phase == "DAY_ELIMINATION") {
-                        console.log("userVideo day elimination");
-                        if (!this.playersGameInfo.suspicious) {
-                            console.log("not suspicious");
-                            this.$refs.cell.classList.add("cell-unsuspicious");
-                            this.$refs.cell.classList.remove("cell-hover");
+                    if (this.playersGameInfo && this.playerInfo.alive === true) {
+                        if (this.gameStatus.phase === "DAY_DISCUSSION") {
+                            this.$refs.cell.classList.add("cell-hover");
+                            this.$refs.cell.addEventListener("click", this.votePlayer)
+                        } else if (this.gameStatus.phase === "DAY_ELIMINATION") {
+                            console.log("userVideo day elimination");
+                            this.$refs.cell.classList.add("cell-hover")
+                            this.$refs.cell.addEventListener("click", this.votePlayer)
+                            if (!this.playersGameInfo.suspicious) {
+                                console.log("not suspicious");
+                                this.$refs.cell.classList.add("cell-unsuspicious");
+                                this.$refs.cell.classList.remove("cell-hover");
+                            }
+                        } else if (this.gameStatus.phase === "NIGHT_VOTE") {
+                            if (this.role === "MAFIA" && this.playersGameInfo.isMafia === false) {
+                                this.$refs.cell.classList.add("cell-hover")
+                                this.$refs.cell.addEventListener("click", this.votePlayer)
+                            } else if (this.role === "DOCTOR") {
+                                this.$refs.cell.classList.add("cell-hover")
+                                this.$refs.cell.addEventListener("click", this.votePlayer)
+                            } else if (this.role === "POLICE") {
+                                if (this.playerMe.playerId !== this.playersGameInfo.playerId) {
+                                    this.$refs.cell.classList.add("cell-hober")
+                                    this.$refs.cell.addEventListener("click", this.votePlayer)
+                                }
+                            }
                         }
                     }
                 }
@@ -101,18 +118,28 @@ export default {
             handler() {
                 console.log("user video playersGameInfo change");
                 if (this.playersGameInfo !== undefined && this.$refs.cell !== undefined) {
-                    console.log(this.playersGameInfo)
                     if (this.playersGameInfo.isTalking === true) {
                         this.$refs.cell.classList.add('talking-border')
                     } else {
                         this.$refs.cell.classList.remove('talking-border')
+                    } 
+                    if (this.plaayersGameInfo.alive === false) {
+                        this.$refs.cell.classList.remove("cell-hover")
+                        this.$refs.removeEventListener("click", this.votePlayer)
+                    } else {
+                        if (this.gameStatus.phase === "DAY_ELIMINATION" && this.playersGameInfo.suspicious === false) {
+                            this.$refs.cell.classList.remove('cell-hover')
+                            this.$refs.cell.removeEventListener('click', this.votePlayer)
+                        }
                     }
+                    
                 }
             },
         },
         isConfirm: {
             handler() {
                 this.$refs.cell.classList.remove("cell-hover");
+                this.$refs.cell.removeEventListener('click', this.votePlayer)
             },
         },
     },
@@ -123,13 +150,8 @@ export default {
         },
         // 투표한 상대 플레이어의 playerId를 얻어오는 method
         votePlayer() {
-            if (
-                this.gameStatus.phase == "DAY_DISCUSSION" ||
-                (this.gameStatus.phase == "DAY_ELILMINATION" && this.playersGameInfo.suspicious)
-            ) {
                 console.log("click", this.playersGameInfo.playerId);
-                this.$emit("emitVoteDataUpdate", this.playersGameInfo.playerId);
-            }
+                this.$emit("emitVoteDataUpdate", this.playersGameInfo.playerId)
         },
     },
 };
