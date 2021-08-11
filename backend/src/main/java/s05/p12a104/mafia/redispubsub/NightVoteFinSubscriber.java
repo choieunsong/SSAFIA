@@ -37,8 +37,14 @@ public class NightVoteFinSubscriber {
       Map<GameRole, String> roleVote = nightVoteMessage.getRoleVoteResult();
       GameSession gameSession = gameSessionService.findById(roomId);
 
+
       String deadPlayerId = roleVote.get(GameRole.MAFIA);
       String protectedPlayerId = roleVote.get(GameRole.DOCTOR);
+
+      // 의사가 살렸을 경우 부활
+      if (deadPlayerId != null && deadPlayerId.equals(protectedPlayerId)) {
+        deadPlayerId = null;
+      }
 
       setNightToDay(gameSession, deadPlayerId, protectedPlayerId);
 
@@ -48,10 +54,6 @@ public class NightVoteFinSubscriber {
       }
 
       Player deadPlayer = gameSession.getPlayerMap().get(deadPlayerId);
-      // 의사가 살렸을 경우 부활
-      if (deadPlayerId == protectedPlayerId) {
-        deadPlayer = null;
-      }
 
       // 밤투표 결과
       template.convertAndSend("/sub/" + roomId, GameStatusKillRes.of(gameSession, deadPlayer));
@@ -62,8 +64,13 @@ public class NightVoteFinSubscriber {
 
       // 용의자 Role 결과
       if (suspectPlayer != null) {
-        template.convertAndSend("/sub/" + roomId + "/police", SuspectVoteRes.of(suspectPlayer));
+        template.convertAndSend("/sub/" + roomId + "/" + GameRole.POLICE.toString(),
+            SuspectVoteRes.of(suspectPlayer));
       }
+
+      log.info("deadPlayerId: " + deadPlayerId);
+      log.info("protectedPlayerId: " + protectedPlayerId);
+      log.info("suspectPlayerId: " + suspectPlayerId);
 
       // Timer를 돌릴 마땅한 위치가 없어서 추후에 통합 예정
       Timer timer = new Timer();
@@ -80,7 +87,7 @@ public class NightVoteFinSubscriber {
     // 나간 사람 체크 및 기본 세팅
     gameSession.changePhase(GamePhase.NIGHT_TO_DAY, 15);
 
-    if (deadPlayerId != null && deadPlayerId != protectedPlayerId) {
+    if (deadPlayerId != null) {
       gameSession.eliminatePlayer(deadPlayerId);
     }
 

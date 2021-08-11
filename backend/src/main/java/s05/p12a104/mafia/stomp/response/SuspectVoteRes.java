@@ -1,9 +1,11 @@
 package s05.p12a104.mafia.stomp.response;
 
 import lombok.Getter;
+import lombok.Setter;
 import s05.p12a104.mafia.domain.entity.Player;
 import s05.p12a104.mafia.domain.enums.GameRole;
 
+@Setter
 @Getter
 public class SuspectVoteRes {
   private String vote;

@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.stream.Collectors;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -85,9 +84,15 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     GameSession gameSession = gameSessionService.findById(roomId);
     Map<String, Player> playerMap = gameSession.getPlayerMap();
 
-    vote.setVoteResult(vote.getVoteResult().entrySet().stream()
-        .filter(e -> playerMap.get(e.getKey()).getRole() == roleName)
-        .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue())));
+    Map<String, String> roleVote = new HashMap();
+
+    vote.getVoteResult().forEach((id, player) -> {
+      if (playerMap.get(id).getRole() == roleName) {
+        roleVote.put(id, player);
+      }
+    });
+    vote.setVoteResult(roleVote);
+
     return vote;
   }
 
@@ -233,7 +238,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
             .collect(Collectors.groupingBy(key -> voteResult.get(key)));
 
     // 마피아가 투표를 했을 경우
-    if (mafiaVote != null) {
+    if (mafiaVote.size() > 0) {
 
       // 최다 득표 수 구하기
       int max = mafiaVote.entrySet().stream()
