@@ -1,5 +1,4 @@
 <template>
-<<<<<<< HEAD
     <div v-if="streamManager" class="cell-box col-md-3">
         <div
             class="cell col-md-12"
@@ -14,12 +13,6 @@
                     :alive="this.playersGameInfo.alive"
                     :phase="this.gameStatus.phase"
                 />
-=======
-    <div v-if="streamManager" class="cell-box col-md-3" @click="votePlayer">
-        <div class="cell col-md-12" :style="'background-color: ' + getColor" ref="cell">
-            <div class="ov-video-wrap" :id="this.playersGameInfo.playerId">
-                <ov-video :stream-manager="streamManager" />
->>>>>>> 5747d39 (fix: fix rebase conflict)
             </div>
             <span id="nickname" class="font-jua">
                 {{ this.playersGameInfo.nickname }}
