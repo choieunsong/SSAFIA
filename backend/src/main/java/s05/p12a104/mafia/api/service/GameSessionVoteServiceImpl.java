@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.stream.Collectors;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -87,6 +86,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
 
     vote.setVoteResult(vote.getVoteResult().entrySet().stream()
         .filter(e -> playerMap.get(e.getKey()).getRole() == roleName)
+        .filter(e -> e.getValue() != null)
         .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue())));
     return vote;
   }
