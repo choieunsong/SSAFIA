@@ -307,12 +307,15 @@ export default {
             });
 
             state.session.on("publisherStartSpeaking", (event) => {
-                console.log(event.connection.data);
                 const array = event.connection.data.split('"');
                 const tmp = array[3].split(",");
                 const targetPlayerId = tmp[1];
+                console.log(targetPlayerId)
+                console.log(state.playerId)
                 if (state.playerId === targetPlayerId) {
+                    console.log("playerMe")
                     state.playerMe.isTalking = true;
+                    console.log(state.playerMe)
                 } else {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
                         if (state.playersGameInfo[i].playerId === targetPlayerId) {
@@ -323,12 +326,13 @@ export default {
                 }
             });
             state.session.on("publisherStopSpeaking", (event) => {
-                console.log(event.connection.data);
                 const array = event.connection.data.split('"');
                 const tmp = array[3].split(",");
                 const targetPlayerId = tmp[1];
-                if (state.playerIid === targetPlayerId) {
+                if (state.playerId === targetPlayerId) {
+                    console.log("playerMe")
                     state.playerMe.isTalking = false;
+                    console.log(state.playerMe)
                 } else {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
                         if (state.playersGameInfo[i].playerId === targetPlayerId) {
@@ -399,18 +403,11 @@ export default {
             // 구독했다고 서버에 알리기, 나갔다 오면 다른 경로로
             if (store.getters["ingame/getPhase"]) {
                 const localPhase = store.getters["ingame/getPhase"];
-                const localDate = store.getters["ingame/getDate"];
                 if (localPhase === "READY") {
                     state.stompClient.send(`/pub/${state.mySessionId}/join`, {});
                 } else {
-                    const message = {
-                        date: localDate,
-                        phase: localPhase,
-                    };
                     state.stompClient.send(
                         `/pub/${state.mySessionId}/rejoin`,
-                        JSON.stringify(message),
-                        {}
                     );
                 }
             } else {
