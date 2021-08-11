@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.redispubsub.message.DayDiscussionMessage;
 import s05.p12a104.mafia.redispubsub.message.DayEliminationMessage;
+import s05.p12a104.mafia.redispubsub.message.NightVoteMessage;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -24,6 +25,10 @@ public class RedisPublisher {
 
   public void publish(ChannelTopic topic, DayEliminationMessage message) {
     redisTemplate.convertAndSend(topic.getTopic(), message);    
+  }
+
+  public void publish(ChannelTopic topic, NightVoteMessage message) {
+    redisTemplate.convertAndSend(topic.getTopic(), message);
   }
   
 }

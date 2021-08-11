@@ -31,13 +31,15 @@ public class GameSessionDao {
   private final int phaseCount;
 
   private final boolean night;
-  
+
   private int aliveMafia;
-  
+
   private int alivePlayer;
-  
+
+  private int aliveNotCivilian;
+
   private int timer;
-  
+
   private List<String> mafias;
 
   @Indexed

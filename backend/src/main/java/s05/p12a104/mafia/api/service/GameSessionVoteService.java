@@ -3,6 +3,7 @@ package s05.p12a104.mafia.api.service;
 import java.util.Map;
 import s05.p12a104.mafia.domain.entity.Vote;
 import s05.p12a104.mafia.domain.enums.GamePhase;
+import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.stomp.request.GameSessionVoteReq;
 
 public interface GameSessionVoteService {
@@ -12,6 +13,8 @@ public interface GameSessionVoteService {
   void endVote(String voteId, GamePhase phase);
 
   Vote vote(String roomId, String playerId, GameSessionVoteReq req);
+
+  Vote nightVote(String roomId, String playerId, GameSessionVoteReq req, GameRole roleName);
 
   Vote getVote(String roomId, GameSessionVoteReq req);
 

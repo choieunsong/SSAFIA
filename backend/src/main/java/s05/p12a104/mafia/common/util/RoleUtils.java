@@ -17,7 +17,9 @@ public class RoleUtils {
     RoomType roomType = gameSession.getRoomType();
     int num = gameSession.getPlayerMap().size();
 
-    int mafia = 0, doctor = 0, police = 0;
+    int mafia = 0;
+    int doctor = 0;
+    int police = 0;
     if (roomType == RoomType.BASIC) {
       mafia = num / 3;
       doctor = num > 4 ? 1 : 0;

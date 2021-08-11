@@ -2,6 +2,7 @@ package s05.p12a104.mafia.redispubsub;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,12 +13,13 @@ import s05.p12a104.mafia.api.service.GameSessionService;
 import s05.p12a104.mafia.api.service.GameSessionVoteService;
 import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.enums.GamePhase;
+import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.stomp.response.GameStatusRes;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class StartFinSubscriber {
+public class DayToNightFinSubscriber {
 
   private final ObjectMapper objectMapper;
   private final SimpMessagingTemplate template;
@@ -28,25 +30,26 @@ public class StartFinSubscriber {
     try {
       String roomId = objectMapper.readValue(redisMessageStr, String.class);
       GameSession gameSession = gameSessionService.findById(roomId);
-      gameSession.setPhase(GamePhase.DAY_DISCUSSION);
-      gameSession.setTimer(100);
-      gameSession.passADay();
+      gameSession.setPhase(GamePhase.NIGHT_VOTE);
+      gameSession.setTimer(30);
+      gameSession.setAliveNotCivilian(gameSession.getPlayerMap().entrySet().stream()
+          .filter(e -> e.getValue().getRole() != GameRole.CIVILIAN)
+          .filter(e -> e.getValue().isAlive()).collect(Collectors.toList()).size());
       gameSessionService.update(gameSession);
-      log.info("Start Day " + gameSession.getDay());
 
       template.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));
 
       Map<String, String> players = new HashMap();
 
       gameSession.getPlayerMap().forEach((playerId, player) -> {
-        if (player.isAlive()) {
+        if (player.isAlive() && player.getRole() != GameRole.CIVILIAN) {
           players.put(playerId, null);
         }
       });
 
       gameSessionVoteService.startVote(roomId, gameSession.getPhase(), gameSession.getTimer(),
           players);
-      log.info("DAY_DISCUSSION 투표 생성!", roomId);
+      log.info("NIGHT_VOTE 투표 생성!", roomId);
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }
