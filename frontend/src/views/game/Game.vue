@@ -403,7 +403,6 @@ export default {
             // 구독했다고 서버에 알리기, 나갔다 오면 다른 경로로
             if (store.getters["ingame/getPhase"]) {
                 const localPhase = store.getters["ingame/getPhase"];
-                const localDate = store.getters["ingame/getDate"];
                 if (localPhase === "READY") {
                     state.stompClient.send(`/pub/${state.mySessionId}/join`, {});
                 } else {
