@@ -155,7 +155,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
 
     // 의심자 찾기
     int alivePlayer = gameSession.getAlivePlayer();
-    if (voteCnt > alivePlayer / 2) {
+    if (voteCnt > (alivePlayer - 1) / 2) {
       List<String> suspects = new ArrayList<>(voteNum.keySet());
       // 투표수 오름차순
       Collections.sort(suspects, (o1, o2) -> voteNum.get(o2).compareTo(voteNum.get(o1)));
@@ -197,7 +197,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     }
 
     int alivePlayer = gameSession.getAlivePlayer();
-    if (voteCnt > alivePlayer / 2) {
+    if (voteCnt > (alivePlayer - 1) / 2) {
 
       // 최다 득표 수 구하기
       Integer max = voteNum.entrySet().stream()
@@ -228,14 +228,13 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
 
     // 마피아들의 투표만 추려서 Map<투표 받은 사람,List<투표한사람>>으로 저장
     Map<String, List<String>> mafiaVote =
-        voteResult.keySet().stream()
-        .filter(key -> playerMap.get(key).getRole() == GameRole.MAFIA)
-        .filter(key -> voteResult.get(key) != null)
-        .collect(Collectors.groupingBy(key -> voteResult.get(key)));
+        voteResult.keySet().stream().filter(key -> playerMap.get(key).getRole() == GameRole.MAFIA)
+            .filter(key -> voteResult.get(key) != null)
+            .collect(Collectors.groupingBy(key -> voteResult.get(key)));
 
-    //마피아가 투표를 했을 경우
+    // 마피아가 투표를 했을 경우
     if (mafiaVote != null) {
-      
+
       // 최다 득표 수 구하기
       int max = mafiaVote.entrySet().stream()
           .max((entry1, entry2) -> entry1.getValue().size() > entry2.getValue().size() ? 1 : -1)

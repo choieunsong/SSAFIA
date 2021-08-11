@@ -25,4 +25,8 @@ public interface GameSessionService {
   GameSession removeUser(String roomId, String playerId);
   
   void startGame(GameSession gameSession);
+
+  boolean isDone(GameSession gameSession);
+
+  void endGame(GameSession gameSession);
 }
