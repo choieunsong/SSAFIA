@@ -62,6 +62,7 @@ public class RedisConfig {
     return new ChannelTopic("NIGHT_VOTE_FIN");
   }
 
+  @Bean
   public ChannelTopic topicEnd() {
     return new ChannelTopic("END");
   }
@@ -113,6 +114,7 @@ public class RedisConfig {
     return new MessageListenerAdapter(subscriber, "sendMessage");
   }
 
+  @Bean
   public MessageListenerAdapter endlistenerAdapter(EndSubscriber subscriber) {
     return new MessageListenerAdapter(subscriber, "sendMessage");
   }
