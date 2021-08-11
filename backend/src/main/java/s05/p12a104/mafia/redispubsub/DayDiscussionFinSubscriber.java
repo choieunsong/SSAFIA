@@ -71,7 +71,7 @@ public class DayDiscussionFinSubscriber {
 
   private void setDayElimination(GameSession gameSession, List<String> suspiciousList) {
     log.info("suspiciousList", suspiciousList.toString());
-    gameSession.changePhase(GamePhase.DAY_ELIMINATION, 30);
+    gameSession.changePhase(GamePhase.DAY_ELIMINATION, 30*suspiciousList.size());
 
     // 의심자 체크
     Map<String, Player> playerMap = gameSession.getPlayerMap();
