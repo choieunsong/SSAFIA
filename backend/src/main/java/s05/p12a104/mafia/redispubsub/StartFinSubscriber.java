@@ -28,9 +28,15 @@ public class StartFinSubscriber {
     try {
       String roomId = objectMapper.readValue(redisMessageStr, String.class);
       GameSession gameSession = gameSessionService.findById(roomId);
-      gameSession.setPhase(GamePhase.DAY_DISCUSSION);
-      gameSession.setTimer(100);
+
+      // 나간 사람 체크 및 기본 세팅
+      gameSession.changePhase(GamePhase.DAY_DISCUSSION, 100);
       gameSession.passADay();
+
+      // 종료 여부 체크
+      if (gameSessionService.isDone(gameSession))
+        return;
+
       gameSessionService.update(gameSession);
       log.info("Start Day " + gameSession.getDay());
 

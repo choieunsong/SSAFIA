@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisKeyValueTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import s05.p12a104.mafia.api.requset.GameSessionPostReq;
 import s05.p12a104.mafia.api.response.GameSessionJoinRes;
@@ -41,6 +42,9 @@ import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.domain.enums.GameState;
 import s05.p12a104.mafia.domain.mapper.GameSessionDaoMapper;
 import s05.p12a104.mafia.domain.repository.GameSessionRedisRepository;
+import s05.p12a104.mafia.redispubsub.RedisPublisher;
+import s05.p12a104.mafia.redispubsub.message.EndMessgae;
+import s05.p12a104.mafia.stomp.response.GameResult;
 
 @Service
 @Slf4j
@@ -50,6 +54,9 @@ public class GameSessionServiceImpl implements GameSessionService {
   private final GameSessionRedisRepository gameSessionRedisRepository;
 
   private final RedisKeyValueTemplate redisKVTemplate;
+
+  private final RedisPublisher redisPublisher;
+  private final ChannelTopic topicEnd;
 
   private final OpenVidu openVidu;
 
@@ -293,6 +300,36 @@ public class GameSessionServiceImpl implements GameSessionService {
     gameSession.setAliveNotCivilian(notCivilianCnt);
 
     // redis에 저장
+    update(gameSession);
+  }
+
+  @Override
+  public boolean isDone(GameSession gameSession) {
+    GameResult gameResult = gameSession.getGameResult();
+    if (gameResult.getWinner() == null)
+      return false;
+
+    redisPublisher.publish(topicEnd, new EndMessgae(gameSession.getRoomId(), gameResult));
+    return true;
+  }
+
+  @Override
+  public void endGame(GameSession gameSession) {
+    // 중간에 나간 사람, 다시 들어오지 않은 사람 playerMap에서 제거 -> leave 처리
+    // 그러면 hostId가 처리가 되겠지..?
+    Map<String, Player> playerMap = gameSession.getPlayerMap();
+    for (Player player : playerMap.values()) {
+      if(player.getLeftPhaseCount() == null)
+        continue;
+      
+      removeReadyUser(gameSession, player);
+    }
+
+    gameSession.setState(GameState.READY);
+    gameSession.setTimer(0);
+    gameSession.setDay(0);
+    gameSession.setAliveMafia(0);
+
     update(gameSession);
   }
 }
