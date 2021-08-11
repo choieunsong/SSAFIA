@@ -1,7 +1,10 @@
 <template>
     <video v-if="this.alive" autoplay class="video-size" />
     <div v-else class="ghost">
-        <img src="https://cdn.pixabay.com/photo/2017/05/12/20/26/spirit-2308072_960_720.png" />
+        <img
+            class="ghost-img"
+            src="https://cdn2.iconfinder.com/data/icons/gaming-entertainment-vol-3/64/ghost-2-512.png"
+        />
     </div>
 </template>
 
@@ -36,5 +39,13 @@ export default {
     width: 100%;
     height: 100%;
     background-color: black;
+}
+
+.ghost-img {
+    position: absolute;
+    height: 70%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 </style>

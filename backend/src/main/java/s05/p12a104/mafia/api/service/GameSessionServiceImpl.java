@@ -279,7 +279,7 @@ public class GameSessionServiceImpl implements GameSessionService {
     gameSession.setDay(0);
     gameSession.setAliveMafia(roleNum.get(GameRole.MAFIA));
     gameSession.setPhase(GamePhase.START);
-    gameSession.setTimer(15);
+    gameSession.setTimer(5);
 
     // player 초기화
     gameSession.getPlayerMap().forEach((playerId, player) -> {

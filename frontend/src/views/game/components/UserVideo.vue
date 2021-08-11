@@ -82,16 +82,21 @@ export default {
         gameStatus: {
             deep: true,
             handler() {
-                if (this.streamManager) {
+                if (
+                    this.streamManager &&
+                    this.playersGameInfo !== null &&
+                    this.$refs.cell !== undefined
+                ) {
                     if (this.gameStatus.phase == "DAY_DISCUSSION") {
                         this.$refs.cell.classList.add("cell-hover");
                     } else if (this.gameStatus.phase == "DAY_ELIMINATION") {
-                        console.log("userVideo day elimination");
                         if (!this.playersGameInfo.suspicious) {
-                            console.log("not suspicious");
                             this.$refs.cell.classList.add("cell-unsuspicious");
                             this.$refs.cell.classList.remove("cell-hover");
                         }
+                    } else if (this.gameStatus.phase == "DAY_TO_NIGHT") {
+                        this.$refs.cell.classList.remove("cell-unsuspicious");
+                        this.$refs.cell.classList.remove("cell-hover");
                     }
                 }
             },
@@ -100,19 +105,25 @@ export default {
             deep: true,
             handler() {
                 console.log("user video playersGameInfo change");
-                if (this.playersGameInfo !== undefined && this.$refs.cell !== undefined) {
-                    console.log(this.playersGameInfo)
+                if (
+                    this.streamManager &&
+                    this.playersGameInfo !== null &&
+                    this.$refs.cell !== undefined
+                ) {
+                    console.log(this.playersGameInfo);
                     if (this.playersGameInfo.isTalking === true) {
-                        this.$refs.cell.classList.add('talking-border')
+                        this.$refs.cell.classList.add("talking-border");
                     } else {
-                        this.$refs.cell.classList.remove('talking-border')
+                        this.$refs.cell.classList.remove("talking-border");
                     }
                 }
             },
         },
         isConfirm: {
             handler() {
-                this.$refs.cell.classList.remove("cell-hover");
+                if (this.playersGameInfo !== undefined && this.$refs.cell !== undefined) {
+                    this.$refs.cell.classList.remove("cell-hover");
+                }
             },
         },
     },
@@ -125,9 +136,9 @@ export default {
         votePlayer() {
             if (
                 this.gameStatus.phase == "DAY_DISCUSSION" ||
-                (this.gameStatus.phase == "DAY_ELILMINATION" && this.playersGameInfo.suspicious)
+                (this.gameStatus.phase == "DAY_ELIMINATION" && this.playersGameInfo.suspicious)
             ) {
-                console.log("click", this.playersGameInfo.playerId);
+                console.log("userVideo click", this.playersGameInfo.playerId);
                 this.$emit("emitVoteDataUpdate", this.playersGameInfo.playerId);
             }
         },

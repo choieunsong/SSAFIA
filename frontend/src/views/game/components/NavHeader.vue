@@ -104,6 +104,9 @@ export default {
                 } else if (this.gameStatus.phase == "DAY_ELIMINATION") {
                     this.$refs.confirm.classList.remove("unhover");
                     this.startCountDown();
+                } else if (this.gameStatus.phase == "DAY_TO_NIGHT") {
+                    this.$refs.confirm.classList.remove("unhover");
+                    this.startCountDown();
                 }
             },
         },
