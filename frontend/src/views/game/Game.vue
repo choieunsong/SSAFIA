@@ -406,14 +406,8 @@ export default {
                 if (localPhase === "READY") {
                     state.stompClient.send(`/pub/${state.mySessionId}/join`, {});
                 } else {
-                    const message = {
-                        date: localDate,
-                        phase: localPhase,
-                    };
                     state.stompClient.send(
                         `/pub/${state.mySessionId}/rejoin`,
-                        JSON.stringify(message),
-                        {}
                     );
                 }
             } else {
