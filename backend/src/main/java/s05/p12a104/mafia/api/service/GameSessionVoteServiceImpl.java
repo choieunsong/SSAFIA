@@ -234,8 +234,8 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
         .collect(Collectors.groupingBy(key -> voteResult.get(key)));
 
     //마피아가 투표를 했을 경우
-    if (mafiaVote != null) {
-      
+    if (mafiaVote.size() > 0) {
+
       // 최다 득표 수 구하기
       int max = mafiaVote.entrySet().stream()
           .max((entry1, entry2) -> entry1.getValue().size() > entry2.getValue().size() ? 1 : -1)
