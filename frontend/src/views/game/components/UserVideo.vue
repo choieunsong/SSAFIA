@@ -115,15 +115,16 @@ export default {
                                 this.$refs.cell.classList.add("cell-hover")
                                 this.$refs.cell.addEventListener("click", this.votePlayer)
                             } else if (this.role === "POLICE") {
-                                if (this.playerMe !== true) {
+                                if (this.playerMe === false) {
                                     this.$refs.cell.classList.add("cell-hober")
                                     this.$refs.cell.addEventListener("click", this.votePlayer)
                                 }
                             }
                         }
-                    } else if (this.gameStatus.phase == "DAY_TO_NIGHT") {
-                        this.$refs.cell.classList.remove("cell-unsuspicious");
-                        this.$refs.cell.classList.remove("cell-hover");
+                    } else {
+                        this.$refs.cell.classList.remove("cell-hover")
+                        this.$refs.cell.removeEventListener("click", this.votePlayer)
+                        this.$refs.cell.classList.remove("cell-unsuspicious")
                     }
                 }
             },
