@@ -862,7 +862,7 @@ export default {
                     infoUpdater("isMafia", null);
                 } else {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
-                        if (state.mafia.includes(state.playersGameInfo[i].playerId)) {
+                        if (state.mafias.includes(state.playersGameInfo[i].playerId)) {
                             state.playersGameInfo[i].isMafia = true;
                         } else {
                             state.playersGameInfo[i].isMafia = false;
