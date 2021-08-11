@@ -79,8 +79,7 @@ public class GameSessionServiceImpl implements GameSessionService {
 
     Session newSession = openVidu.createSession();
     String newRoomId =
-        RoomIdUtils.getIdPrefix(typeInfo.getAccessType())
-        + newSession.getSessionId().split("_")[1];
+        RoomIdUtils.getIdPrefix(typeInfo.getAccessType()) + newSession.getSessionId().split("_")[1];
 
     LocalDateTime createdTime = LocalDateTime.now();
     GameSession newGameSession = GameSession.builder(newRoomId, user.getEmail(),
@@ -306,8 +305,9 @@ public class GameSessionServiceImpl implements GameSessionService {
   @Override
   public boolean isDone(GameSession gameSession) {
     GameResult gameResult = gameSession.getGameResult();
-    if (gameResult.getWinner() == null)
+    if (gameResult.getWinner() == null) {
       return false;
+    }
 
     redisPublisher.publish(topicEnd, new EndMessgae(gameSession.getRoomId(), gameResult));
     return true;
@@ -319,9 +319,10 @@ public class GameSessionServiceImpl implements GameSessionService {
     // 그러면 hostId가 처리가 되겠지..?
     Map<String, Player> playerMap = gameSession.getPlayerMap();
     for (Player player : playerMap.values()) {
-      if(player.getLeftPhaseCount() == null)
+      if (player.getLeftPhaseCount() == null) {
         continue;
-      
+      }
+
       removeReadyUser(gameSession, player);
     }
 

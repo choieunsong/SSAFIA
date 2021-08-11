@@ -27,16 +27,16 @@ public class EndSubscriber {
       EndMessgae endMessgae = objectMapper.readValue(message, EndMessgae.class);
       String roomId = endMessgae.getRoomId();
       GameResult gameResult = endMessgae.getGameResult();
-      
+
       ReadyTimerTask task = new ReadyTimerTask(gameSessionService, template);
       task.setRoomId(roomId);
       Timer timer = new Timer();
-      timer.schedule(task, gameResult.getTimer()*1000);
-      
-      log.info("Game is done: "+ gameResult);
+      timer.schedule(task, gameResult.getTimer() * 1000);
+
+      log.info("Game is done: " + gameResult);
       template.convertAndSend("/sub/" + roomId, GameResultRes.of(gameResult));
-      
-      
+
+
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }

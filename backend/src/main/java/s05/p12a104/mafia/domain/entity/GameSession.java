@@ -133,12 +133,13 @@ public class GameSession {
     GameResult gameResult = new GameResult();
     gameResult.setTimer(15);
     // 마피아 >= 시민인 경우
-    if (aliveMafia >= alivePlayer - aliveMafia)
+    if (aliveMafia >= alivePlayer - aliveMafia) {
       gameResult.setWinner(GameRole.MAFIA);
-
+    }
     // 모든 마피아를 제거한 경우
-    if (aliveMafia == 0)
+    if (aliveMafia == 0) {
       gameResult.setWinner(GameRole.CIVILIAN);
+    }
 
     // 15턴 모두 소요된 경우
     if (day >= 15) {

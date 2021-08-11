@@ -38,8 +38,9 @@ public class DayEliminationFinSubscriber {
       setDayToNight(gameSession, deadPlayerId);
 
       // 종료 여부 체크
-      if (gameSessionService.isDone(gameSession))
+      if (gameSessionService.isDone(gameSession)) {
         return;
+      }
 
       Player dead = gameSession.getPlayerMap().get(deadPlayerId);
       template.convertAndSend("/sub/" + roomId, GameStatusKillRes.of(gameSession, dead));

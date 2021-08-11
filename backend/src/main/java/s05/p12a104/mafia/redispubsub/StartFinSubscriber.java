@@ -35,8 +35,9 @@ public class StartFinSubscriber {
       gameSessionService.update(gameSession);
 
       // 종료 여부 체크
-      if (gameSessionService.isDone(gameSession))
+      if (gameSessionService.isDone(gameSession)) {
         return;
+      }
 
       log.info("Start Day " + gameSession.getDay());
 

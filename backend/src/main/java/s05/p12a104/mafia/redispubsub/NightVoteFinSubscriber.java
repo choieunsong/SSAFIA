@@ -43,8 +43,9 @@ public class NightVoteFinSubscriber {
       setNightToDay(gameSession, deadPlayerId, protectedPlayerId);
 
       // 종료 여부 체크
-      if (gameSessionService.isDone(gameSession))
+      if (gameSessionService.isDone(gameSession)) {
         return;
+      }
 
       Player deadPlayer = gameSession.getPlayerMap().get(deadPlayerId);
       // 의사가 살렸을 경우 부활
