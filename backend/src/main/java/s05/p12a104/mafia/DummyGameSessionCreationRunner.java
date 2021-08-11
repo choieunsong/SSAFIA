@@ -31,7 +31,7 @@ public class DummyGameSessionCreationRunner implements ApplicationRunner {
         .roomId("V1234").accessType(AccessType.PRIVATE).roomType(RoomType.BASIC)
         .creatorEmail("dummy@dummy.com").createdTime(createdTime)
         .finishedTime(createdTime)
-        .state(GameState.WAIT)
+        .state(GameState.READY)
         .sessionId(openVidu.createSession().getSessionId())
         .playerMap(new HashMap())
         .build();

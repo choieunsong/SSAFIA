@@ -37,6 +37,11 @@ public class DayEliminationFinSubscriber {
       GameSession gameSession = gameSessionService.findById(roomId);
       setDayToNight(gameSession, deadPlayerId);
 
+      // 종료 여부 체크
+      if (gameSessionService.isDone(gameSession)) {
+        return;
+      }
+
       Player dead = gameSession.getPlayerMap().get(deadPlayerId);
       template.convertAndSend("/sub/" + roomId, GameStatusKillRes.of(gameSession, dead));
 
@@ -52,9 +57,8 @@ public class DayEliminationFinSubscriber {
 
   private void setDayToNight(GameSession gameSession, String deadPlayerId) {
     log.info("deadPlayer: " + deadPlayerId);
-    gameSession.setPhase(GamePhase.DAY_TO_NIGHT);
-    gameSession.setPhaseCount(gameSession.getPhaseCount() + 1);
-    gameSession.setTimer(15);
+    // 나간 사람 체크 및 기본 세팅
+    gameSession.changePhase(GamePhase.DAY_TO_NIGHT, 15);
 
     // 사망 처리
     if (deadPlayerId != null) {

@@ -47,6 +47,11 @@ public class NightVoteFinSubscriber {
 
       setNightToDay(gameSession, deadPlayerId, protectedPlayerId);
 
+      // 종료 여부 체크
+      if (gameSessionService.isDone(gameSession)) {
+        return;
+      }
+
       Player deadPlayer = gameSession.getPlayerMap().get(deadPlayerId);
 
       // 밤투표 결과
@@ -77,9 +82,8 @@ public class NightVoteFinSubscriber {
 
   private void setNightToDay(GameSession gameSession, String deadPlayerId,
       String protectedPlayerId) {
-    gameSession.setPhase(GamePhase.NIGHT_TO_DAY);
-    gameSession.setPhaseCount(gameSession.getPhaseCount() + 1);
-    gameSession.setTimer(15);
+    // 나간 사람 체크 및 기본 세팅
+    gameSession.changePhase(GamePhase.NIGHT_TO_DAY, 15);
 
     if (deadPlayerId != null) {
       gameSession.eliminatePlayer(deadPlayerId);
