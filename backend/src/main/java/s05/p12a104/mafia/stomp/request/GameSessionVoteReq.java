@@ -1,5 +1,6 @@
 package s05.p12a104.mafia.stomp.request;
 
+import javax.annotation.Nullable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Getter;
@@ -13,6 +14,6 @@ public class GameSessionVoteReq {
   @Enumerated(EnumType.STRING)
   private GamePhase phase;
 
-  @NonNull
+  @Nullable
   String vote;
 }

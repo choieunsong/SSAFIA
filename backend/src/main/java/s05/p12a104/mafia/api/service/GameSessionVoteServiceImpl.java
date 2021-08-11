@@ -84,14 +84,15 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     GameSession gameSession = gameSessionService.findById(roomId);
     Map<String, Player> playerMap = gameSession.getPlayerMap();
 
-    Map<String, String> filteredVote = new HashMap();
+    Map<String, String> roleVote = new HashMap();
 
     vote.getVoteResult().forEach((id, player) -> {
       if (playerMap.get(id).getRole() == roleName) {
-        filteredVote.put(id, player);
+        roleVote.put(id, player);
       }
     });
-    vote.setVoteResult(filteredVote);
+    vote.setVoteResult(roleVote);
+
     return vote;
   }
 

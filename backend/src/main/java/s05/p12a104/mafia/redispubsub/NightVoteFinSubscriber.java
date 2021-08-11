@@ -37,6 +37,16 @@ public class NightVoteFinSubscriber {
       Map<GameRole, String> roleVote = nightVoteMessage.getRoleVoteResult();
       GameSession gameSession = gameSessionService.findById(roomId);
 
+      String suspectPlayerId = roleVote.get(GameRole.POLICE);
+
+      Player suspectPlayer = gameSession.getPlayerMap().get(suspectPlayerId);
+
+      // 용의자 Role 결과
+      if (suspectPlayer != null) {
+        template.convertAndSend("/sub/" + roomId + "/" + GameRole.POLICE.toString(),
+            SuspectVoteRes.of(suspectPlayer));
+      }
+
       String deadPlayerId = roleVote.get(GameRole.MAFIA);
       String protectedPlayerId = roleVote.get(GameRole.DOCTOR);
 
@@ -57,15 +67,6 @@ public class NightVoteFinSubscriber {
       // 밤투표 결과
       template.convertAndSend("/sub/" + roomId, GameStatusKillRes.of(gameSession, deadPlayer));
 
-      String suspectPlayerId = roleVote.get(GameRole.POLICE);
-
-      Player suspectPlayer = gameSession.getPlayerMap().get(suspectPlayerId);
-
-      // 용의자 Role 결과
-      if (suspectPlayer != null) {
-        template.convertAndSend("/sub/" + roomId + "/" + GameRole.POLICE.toString(),
-            SuspectVoteRes.of(suspectPlayer));
-      }
       log.info("deadPlayerId: " + deadPlayerId);
       log.info("protectedPlayerId: " + protectedPlayerId);
       log.info("suspectPlayerId: " + suspectPlayerId);
