@@ -14,7 +14,7 @@ public class GameStatusKill {
   private GamePhase phase;
   private int timer;
   private int aliveMafia;
-  private String victim=null;
+  private String victim = null;
   private boolean victimIsMafia;
 
   public static GameStatusKill of(GameSession gameSession, Player dead) {

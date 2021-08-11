@@ -145,8 +145,9 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     Map<String, Integer> voteNum = new HashMap<String, Integer>();
     int voteCnt = 0;
     for (String vote : voteResult.values()) {
-      if (vote == null)
+      if (vote == null) {
         continue;
+      }
 
       voteCnt++;
       voteNum.put(vote, voteNum.getOrDefault(vote, 0) + 1);
@@ -163,17 +164,20 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
       int voteMax = voteNum.get(suspects.get(0));
       for (String suspect : suspects) {
         // 동점자가 아니면 더이상 동점자가 없기때문에 끝내기
-        if (voteNum.get(suspect) != voteMax)
+        if (voteNum.get(suspect) != voteMax) {
           break;
+        }
 
         // 중간 나간 사람이 포함되어 있을 수 있으므로 살아있는지 체크
-        if (playerMap.get(suspect).isAlive())
+        if (playerMap.get(suspect).isAlive()) {
           suspiciousList.add(suspect);
+        }
       }
 
       // 살아있는 사람 기준으로 6명이상이면 3명까지 5이하면 2명까지
-      if (suspiciousList.size() > 3 || (alivePlayer <= 5 && suspiciousList.size() > 2))
+      if (suspiciousList.size() > 3 || (alivePlayer <= 5 && suspiciousList.size() > 2)) {
         suspiciousList.clear();
+      }
     }
 
     return suspiciousList;
@@ -184,8 +188,9 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     Map<String, Integer> voteNum = new HashMap<String, Integer>();
     int voteCnt = 0;
     for (String vote : voteResult.values()) {
-      if (vote == null)
+      if (vote == null) {
         continue;
+      }
 
       voteCnt++;
       voteNum.put(vote, voteNum.getOrDefault(vote, 0) + 1);
@@ -226,20 +231,24 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
         voteResult.keySet().stream()
         .filter(key -> playerMap.get(key).getRole() == GameRole.MAFIA)
         .filter(key -> voteResult.get(key) != null)
-            .collect(Collectors.groupingBy(key -> voteResult.get(key)));
+        .collect(Collectors.groupingBy(key -> voteResult.get(key)));
 
-    // 최다 득표 수 구하기
-    int max = mafiaVote.entrySet().stream()
-        .max((entry1, entry2) -> entry1.getValue().size() > entry2.getValue().size() ? 1 : -1).get()
-        .getValue().size();
+    //마피아가 투표를 했을 경우
+    if (mafiaVote != null) {
+      
+      // 최다 득표 수 구하기
+      int max = mafiaVote.entrySet().stream()
+          .max((entry1, entry2) -> entry1.getValue().size() > entry2.getValue().size() ? 1 : -1)
+          .get().getValue().size();
 
-    // 최다 득표한 Player List
-    List deadList = mafiaVote.entrySet().stream().filter(entry -> entry.getValue().size() == max)
-        .map(Map.Entry::getKey).collect(Collectors.toList());
+      // 최다 득표한 Player List
+      List deadList = mafiaVote.entrySet().stream().filter(entry -> entry.getValue().size() == max)
+          .map(Map.Entry::getKey).collect(Collectors.toList());
 
-    // 한명일 경우
-    if (deadList.size() == 1) {
-      result.put(GameRole.MAFIA, deadList.get(0).toString());
+      // 한명일 경우
+      if (deadList.size() == 1) {
+        result.put(GameRole.MAFIA, deadList.get(0).toString());
+      }
     }
 
     return result;

@@ -32,7 +32,7 @@ public class StartFinSubscriber {
       gameSession.setTimer(100);
       gameSession.passADay();
       gameSessionService.update(gameSession);
-      log.info("Start Day "+gameSession.getDay());
+      log.info("Start Day " + gameSession.getDay());
 
       template.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));
 

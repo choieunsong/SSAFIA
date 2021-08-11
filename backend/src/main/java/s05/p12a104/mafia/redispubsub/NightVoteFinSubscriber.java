@@ -39,7 +39,6 @@ public class NightVoteFinSubscriber {
 
       String deadPlayerId = roleVote.get(GameRole.MAFIA);
       String protectedPlayerId = roleVote.get(GameRole.DOCTOR);
-      String suspectPlayerId = roleVote.get(GameRole.POLICE);
 
       setNightToDay(gameSession, deadPlayerId, protectedPlayerId);
 
@@ -51,6 +50,8 @@ public class NightVoteFinSubscriber {
 
       // 밤투표 결과
       template.convertAndSend("/sub/" + roomId, GameStatusKillRes.of(gameSession, deadPlayer));
+
+      String suspectPlayerId = roleVote.get(GameRole.POLICE);
 
       Player suspectPlayer = gameSession.getPlayerMap().get(suspectPlayerId);
 
