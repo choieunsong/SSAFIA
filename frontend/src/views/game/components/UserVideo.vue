@@ -134,8 +134,8 @@ export default {
                 console.log("user video playersGameInfo change");
                 if (
                     this.streamManager &&
-                    this.playersGameInfo !== undefined &&
-                    this.$refs.cell !== undefined
+                    this.playersGameInfo &&
+                    this.$refs.cell 
                 ) {
                     console.log(this.playersGameInfo);
                     if (this.playersGameInfo.isTalking === true) {
@@ -143,12 +143,16 @@ export default {
                     } else {
                         this.$refs.cell.classList.remove("talking-border");
                     }
+                    if (this.playersGameInfo.alive === true && this.gameStatus.phase === "DAY_ELIMINATION" && this.playersGameInfo.suspicious === true) {
+                        this.$refs.cell.classList.add("cell-hover")
+                        this.$refs.cell.addEventListener("click", this.votePlayer)
+                    }
                 }
             },
         },
         isConfirm: {
             handler() {
-                if (this.playersGameInfo !== undefined && this.$refs.cell !== undefined) {
+                if (this.playersGameInfo && this.$refs.cell ) {
                     this.$refs.cell.classList.remove("cell-hover");
                     this.$refs.cell.removeEventListener("click", this.votePlayer)
                 }
