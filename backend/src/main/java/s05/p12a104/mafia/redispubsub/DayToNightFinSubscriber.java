@@ -30,13 +30,17 @@ public class DayToNightFinSubscriber {
     try {
       String roomId = objectMapper.readValue(redisMessageStr, String.class);
       GameSession gameSession = gameSessionService.findById(roomId);
-      gameSession.setPhase(GamePhase.NIGHT_VOTE);
-      gameSession.setTimer(30);
+      // 나간 사람 체크 및 기본 세팅
+      gameSession.changePhase(GamePhase.NIGHT_VOTE, 30);
       gameSession.setAliveNotCivilian(gameSession.getPlayerMap().entrySet().stream()
           .filter(e -> e.getValue().getRole() != GameRole.CIVILIAN)
           .filter(e -> e.getValue().isAlive()).collect(Collectors.toList()).size());
       gameSessionService.update(gameSession);
 
+      // 종료 여부 체크
+      if (gameSessionService.isDone(gameSession))
+        return;
+      
       template.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));
 
       Map<String, String> players = new HashMap();

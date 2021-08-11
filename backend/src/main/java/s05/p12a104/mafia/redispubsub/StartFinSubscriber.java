@@ -32,12 +32,14 @@ public class StartFinSubscriber {
       // 나간 사람 체크 및 기본 세팅
       gameSession.changePhase(GamePhase.DAY_DISCUSSION, 100);
       gameSession.passADay();
+      gameSessionService.update(gameSession);
 
+      System.out.println(gameSession.getAliveMafia() +", " + gameSession.getAlivePlayer());
+      
       // 종료 여부 체크
       if (gameSessionService.isDone(gameSession))
         return;
 
-      gameSessionService.update(gameSession);
       log.info("Start Day " + gameSession.getDay());
 
       template.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));
