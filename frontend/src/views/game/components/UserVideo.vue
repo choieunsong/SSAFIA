@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
     <div v-if="streamManager" class="cell-box col-md-3">
         <div
             class="cell col-md-12"
@@ -13,6 +14,12 @@
                     :alive="this.playersGameInfo.alive"
                     :phase="this.gameStatus.phase"
                 />
+=======
+    <div v-if="streamManager" class="cell-box col-md-3" @click="votePlayer">
+        <div class="cell col-md-12" :style="'background-color: ' + getColor" ref="cell">
+            <div class="ov-video-wrap" :id="this.playersGameInfo.playerId">
+                <ov-video :stream-manager="streamManager" />
+>>>>>>> 5747d39 (fix: fix rebase conflict)
             </div>
             <span id="nickname" class="font-jua">
                 {{ this.playersGameInfo.nickname }}
@@ -96,6 +103,20 @@ export default {
                 }
             },
         },
+        playersGameInfo: {
+            deep: true,
+            handler() {
+                console.log("user video playersGameInfo change");
+                // console.log(this.playersGameInfo.voters);
+                if (this.playersGameinfo.isTalking === true) {
+                    const video = document.querySelector('#' + this.playersGameinfo.playerId)
+                    video.classList.add('talking-border')
+                } else {
+                    const video = document.querySelector('#' + this.playersGameinfo.playerId)
+                    video.classList.remove('talking-border')
+                }
+            },
+        },
         isConfirm: {
             handler() {
                 this.$refs.cell.classList.remove("cell-hover");
@@ -120,4 +141,14 @@ export default {
     },
 };
 </script>
-<style></style>
+<style>
+.cell-hover {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    cursor: pointer;
+}
+.talking-border {
+    border-style: solid;
+    border-color: #32a8a2;
+    border-width: thick;
+}
+</style>
