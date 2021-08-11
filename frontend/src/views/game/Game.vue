@@ -353,7 +353,7 @@ export default {
                     let publisher = state.OV.initPublisher(undefined, {
                         audioSource: undefined, // The source of audio. If undefined default microphone
                         videoSource: undefined, // The source of video. If undefined default webcam
-                        publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+                        publishAudio: false, // Whether you want to start publishing with your audio unmuted or not
                         publishVideo: true, // Whether you want to start publishing with your video enabled or not
                         resolution: "311x170", // The resolution of your video
                         frameRate: 30, // The frame rate of your video
@@ -862,7 +862,7 @@ export default {
                     infoUpdater("isMafia", null);
                 } else {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
-                        if (state.mafia.includes(state.playersGameInfo[i].playerId)) {
+                        if (state.mafias.includes(state.playersGameInfo[i].playerId)) {
                             state.playersGameInfo[i].isMafia = true;
                         } else {
                             state.playersGameInfo[i].isMafia = false;

@@ -81,21 +81,33 @@ export default {
         gameStatus: {
             deep: true,
             handler() {
-                if (this.streamManager) {
-                    if (this.playersGameInfo && this.playerInfo.alive === true) {
+                if (this.streamManager && this.playersGameInfo) {
+                    console.log("gameStatus changed")
+                    console.log(this.playersGameInfo.alive)
+                    console.log(this.gameStatus.phase)
+                    if (this.playersGameInfo.alive !== false) {
+                        // 초기화
+                        this.$refs.cell.classList.remove("cell-hover")
+                        this.$refs.cell.removeEventListener("click", this.votePlayer)
+                        this.$refs.cell.classList.remove("cell-unsuspicious")
                         if (this.gameStatus.phase === "DAY_DISCUSSION") {
+                            console.log("DAY_DISCUSSION")
                             this.$refs.cell.classList.add("cell-hover");
                             this.$refs.cell.addEventListener("click", this.votePlayer)
                         } else if (this.gameStatus.phase === "DAY_ELIMINATION") {
                             console.log("userVideo day elimination");
-                            this.$refs.cell.classList.add("cell-hover")
-                            this.$refs.cell.addEventListener("click", this.votePlayer)
+                            if (this.playersGameInfo.suspicious === true) {
+                                console.log(this.playersGameInfo.suspicious)
+                                this.$refs.cell.classList.add("cell-hover")
+                                this.$refs.cell.addEventListener("click", this.votePlayer)
+                            }
                             if (!this.playersGameInfo.suspicious) {
                                 console.log("not suspicious");
                                 this.$refs.cell.classList.add("cell-unsuspicious");
                                 this.$refs.cell.classList.remove("cell-hover");
                             }
                         } else if (this.gameStatus.phase === "NIGHT_VOTE") {
+                            console.log("NIGHT VOTE")
                             if (this.role === "MAFIA" && this.playersGameInfo.isMafia === false) {
                                 this.$refs.cell.classList.add("cell-hover")
                                 this.$refs.cell.addEventListener("click", this.votePlayer)
@@ -103,7 +115,7 @@ export default {
                                 this.$refs.cell.classList.add("cell-hover")
                                 this.$refs.cell.addEventListener("click", this.votePlayer)
                             } else if (this.role === "POLICE") {
-                                if (this.playerMe.playerId !== this.playersGameInfo.playerId) {
+                                if (this.playerMe !== true) {
                                     this.$refs.cell.classList.add("cell-hober")
                                     this.$refs.cell.addEventListener("click", this.votePlayer)
                                 }
@@ -123,16 +135,6 @@ export default {
                     } else {
                         this.$refs.cell.classList.remove('talking-border')
                     } 
-                    if (this.plaayersGameInfo.alive === false) {
-                        this.$refs.cell.classList.remove("cell-hover")
-                        this.$refs.removeEventListener("click", this.votePlayer)
-                    } else {
-                        if (this.gameStatus.phase === "DAY_ELIMINATION" && this.playersGameInfo.suspicious === false) {
-                            this.$refs.cell.classList.remove('cell-hover')
-                            this.$refs.cell.removeEventListener('click', this.votePlayer)
-                        }
-                    }
-                    
                 }
             },
         },
