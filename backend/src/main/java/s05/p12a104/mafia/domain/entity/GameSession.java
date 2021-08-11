@@ -132,15 +132,15 @@ public class GameSession {
   public GameResult getGameResult() {
     GameResult gameResult = new GameResult();
     gameResult.setTimer(15);
-    // 시민 <= 마피아 인 경우
-    if (aliveMafia >= alivePlayer)
+    // 마피아 >= 시민인 경우
+    if (aliveMafia >= alivePlayer - aliveMafia)
       gameResult.setWinner(GameRole.MAFIA);
 
     // 모든 마피아를 제거한 경우
-    // 15턴 모두 소요된 경우
     if (aliveMafia == 0)
       gameResult.setWinner(GameRole.CIVILIAN);
 
+    // 15턴 모두 소요된 경우
     if (day >= 15) {
       gameResult.setWinner(GameRole.CIVILIAN);
       gameResult.setTurnOver(true);
