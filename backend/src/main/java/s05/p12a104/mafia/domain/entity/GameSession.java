@@ -23,6 +23,7 @@ import s05.p12a104.mafia.domain.enums.GamePhase;
 import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.domain.enums.GameState;
 import s05.p12a104.mafia.domain.enums.RoomType;
+import s05.p12a104.mafia.stomp.response.GameResult;
 
 @Setter
 @Getter
@@ -87,7 +88,7 @@ public class GameSession {
       AccessType accessType, RoomType roomType, LocalDateTime createdTime, Session session,
       Map<String, Player> playerMap) {
     return new GameSessionBuilder().roomId(roomId).creatorEmail(creatorEmail).accessType(accessType)
-        .roomType(roomType).createdTime(createdTime).session(session).state(GameState.WAIT)
+        .roomType(roomType).createdTime(createdTime).session(session).state(GameState.READY)
         .playerMap(playerMap);
   }
 
@@ -126,6 +127,27 @@ public class GameSession {
 
   public void passADay() {
     this.day++;
+  }
+
+  public GameResult getGameResult() {
+    GameResult gameResult = new GameResult();
+    gameResult.setTimer(15);
+    // 마피아 >= 시민인 경우
+    if (aliveMafia >= alivePlayer - aliveMafia) {
+      gameResult.setWinner(GameRole.MAFIA);
+    }
+    // 모든 마피아를 제거한 경우
+    if (aliveMafia == 0) {
+      gameResult.setWinner(GameRole.CIVILIAN);
+    }
+
+    // 15턴 모두 소요된 경우
+    if (day >= 15) {
+      gameResult.setWinner(GameRole.CIVILIAN);
+      gameResult.setTurnOver(true);
+    }
+
+    return gameResult;
   }
 
   public static GameSession of(GameSessionDao dao, OpenVidu openVidu) {
