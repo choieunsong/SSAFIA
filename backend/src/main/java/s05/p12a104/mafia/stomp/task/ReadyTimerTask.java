@@ -24,6 +24,8 @@ public class ReadyTimerTask extends TimerTask {
     GameSession gameSession = gameSessionService.findById(roomId);
     gameSessionService.endGame(gameSession);
     
+    log.info("hostId : " + gameSession.getHostId());
+    
     template.convertAndSend("/sub/" + roomId, GameSessionReadyRes.of(gameSession));
   }
 

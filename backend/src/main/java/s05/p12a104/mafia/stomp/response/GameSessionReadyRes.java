@@ -7,12 +7,12 @@ import s05.p12a104.mafia.domain.enums.StompMessageType;
 @Getter
 public class GameSessionReadyRes {
   private StompMessageType type = StompMessageType.PHASE_CHANGED;
-  private GameReadyStatus status;
+  private GameReadyStatus gameStatus;
   private String hostId;
 
   public static GameSessionReadyRes of(GameSession gameSession) {
     GameSessionReadyRes gameSessionReadyRes = new GameSessionReadyRes();
-    gameSessionReadyRes.status = GameReadyStatus.of(gameSession);
+    gameSessionReadyRes.gameStatus = GameReadyStatus.of(gameSession);
     gameSessionReadyRes.hostId = gameSession.getHostId();
     return gameSessionReadyRes;
   }
