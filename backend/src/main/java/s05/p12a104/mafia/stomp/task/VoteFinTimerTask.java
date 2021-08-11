@@ -10,7 +10,7 @@ import s05.p12a104.mafia.domain.enums.GamePhase;
 @RequiredArgsConstructor
 @Service
 @Setter
-public class DayDiscussionVoteFinTimerTask extends TimerTask {
+public class VoteFinTimerTask extends TimerTask {
 
   private final GameSessionVoteService gameSessionVoteService;
   private String roomId;

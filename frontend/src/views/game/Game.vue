@@ -262,8 +262,8 @@ export default {
                     state.playersGameInfo.push({
                         playerId: tmp[1],
                         nickname: tmp[0],
-                        alive: null,
-                        suspicious: null,
+                        alive: true,
+                        suspicious: false,
                         voters: [],
                         isMafia: null,
                         color: null,
@@ -349,7 +349,7 @@ export default {
                     let publisher = state.OV.initPublisher(undefined, {
                         audioSource: undefined, // The source of audio. If undefined default microphone
                         videoSource: undefined, // The source of video. If undefined default webcam
-                        publishAudio: false, // Whether you want to start publishing with your audio unmuted or not
+                        publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
                         publishVideo: true, // Whether you want to start publishing with your video enabled or not
                         resolution: "311x170", // The resolution of your video
                         frameRate: 30, // The frame rate of your video
@@ -365,8 +365,8 @@ export default {
                     state.playerMe = {
                         playerId: state.playerId,
                         nickname: state.myUserName,
-                        alive: null,
-                        suspicious: null,
+                        alive: true,
+                        suspicious: false,
                         voters: [],
                         color: "red",
                         isMafia: null,
@@ -564,6 +564,7 @@ export default {
                     }
                 } else {
                     state.playerMe[key] = message.playerMap[state.playerMe.playerId][key];
+                    console.log("newSubscriberOn", state.newSubscriberOn);
                     // 만약 openVidu보다 먼저 stomp 정보 들어오는 경우 temp에 저장
                     if (!state.newSubscriberOn) {
                         state.tempPlayerMap = message.playerMap;
@@ -573,6 +574,7 @@ export default {
                             state.playersGameInfo[i][key] =
                                 message.playerMap[state.playersGameInfo[i].playerId][key];
                         }
+                        console.log("!!!!!!!!!playersGameInfo", state.playersGameInfo);
                         state.newSubscriberOn = false;
                     }
                 }
@@ -589,26 +591,30 @@ export default {
             } else if (message.type === "LEAVE") {
                 infoUpdater("isHost", message);
             } else if (message.type === "REJOIN") {
-                for (let i=0; i.state.playersGameInfo.length;i++) {
-                    if (state.playersGameInfo[i].playerID ===  message.rejoiningPlayerId) {
-                        state.playersGameInfo[i].alive = message.alive
-                        state.playersGameInfo[i].suspicious = message.suspicious
-                        break
+                for (let i = 0; i.state.playersGameInfo.length; i++) {
+                    if (state.playersGameInfo[i].playerID === message.rejoiningPlayerId) {
+                        state.playersGameInfo[i].alive = message.alive;
+                        state.playersGameInfo[i].suspicious = message.suspicious;
+                        break;
                     }
                 }
             } else if (message.type === "PHASE_CHANGED") {
                 switch (message.gameStatus.phase) {
                     case "START": {
-                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
-                        audio.play()
+                        const audio = new Audio(
+                            "https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3"
+                        );
+                        audio.play();
                         state.gameStatus = message.gameStatus;
                         infoUpdater("alive", message);
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
                         break;
                     }
                     case "DAY_DISCUSSION": {
-                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
-                        audio.play()
+                        const audio = new Audio(
+                            "https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3"
+                        );
+                        audio.play();
                         state.submessage = "";
                         if (state.role !== "observer") {
                             state.message = `<span style='font-size: 25px; color:pink'>낮 투표시간</span>이 되었습니다. <br/> 각자 의심되는 사람을 지목해 주세요. <br/> 최다 득표를 한 사람들은 최종투표에 나가게 됩니다.`;
@@ -622,17 +628,20 @@ export default {
                         break;
                     }
                     case "DAY_ELIMINATION": {
-                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
-                        audio.play()
+                        const audio = new Audio(
+                            "https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3"
+                        );
+                        audio.play();
                         state.vote = null;
                         if (state.role !== "observer") {
                             state.message =
-                                "<span style='font-size: 25px; color:pink'>최종투표시간</span>이 되었습니다. <br/> 최종투표 후보자들 중에 제거할 사람에게 투표해 주세요. <br/> 최다득표자는 제거되게 됩니다.";
+                                "<span style='font-size: 25px; color:pink'>최종투표시간</span>이 되었습니다. <br/> 최종투표 후보자들 중에 제거할 사람에게 투표해 주세요. <br/> 최다득표자는 제거됩니다.";
                         } else {
                             state.message =
                                 "당신은 관전자입니다. <br/> 게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
                         }
                         state.gameStatus = message.gameStatus;
+                        state.newSubscriberOn = true;
                         infoUpdater("suspicious", message);
                         infoUpdater("voters", null);
                         state.isConfirm = false;
@@ -640,8 +649,10 @@ export default {
                         break;
                     }
                     case "DAY_TO_NIGHT": {
-                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
-                        audio.play()
+                        const audio = new Audio(
+                            "https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3"
+                        );
+                        audio.play();
                         state.vote = null;
                         if (state.gameStatus === "DAY_DISCUSSION") {
                             state.message =
@@ -678,8 +689,10 @@ export default {
                         break;
                     }
                     case "NIGHT_VOTE": {
-                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
-                        audio.play()
+                        const audio = new Audio(
+                            "https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3"
+                        );
+                        audio.play();
                         if (state.role === "MAFIA") {
                             state.message =
                                 "밤이 되었습니다. 마피아는 시민 중 제거할 사람을 투표하여 주시기 바랍니다.";
@@ -718,8 +731,10 @@ export default {
                         break;
                     }
                     case "NIGHT_TO_DAY": {
-                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
-                        audio.play()
+                        const audio = new Audio(
+                            "https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3"
+                        );
+                        audio.play();
                         state.vote = null;
                         if (message.gameStatus.victim) {
                             let victimNickname = "";
@@ -753,8 +768,10 @@ export default {
                         break;
                     }
                     case "END": {
-                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
-                        audio.play()
+                        const audio = new Audio(
+                            "https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3"
+                        );
+                        audio.play();
                         let winner = message.gameStatus.winner === "mafia" ? "마피아" : "시민";
                         state.message = `게임이 종료되었습니다. 최종승자는 ${winner}입니다.`;
                         break;
@@ -789,7 +806,7 @@ export default {
                         infoUpdater("suspicious", null);
                         infoUpdater("voters", null);
                         infoUpdater("isMafia", null);
-                        infoUpdater("isHost", message)
+                        infoUpdater("isHost", message);
                         state.vote = null;
                         state.isConfirm = false;
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
@@ -923,16 +940,20 @@ export default {
                 );
                 switch (message.gameStatus.phase) {
                     case "START": {
-                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
-                        audio.play()
+                        const audio = new Audio(
+                            "https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3"
+                        );
+                        audio.play();
                         state.gameStatus = message.gameStatus;
                         infoUpdater("alive", message);
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
                         break;
                     }
                     case "DAY_DISCUSSION": {
-                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
-                        audio.play()
+                        const audio = new Audio(
+                            "https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3"
+                        );
+                        audio.play();
                         state.submessage = "";
                         if (state.role !== "observer") {
                             state.message =
@@ -947,8 +968,10 @@ export default {
                         break;
                     }
                     case "DAY_ELIMINATION": {
-                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
-                        audio.play()
+                        const audio = new Audio(
+                            "https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3"
+                        );
+                        audio.play();
                         state.vote = null;
                         if (state.role !== "observer") {
                             state.message =
@@ -965,8 +988,10 @@ export default {
                         break;
                     }
                     case "DAY_TO_NIGHT": {
-                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
-                        audio.play()
+                        const audio = new Audio(
+                            "https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3"
+                        );
+                        audio.play();
                         state.vote = null;
                         if (state.gameStatus === "DAY_DISCUSSION") {
                             state.message =
@@ -1003,8 +1028,10 @@ export default {
                         break;
                     }
                     case "NIGHT_VOTE": {
-                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
-                        audio.play()
+                        const audio = new Audio(
+                            "https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3"
+                        );
+                        audio.play();
                         if (state.role === "MAFIA") {
                             state.message =
                                 "밤이 되었습니다. 마피아는 시민 중 제거할 사람을 투표하여 주시기 바랍니다.";
@@ -1043,8 +1070,10 @@ export default {
                         break;
                     }
                     case "NIGHT_TO_DAY": {
-                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
-                        audio.play()
+                        const audio = new Audio(
+                            "https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3"
+                        );
+                        audio.play();
                         state.vote = null;
                         if (message.gameStatus.victim) {
                             let victimNickname = "";
@@ -1078,8 +1107,10 @@ export default {
                         break;
                     }
                     case "END": {
-                        const audio = new Audio('https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')
-                        audio.play()
+                        const audio = new Audio(
+                            "https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3"
+                        );
+                        audio.play();
                         let winner = message.gameStatus.winner === "mafia" ? "마피아" : "시민";
                         state.message = `게임이 종료되었습니다. 최종승자는 ${winner}입니다.`;
 
@@ -1118,7 +1149,7 @@ export default {
                         break;
                     }
                 }
-            } 
+            }
         }
 
         // 직업 채널로 온 메세지에 따라 할 일

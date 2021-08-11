@@ -16,6 +16,8 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import s05.p12a104.mafia.redispubsub.DayDiscussionFinSubscriber;
 import s05.p12a104.mafia.redispubsub.DayEliminationFinSubscriber;
+import s05.p12a104.mafia.redispubsub.DayToNightFinSubscriber;
+import s05.p12a104.mafia.redispubsub.NightVoteFinSubscriber;
 import s05.p12a104.mafia.redispubsub.StartFinSubscriber;
 
 @Configuration
@@ -50,17 +52,31 @@ public class RedisConfig {
   }
 
   @Bean
+  public ChannelTopic topicDayToNightFin() {
+    return new ChannelTopic("DAY_TO_NIGHT_FIN");
+  }
+
+  @Bean
+  public ChannelTopic topicNightVoteFin() {
+    return new ChannelTopic("NIGHT_VOTE_FIN");
+  }
+
+  @Bean
   public RedisMessageListenerContainer redisMessageListener(
       RedisConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter,
       MessageListenerAdapter dayDisculistenerAdapter,
-      MessageListenerAdapter dayEliminationlistenerAdapter, ChannelTopic topicStartFin,
-      ChannelTopic topicDayDiscussionFin, ChannelTopic topicDayEliminationFin) {
+      MessageListenerAdapter dayEliminationlistenerAdapter,
+      MessageListenerAdapter dayToNightlistenerAdapter,
+      MessageListenerAdapter nightVotelistenerAdapter, ChannelTopic topicStartFin,
+      ChannelTopic topicDayDiscussionFin, ChannelTopic topicDayEliminationFin,
+      ChannelTopic topicDayToNightFin, ChannelTopic topicNightVoteFin) {
     RedisMessageListenerContainer container = new RedisMessageListenerContainer();
     container.setConnectionFactory(connectionFactory);
     container.addMessageListener(listenerAdapter, topicStartFin);
     container.addMessageListener(dayDisculistenerAdapter, topicDayDiscussionFin);
-    container.addMessageListener(dayEliminationlistenerAdapter,
-        topicDayEliminationFin);
+    container.addMessageListener(dayEliminationlistenerAdapter, topicDayEliminationFin);
+    container.addMessageListener(dayToNightlistenerAdapter, topicDayToNightFin);
+    container.addMessageListener(nightVotelistenerAdapter, topicNightVoteFin);
     return container;
   }
 
@@ -77,6 +93,16 @@ public class RedisConfig {
   @Bean
   public MessageListenerAdapter dayEliminationlistenerAdapter(
       DayEliminationFinSubscriber subscriber) {
+    return new MessageListenerAdapter(subscriber, "sendMessage");
+  }
+
+  @Bean
+  public MessageListenerAdapter dayToNightlistenerAdapter(DayToNightFinSubscriber subscriber) {
+    return new MessageListenerAdapter(subscriber, "sendMessage");
+  }
+
+  @Bean
+  public MessageListenerAdapter nightVotelistenerAdapter(NightVoteFinSubscriber subscriber) {
     return new MessageListenerAdapter(subscriber, "sendMessage");
   }
 
