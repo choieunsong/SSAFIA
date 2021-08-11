@@ -1,8 +1,18 @@
 <template>
-    <div v-if="streamManager" class="cell-box col-md-3" @click="votePlayer">
-        <div class="cell col-md-12" :style="'background-color: ' + getColor" ref="cell">
+    <div v-if="streamManager" class="cell-box col-md-3">
+        <div
+            class="cell col-md-12"
+            :style="'background-color: ' + getColor"
+            ref="cell"
+            @click="votePlayer"
+        >
+            <span v-if="this.playersGameInfo.suspicious" class="cell-suspicious"></span>
             <div class="ov-video-wrap">
-                <ov-video :stream-manager="streamManager" />
+                <ov-video
+                    :stream-manager="streamManager"
+                    :alive="this.playersGameInfo.alive"
+                    :phase="this.gameStatus.phase"
+                />
             </div>
             <span id="nickname" class="font-jua">
                 {{ this.playersGameInfo.nickname }}
@@ -73,17 +83,17 @@ export default {
             deep: true,
             handler() {
                 if (this.streamManager) {
-                    if (this.gameStatus.phase == "DAY_DISCUSSION" && !this.playerMe) {
+                    if (this.gameStatus.phase == "DAY_DISCUSSION") {
                         this.$refs.cell.classList.add("cell-hover");
+                    } else if (this.gameStatus.phase == "DAY_ELIMINATION") {
+                        console.log("userVideo day elimination");
+                        if (!this.playersGameInfo.suspicious) {
+                            console.log("not suspicious");
+                            this.$refs.cell.classList.add("cell-unsuspicious");
+                            this.$refs.cell.classList.remove("cell-hover");
+                        }
                     }
                 }
-            },
-        },
-        playersGameInfo: {
-            deep: true,
-            handler() {
-                console.log("user video playersGameInfo change");
-                // console.log(this.playersGameInfo.voters);
             },
         },
         isConfirm: {
@@ -99,19 +109,15 @@ export default {
         },
         // 투표한 상대 플레이어의 playerId를 얻어오는 method
         votePlayer() {
-            console.log("click", this.playersGameInfo.playerId);
-            this.$emit("emitVoteDataUpdate", this.playersGameInfo.playerId);
+            if (
+                this.gameStatus.phase == "DAY_DISCUSSION" ||
+                (this.gameStatus.phase == "DAY_ELILMINATION" && this.playersGameInfo.suspicious)
+            ) {
+                console.log("click", this.playersGameInfo.playerId);
+                this.$emit("emitVoteDataUpdate", this.playersGameInfo.playerId);
+            }
         },
     },
 };
 </script>
-<style>
-.cell-hover {
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-    cursor: pointer;
-}
-
-.cell-hover:hover {
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
-}
-</style>
+<style></style>
