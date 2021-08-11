@@ -34,8 +34,6 @@ public class StartFinSubscriber {
       gameSession.passADay();
       gameSessionService.update(gameSession);
 
-      System.out.println(gameSession.getAliveMafia() +", " + gameSession.getAlivePlayer());
-      
       // 종료 여부 체크
       if (gameSessionService.isDone(gameSession))
         return;
