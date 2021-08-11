@@ -79,8 +79,14 @@ export default defineComponent({
                         ElMessage.error("방 생성 개수를 초과했습니다.(1시간 2개까지 가능)");
                     }
                 })
-                .catch((error) => {
-                    console.log(error);
+                .catch(({ response }) => {
+                    if (response.status === 500) {
+                        ElMessage.error("방 생성 개수를 초과했습니다.(1시간 2개까지 가능)");
+                    } else if (response.status === 401) {
+                        ElMessage.error("지원되지 않는 방 생성 조건입니다.");
+                    } else {
+                        console.log(response);
+                    }
                 });
         };
 

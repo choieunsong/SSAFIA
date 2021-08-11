@@ -96,6 +96,20 @@ export default {
                 }
             },
         },
+        playersGameInfo: {
+            deep: true,
+            handler() {
+                console.log("user video playersGameInfo change");
+                if (this.playersGameInfo !== undefined && this.$refs.cell !== undefined) {
+                    console.log(this.playersGameInfo)
+                    if (this.playersGameInfo.isTalking === true) {
+                        this.$refs.cell.classList.add('talking-border')
+                    } else {
+                        this.$refs.cell.classList.remove('talking-border')
+                    }
+                }
+            },
+        },
         isConfirm: {
             handler() {
                 this.$refs.cell.classList.remove("cell-hover");
@@ -120,4 +134,14 @@ export default {
     },
 };
 </script>
-<style></style>
+<style>
+.cell-hover {
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+    cursor: pointer;
+}
+.talking-border {
+    border-style: solid;
+    border-color: #00ff26;
+    border-width: thick;
+}
+</style>
