@@ -451,8 +451,8 @@ export default {
                 };
                 state.stompClient.send(
                     `/pub/${state.mySessionId}/confirm`,
+                    JSON.stringify(Message),
                     {},
-                    JSON.stringify(Message)
                 );
             }
         }
@@ -476,8 +476,8 @@ export default {
                 };
                 state.stompClient.send(
                     `/pub/${state.mySessionId}/${state.role}/vote`,
-                    {},
-                    JSON.stringify(message)
+                    JSON.stringify(message),
+                    {},                    
                 );
             }
         }
@@ -490,8 +490,8 @@ export default {
                 };
                 state.stompClient.send(
                     `/pub/${state.mySessionId}/${state.role}/confirm`,
+                    JSON.stringify(message),
                     {},
-                    JSON.stringify(message)
                 );
             }
         }
