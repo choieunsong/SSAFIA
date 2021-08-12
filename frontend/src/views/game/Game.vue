@@ -839,10 +839,15 @@ export default {
                             "https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3"
                         );
                         audio.play();
-                        if (message.gameStatus.winner === "MAFIA") {
-                            state.message = `게임이 종료되었습니다. <br> 시민 수가 마피아 수 이하가 됐으므로 <span style="font-size: 25px; color:#DC143C">마피아측 진영</span>의 승리입니다.`;
+                        if (message.gameStatus.turnOver === true) {
+                            state.message = `게임이 종료되었습니다 <br> 15턴이 지나 자동으로 <span style="font-size: 25px; color:#1E90FF">시민측 진영</span>이 승리하였습니다. `
                         } else {
-                            state.message = `게임이 종료되었습니다. <br> 마피아를 모두 제거하였으므로 <span style="font-size: 25px; color:#1E90FF">시민측 진영</span>이 승리하였습니다.`;
+                            let victims = message.gameStatus.victims.join(',')
+                            if (message.gameStatus.winner === "MAFIA") {
+                                state.message = `게임이 종료되었습니다. <br> ${victims}가 사망하면서 시민 수가 마피아 수 이하가 됐으므로 <span style="font-size: 25px; color:#DC143C">마피아측 진영</span>의 승리입니다.`;
+                            } else {
+                                state.message = `게임이 종료되었습니다. <br> ${victims}가 사망하면서 마피아를 모두 제거하였으므로 <span style="font-size: 25px; color:#1E90FF">시민측 진영</span>이 승리하였습니다.`;
+                            }
                         }
                         break;
                     }
