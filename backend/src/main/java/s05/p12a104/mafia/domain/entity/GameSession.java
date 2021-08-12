@@ -118,7 +118,7 @@ public class GameSession {
     Map<String, Player> playerMap = getPlayerMap();
     playerMap.forEach((playerId, player) -> {
       Integer leftPhaseCount = player.getLeftPhaseCount();
-      if (leftPhaseCount == null || leftPhaseCount != this.phaseCount - 1) {
+      if (!player.isLeft() || leftPhaseCount >= this.phaseCount) {
         return;
       }
       
