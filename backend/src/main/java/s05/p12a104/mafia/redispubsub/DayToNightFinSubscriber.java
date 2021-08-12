@@ -1,6 +1,7 @@
 package s05.p12a104.mafia.redispubsub;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -31,14 +32,14 @@ public class DayToNightFinSubscriber {
       String roomId = objectMapper.readValue(redisMessageStr, String.class);
       GameSession gameSession = gameSessionService.findById(roomId);
       // 나간 사람 체크 및 기본 세팅
-      gameSession.changePhase(GamePhase.NIGHT_VOTE, 30);
+      List<String> vitims = gameSession.changePhase(GamePhase.NIGHT_VOTE, 30);
       gameSession.setAliveNotCivilian(gameSession.getPlayerMap().entrySet().stream()
           .filter(e -> e.getValue().getRole() != GameRole.CIVILIAN)
           .filter(e -> e.getValue().isAlive()).collect(Collectors.toList()).size());
       gameSessionService.update(gameSession);
 
       // 종료 여부 체크
-      if (gameSessionService.isDone(gameSession)) {
+      if (gameSessionService.isDone(gameSession, vitims)) {
         return;
       }
       

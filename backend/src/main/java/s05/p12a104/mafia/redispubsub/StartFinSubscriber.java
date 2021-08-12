@@ -1,6 +1,7 @@
 package s05.p12a104.mafia.redispubsub;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -30,12 +31,12 @@ public class StartFinSubscriber {
       GameSession gameSession = gameSessionService.findById(roomId);
 
       // 나간 사람 체크 및 기본 세팅
-      gameSession.changePhase(GamePhase.DAY_DISCUSSION, 100);
+      List<String> victims = gameSession.changePhase(GamePhase.DAY_DISCUSSION, 100);
       gameSession.passADay();
       gameSessionService.update(gameSession);
 
       // 종료 여부 체크
-      if (gameSessionService.isDone(gameSession)) {
+      if (gameSessionService.isDone(gameSession, victims)) {
         return;
       }
 

@@ -1,5 +1,17 @@
 package s05.p12a104.mafia.api.service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.stream.Collectors;
+import org.springframework.data.redis.core.RedisKeyValueTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.stereotype.Service;
 import io.openvidu.java.client.ConnectionProperties;
 import io.openvidu.java.client.ConnectionType;
 import io.openvidu.java.client.OpenVidu;
@@ -7,19 +19,8 @@ import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
 import io.openvidu.java.client.OpenViduRole;
 import io.openvidu.java.client.Session;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisKeyValueTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.stereotype.Service;
 import s05.p12a104.mafia.api.requset.GameSessionPostReq;
 import s05.p12a104.mafia.api.response.GameSessionJoinRes;
 import s05.p12a104.mafia.api.response.PlayerJoinRoomState;
@@ -184,19 +185,26 @@ public class GameSessionServiceImpl implements GameSessionService {
     }
 
     player.setLeftPhaseCount(gameSession.getPhaseCount());
+    update(gameSession);
 
     final int TIME_TO_DIE = 30; // 30초
     Timer timer = new Timer();
     TimerTask timerTask = new TimerTask() {
       @Override
       public void run() {
-        if (player.getLeftPhaseCount() == null) {
+        GameSession gameSessionTemp = findById(gameSession.getRoomId());
+        if (gameSessionTemp.getState() == GameState.READY) {
           return;
         }
 
-        String playerId = player.getId();
-        gameSession.eliminatePlayer(playerId);
-        update(gameSession);
+        Player playerTemp = gameSessionTemp.getPlayerMap().get(player.getId());
+        if (playerTemp.getLeftPhaseCount() == null) {
+          return;
+        }
+
+        String playerId = playerTemp.getId();
+        gameSessionTemp.eliminatePlayer(playerId);
+        update(gameSessionTemp);
       }
     };
     timer.schedule(timerTask, TIME_TO_DIE * 1000);
@@ -304,8 +312,8 @@ public class GameSessionServiceImpl implements GameSessionService {
   }
 
   @Override
-  public boolean isDone(GameSession gameSession) {
-    GameResult gameResult = gameSession.getGameResult();
+  public boolean isDone(GameSession gameSession, List<String> victims) {
+    GameResult gameResult = GameResult.of(gameSession, victims);
     if (gameResult.getWinner() == null) {
       return false;
     }
@@ -319,11 +327,15 @@ public class GameSessionServiceImpl implements GameSessionService {
     // 중간에 나간 사람, 다시 들어오지 않은 사람 playerMap에서 제거 -> leave 처리
     // 그러면 hostId가 처리가 되겠지..?
     Map<String, Player> playerMap = gameSession.getPlayerMap();
+    List<Player> removePlayers = new ArrayList<>();
     for (Player player : playerMap.values()) {
       if (player.getLeftPhaseCount() == null) {
         continue;
       }
+      removePlayers.add(player);
+    }
 
+    for (Player player : removePlayers) {
       removeReadyUser(gameSession, player);
     }
 
@@ -342,7 +354,7 @@ public class GameSessionServiceImpl implements GameSessionService {
 
     observer = playerMap.entrySet().stream().filter(e -> e.getValue().getRole() != null)
         .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().getRole()));
-    
+
     return observer;
   }
 }

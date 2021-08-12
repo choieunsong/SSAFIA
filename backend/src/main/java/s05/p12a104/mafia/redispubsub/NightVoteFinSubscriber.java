@@ -1,5 +1,6 @@
 package s05.p12a104.mafia.redispubsub;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -47,30 +48,16 @@ public class NightVoteFinSubscriber {
         deadPlayerId = null;
       }
 
-      Player deadClone = gameSession.getPlayerMap().get(deadPlayerId);
-      Player deadPlayer = null;
-
-      // 죽으면 Role이 변경되기 때문에 미리 저장
-      if (deadClone != null) {
-        GameRole deadPlayerRole = deadClone.getRole();
-        deadPlayer = Player.builder(deadPlayerId, deadPlayerRole).build();
-      }
+      Player deadPlayer = gameSession.getPlayerMap().get(deadPlayerId);
 
       String suspectPlayerId = roleVote.get(GameRole.POLICE);
 
-      Player suspectClone = gameSession.getPlayerMap().get(suspectPlayerId);
-      Player suspectPlayer = null;
+      Player suspectPlayer = gameSession.getPlayerMap().get(suspectPlayerId);
 
-      // 죽으면 Role이 변경되기 때문에 미리 저장
-      if (suspectClone != null) {
-        GameRole suspectPlayerRole = suspectClone.getRole();
-        suspectPlayer = Player.builder(suspectPlayerId, suspectPlayerRole).build();
-      }
-
-      setNightToDay(gameSession, deadPlayerId, protectedPlayerId);
+      List<String> victims = setNightToDay(gameSession, deadPlayerId, protectedPlayerId);
 
       // 종료 여부 체크
-      if (gameSessionService.isDone(gameSession)) {
+      if (gameSessionService.isDone(gameSession, victims)) {
         return;
       }
 
@@ -104,15 +91,18 @@ public class NightVoteFinSubscriber {
     }
   }
 
-  private void setNightToDay(GameSession gameSession, String deadPlayerId,
+  private List<String> setNightToDay(GameSession gameSession, String deadPlayerId,
       String protectedPlayerId) {
     // 나간 사람 체크 및 기본 세팅
-    gameSession.changePhase(GamePhase.NIGHT_TO_DAY, 15);
+    List<String> victims = gameSession.changePhase(GamePhase.NIGHT_TO_DAY, 15);
 
     if (deadPlayerId != null) {
       gameSession.eliminatePlayer(deadPlayerId);
+      victims.add(gameSession.getPlayerMap().get(deadPlayerId).getNickname());
     }
 
     gameSessionService.update(gameSession);
+
+    return victims;
   }
 }

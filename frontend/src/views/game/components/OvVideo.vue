@@ -39,6 +39,8 @@ export default {
     width: 100%;
     height: 100%;
     background-color: black;
+    animation-duration: 1s;
+    animation-name: slide-in-bottom;
 }
 
 .ghost-img {
@@ -47,5 +49,24 @@ export default {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+}
+@keyframes slide-in-bottom {
+    0% {
+        transform: translateY(15vh);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 </style>
