@@ -77,6 +77,14 @@
                                     : ' vertical-align: middle; text-align: center; ',
                             ]"
                         ></span>
+                        <span
+                            class="info-text"
+                            v-html="state.submessage"
+                            :style="[
+                                state.gameStatus.phase == 'READY'
+                                    ? 'padding-top:50px'
+                                    : ' vertical-align: middle; text-align: center; ',
+                            ]"></span>
 
                         <div v-if="state.gameStatus.phase == 'READY'" class="url-copy-box">
                             <span class="url-title">친구를 초대해 보세요!</span>
