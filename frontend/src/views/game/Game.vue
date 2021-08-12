@@ -1184,7 +1184,11 @@ export default {
           }
         }
         const targetJob = message.isMafia ? "마피아" : "시민";
-        state.submessage = `당신이 지목한 ${targetNickname}의 직업은 ${targetJob}입니다.`;
+        if (state.role === "POLICE") {
+            state.submessage = `당신이 지목한 ${targetNickname}의 직업은 ${targetJob}입니다.`;
+        } else {
+            state.submessage = `경찰이 지목한 ${targetNickname}의 직업은 ${targetJob}입니다.`;
+        }
       } else if (message.type === "DEAD") {
           infoUpdater("role", message)
       }
