@@ -1187,6 +1187,7 @@ export default {
                     state.submessage = `경찰이 지목한 ${targetNickname}의 직업은 ${targetJob}입니다.`;
                 }
             } else if (message.type === "DEAD") {
+                state.newSubscriberOn = true;
                 infoUpdater("role", message);
             }
         }

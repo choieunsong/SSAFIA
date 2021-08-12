@@ -152,7 +152,7 @@ export default {
     },
     isConfirm: {
       handler() {
-        if (this.playersGameInfo && this.$refs.cell && !this.isConfirm) {
+        if (this.playersGameInfo && this.$refs.cell && this.isConfirm) {
           if (this.isConfirm) {
             this.$refs.cell.classList.remove("cell-hover");
             this.$refs.cell.removeEventListener("click", this.votePlayer);
