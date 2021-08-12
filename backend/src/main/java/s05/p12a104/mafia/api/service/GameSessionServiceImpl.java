@@ -8,6 +8,7 @@ import io.openvidu.java.client.OpenViduJavaClientException;
 import io.openvidu.java.client.OpenViduRole;
 import io.openvidu.java.client.Session;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -79,8 +80,7 @@ public class GameSessionServiceImpl implements GameSessionService {
 
     Session newSession = openVidu.createSession();
     String newRoomId =
-        RoomIdUtils.getIdPrefix(typeInfo.getAccessType())
-        + newSession.getSessionId().split("_")[1];
+        RoomIdUtils.getIdPrefix(typeInfo.getAccessType()) + newSession.getSessionId().split("_")[1];
 
     LocalDateTime createdTime = LocalDateTime.now();
     GameSession newGameSession = GameSession.builder(newRoomId, user.getEmail(),
@@ -333,5 +333,16 @@ public class GameSessionServiceImpl implements GameSessionService {
     gameSession.setAliveMafia(0);
 
     update(gameSession);
+  }
+
+  @Override
+  public Map<String, GameRole> addObserver(String roomId, String playerId) {
+    Map<String, GameRole> observer;
+    Map<String, Player> playerMap = findById(roomId).getPlayerMap();
+
+    observer = playerMap.entrySet().stream().filter(e -> e.getValue().getRole() != null)
+        .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().getRole()));
+    
+    return observer;
   }
 }

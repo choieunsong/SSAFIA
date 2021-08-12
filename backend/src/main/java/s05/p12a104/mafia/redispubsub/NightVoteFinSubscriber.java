@@ -16,6 +16,8 @@ import s05.p12a104.mafia.domain.enums.GamePhase;
 import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.redispubsub.message.NightVoteMessage;
 import s05.p12a104.mafia.stomp.response.GameStatusKillRes;
+import s05.p12a104.mafia.stomp.response.ObserberJoinRes;
+import s05.p12a104.mafia.stomp.response.PlayerDeadRes;
 import s05.p12a104.mafia.stomp.response.SuspectVoteRes;
 import s05.p12a104.mafia.stomp.task.StartFinTimerTask;
 
@@ -37,13 +39,32 @@ public class NightVoteFinSubscriber {
       Map<GameRole, String> roleVote = nightVoteMessage.getRoleVoteResult();
       GameSession gameSession = gameSessionService.findById(roomId);
 
-
       String deadPlayerId = roleVote.get(GameRole.MAFIA);
       String protectedPlayerId = roleVote.get(GameRole.DOCTOR);
 
       // 의사가 살렸을 경우 부활
       if (deadPlayerId != null && deadPlayerId.equals(protectedPlayerId)) {
         deadPlayerId = null;
+      }
+
+      Player deadClone = gameSession.getPlayerMap().get(deadPlayerId);
+      Player deadPlayer = null;
+
+      // 죽으면 Role이 변경되기 때문에 미리 저장
+      if (deadClone != null) {
+        GameRole deadPlayerRole = deadClone.getRole();
+        deadPlayer = Player.builder(deadPlayerId, deadPlayerRole).build();
+      }
+
+      String suspectPlayerId = roleVote.get(GameRole.POLICE);
+
+      Player suspectClone = gameSession.getPlayerMap().get(suspectPlayerId);
+      Player suspectPlayer = null;
+
+      // 죽으면 Role이 변경되기 때문에 미리 저장
+      if (suspectClone != null) {
+        GameRole suspectPlayerRole = suspectClone.getRole();
+        suspectPlayer = Player.builder(suspectPlayerId, suspectPlayerRole).build();
       }
 
       setNightToDay(gameSession, deadPlayerId, protectedPlayerId);
@@ -53,18 +74,19 @@ public class NightVoteFinSubscriber {
         return;
       }
 
-      Player deadPlayer = gameSession.getPlayerMap().get(deadPlayerId);
-
       // 밤투표 결과
       template.convertAndSend("/sub/" + roomId, GameStatusKillRes.of(gameSession, deadPlayer));
 
-      String suspectPlayerId = roleVote.get(GameRole.POLICE);
-
-      Player suspectPlayer = gameSession.getPlayerMap().get(suspectPlayerId);
+      // 사망자 OBSERVER 변경
+      if (deadPlayer != null) {
+        template.convertAndSend("/sub/" + roomId + "/" + deadPlayerId, PlayerDeadRes.of());
+      }
 
       // 용의자 Role 결과
       if (suspectPlayer != null) {
-        template.convertAndSend("/sub/" + roomId + "/" + GameRole.POLICE.toString(),
+        template.convertAndSend("/sub/" + roomId + "/" + GameRole.POLICE,
+            SuspectVoteRes.of(suspectPlayer));
+        template.convertAndSend("/sub/" + roomId + "/" + GameRole.OBSERVER,
             SuspectVoteRes.of(suspectPlayer));
       }
 

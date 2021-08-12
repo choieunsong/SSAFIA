@@ -107,6 +107,8 @@ public class GameSession {
     if (player.getRole() == GameRole.MAFIA) {
       aliveMafia--;
     }
+    player.setRole(GameRole.OBSERVER);
+    playerMap.put(playerId, player);
   }
 
   public void changePhase(GamePhase phase, int timer) {

@@ -42,4 +42,10 @@ public class Player implements Serializable {
         .nickname(nickname)
         .color(color);
   }
+
+  public static PlayerBuilder builder(String id, GameRole role) {
+    return new PlayerBuilder()
+        .id(id)
+        .role(role);
+  }
 }

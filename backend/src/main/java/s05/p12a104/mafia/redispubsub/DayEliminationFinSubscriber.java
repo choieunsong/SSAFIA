@@ -15,6 +15,7 @@ import s05.p12a104.mafia.domain.enums.GamePhase;
 import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.redispubsub.message.DayEliminationMessage;
 import s05.p12a104.mafia.stomp.response.GameStatusKillRes;
+import s05.p12a104.mafia.stomp.response.PlayerDeadRes;
 import s05.p12a104.mafia.stomp.task.StartFinTimerTask;
 
 @Slf4j
@@ -33,8 +34,18 @@ public class DayEliminationFinSubscriber {
       DayEliminationMessage dayEliminationMessage =
           objectMapper.readValue(message, DayEliminationMessage.class);
       String roomId = dayEliminationMessage.getRoomId();
-      String deadPlayerId = dayEliminationMessage.getDeadPlayerId();
       GameSession gameSession = gameSessionService.findById(roomId);
+
+      String deadPlayerId = dayEliminationMessage.getDeadPlayerId();
+      Player clone = gameSession.getPlayerMap().get(deadPlayerId);
+      Player deadPlayer = null;
+
+      // 죽으면 Role이 변경되기 때문에 미리 저장
+      if (clone != null) {
+        GameRole deadPlayerRole = clone.getRole();
+        deadPlayer = Player.builder(deadPlayerId, deadPlayerRole).build();
+      }
+
       setDayToNight(gameSession, deadPlayerId);
 
       // 종료 여부 체크
@@ -42,8 +53,13 @@ public class DayEliminationFinSubscriber {
         return;
       }
 
-      Player dead = gameSession.getPlayerMap().get(deadPlayerId);
-      template.convertAndSend("/sub/" + roomId, GameStatusKillRes.of(gameSession, dead));
+      // 밤투표 결과
+      template.convertAndSend("/sub/" + roomId, GameStatusKillRes.of(gameSession, deadPlayer));
+
+      // 사망자 OBSERVER 변경
+      if (deadPlayer != null) {
+        template.convertAndSend("/sub/" + roomId + "/" + deadPlayerId, PlayerDeadRes.of());
+      }
 
       // Timer를 돌릴 마땅한 위치가 없어서 추후에 통합 예정
       Timer timer = new Timer();

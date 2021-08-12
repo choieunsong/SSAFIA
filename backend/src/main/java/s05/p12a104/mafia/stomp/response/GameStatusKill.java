@@ -26,6 +26,7 @@ public class GameStatusKill {
     if (dead != null) {
       gameStatus.victim = dead.getId();
       gameStatus.victimIsMafia = dead.getRole() == GameRole.MAFIA ? true : false;
+      System.out.println(gameStatus.victimIsMafia+" "+dead.getRole());
     }
     return gameStatus;
   }
