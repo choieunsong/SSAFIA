@@ -77,13 +77,11 @@
                   : ' vertical-align: middle; text-align: center; ',
               ]"
             ></span>
-            <br>
+            <br />
             <span
               class="info-text"
               v-html="state.submessage"
-              :style="[
-                ' vertical-align: middle; text-align: center; ',
-              ]"
+              :style="[' vertical-align: middle; text-align: center; ']"
             ></span>
 
             <div v-if="state.gameStatus.phase == 'READY'" class="url-copy-box">
@@ -696,7 +694,7 @@ export default {
                   }
                   let victimJob = "";
                   const targetJob = message.isMafia ? "마피아" : "시민";
-                  state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${victimNickname}님의 직업은 ${victimJob}이였습니다  곧 밤으로 넘어갑니다.`;
+                  state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다. <br/> ${victimNickname}님의 직업은 ${victimJob}이였습니다. <br/>  곧 밤으로 넘어갑니다.`;
 
                   // 죽는 애니메이션
                 }
@@ -783,7 +781,7 @@ export default {
               } else {
                 victimJob = "시민";
               }
-              state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${victimNickname}님의 직업은 ${victimJob}이였습니다  곧 밤으로 넘어갑니다.`;
+              state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다. <br/> ${victimNickname}님의 직업은 ${victimJob}이였습니다  곧 밤으로 넘어갑니다.`;
             } else {
               state.message = "밤의 투표 결과, 아무도 죽지 않았습니다.";
             }
@@ -804,8 +802,12 @@ export default {
             );
             audio.play();
             let winner =
-              message.gameStatus.winner === "mafia" ? "마피아" : "시민";
-            state.message = `게임이 종료되었습니다. 최종승자는 ${winner}입니다.`;
+              message.gameStatus.winner === "MAFIA" ? "마피아" : "시민";
+            if (message.gameStatus.turnOver === true) {
+              state.message = `게임이 종료되었습니다. <br/> 최종승자는 ${winner}입니다. <br/> 시간이 지체되어 최종승자가 승리하게 되었습니다.`;
+            } else {
+              state.message = `게임이 종료되었습니다. <br/> 최종승자는 ${winnder}입니다. <br/> 승리조건을 만족하여 승리하게 되었습니다.`;
+            }
             break;
           }
           case "READY": {
@@ -829,6 +831,9 @@ export default {
                 state.playerNum--;
               }
             }
+
+            state.publisher.publishAudio(true);
+            state.publisher.publishVideo(true);
             for (let i = 0; i < state.subscribers.length; i++) {
               state.subscribers[i].subscribeToAudio(true);
               state.subscribers[i].subscribeToVideo(true);
@@ -905,14 +910,14 @@ export default {
           }
         }
         if (state.jobClicnt) {
-            state.jobClient.unsubscribe()
+          state.jobClient.unsubscribe();
         }
         state.jobClient = state.stompClient.subscribe(
           `/sub/${state.mySessionId}/${state.role}`,
           onJobMessageReceived
         );
         if (state.role === "OBSERVER") {
-            state.stompClient.send(`/pub/${state.mySessionId}/${state.role}`)
+          state.stompClient.send(`/pub/${state.mySessionId}/${state.role}`);
         }
       } else if (message.type === "REJOIN") {
         const keys = Object.keys(message.playerMap);
@@ -977,7 +982,7 @@ export default {
           onJobMessageReceived
         );
         if (state.role === "OBSERVER") {
-            state.stompClient.send(`/pub/${state.mySessionId}/${state.role}`)
+          state.stompClient.send(`/pub/${state.mySessionId}/${state.role}`);
         }
         switch (message.gameStatus.phase) {
           case "START": {
@@ -1136,12 +1141,12 @@ export default {
                   }
                 }
               }
-             let victimJob = "";
-                  if (message.victimIsMafia === true) {
-                    victimJob = "마피아";
-                  } else {
-                    victimJob = "시민";
-                  }
+              let victimJob = "";
+              if (message.victimIsMafia === true) {
+                victimJob = "마피아";
+              } else {
+                victimJob = "시민";
+              }
               state.message = `밤의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${victimNickname}님의 직업은 ${victimJob}이였습니다  곧 낮으로 넘어갑니다.`;
             } else {
               state.message = "밤의 투표 결과, 아무도 죽지 않았습니다.";
@@ -1185,12 +1190,12 @@ export default {
         }
         const targetJob = message.isMafia ? "마피아" : "시민";
         if (state.role === "POLICE") {
-            state.submessage = `당신이 지목한 ${targetNickname}의 직업은 ${targetJob}입니다.`;
+          state.submessage = `당신이 지목한 ${targetNickname}의 직업은 ${targetJob}입니다.`;
         } else {
-            state.submessage = `경찰이 지목한 ${targetNickname}의 직업은 ${targetJob}입니다.`;
+          state.submessage = `경찰이 지목한 ${targetNickname}의 직업은 ${targetJob}입니다.`;
         }
       } else if (message.type === "DEAD") {
-          infoUpdater("role", message)
+        infoUpdater("role", message);
       }
     }
 
