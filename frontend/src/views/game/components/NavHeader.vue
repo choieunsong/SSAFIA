@@ -2,10 +2,15 @@
     <div>
         <nav class="navbar navbar-expand-sm navbar-light bg-light">
             <div>
-                <img src="../../../assets/image/sun.png" id="sun-logo" />
+                <span class="logo"
+                    ><img src="../../../assets/image/sun.png" class="sun-logo" ref="sun"
+                /></span>
+                <span class="logo"
+                    ><img src="../../../assets/image/moon.png" class="moon-logo" ref="moon"
+                /></span>
                 <span id="sun-logo-title" class="font-jua">{{ getDate }}</span>
             </div>
-            <div style="margin-left: 70px">
+            <div style="margin-left: 120px">
                 <img
                     src="https://www.clipartmax.com/png/full/110-1108103_home-expansion-syndicate-mafia-logo.png"
                     alt=""
@@ -75,6 +80,7 @@
 <script>
 import "./navheader.css";
 import RuleBook from "./RuleBook.vue";
+
 export default {
     name: "NavHeader",
     components: {
@@ -85,6 +91,7 @@ export default {
         isHost: Boolean,
         gameStatus: Object,
         finishStartAnimation: Boolean,
+        role: String,
     },
     watch: {
         gameStatus: {
@@ -102,10 +109,41 @@ export default {
                     this.$refs.confirm.classList.add("confirm-button-active");
                     this.startCountDown();
                 } else if (this.gameStatus.phase == "DAY_ELIMINATION") {
+                    clearInterval(this.interval);
                     this.$refs.confirm.classList.remove("unhover");
+                    this.$refs.confirm.classList.add("confirm-button-active");
                     this.startCountDown();
                 } else if (this.gameStatus.phase == "DAY_TO_NIGHT") {
-                    this.$refs.confirm.classList.remove("unhover");
+                    clearInterval(this.interval);
+                    this.$refs.confirm.classList.add("unhover");
+                    this.$refs.confirm.classList.remove("confirm-button-active");
+                    this.startCountDown();
+                } else if (this.gameStatus.phase == "NIGHT_VOTE") {
+                    clearInterval(this.interval);
+                    this.$refs.sun.classList.add("sun-logo-deactive");
+                    this.$refs.moon.classList.add("moon-logo-active");
+                    this.startCountDown();
+                    if (this.role == "CIVILIAN") {
+                        this.$refs.confirm.classList.add("unhover");
+                        this.$refs.confirm.classList.remove("confirm-button-active");
+                    } else {
+                        this.$refs.confirm.classList.remove("unhover");
+                        this.$refs.confirm.classList.add("confirm-button-active");
+                    }
+                } else if (this.gameStatus.phase == "NIGHT_TO_DAY") {
+                    clearInterval(this.interval);
+                    this.$refs.sun.classList.remove("sun-logo-deactive");
+                    this.$refs.moon.classList.remove("moon-logo-active");
+                    this.$refs.sun.classList.add("sun-logo-active");
+                    this.$refs.moon.classList.add("moon-logo-deactive");
+
+                    this.$refs.confirm.classList.add("unhover");
+                    this.$refs.confirm.classList.remove("confirm-button-active");
+                    this.startCountDown();
+                } else if (this.gameStatus.phase == "END") {
+                    clearInterval(this.interval);
+                    this.$refs.confirm.classList.add("unhover");
+                    this.$refs.confirm.classList.remove("confirm-button-active");
                     this.startCountDown();
                 }
             },
@@ -119,6 +157,7 @@ export default {
             minPlayerNumToPlay: 4,
             clickStartButton: false,
             showRuleBook: false,
+            interval: null,
         };
     },
     computed: {
@@ -129,12 +168,13 @@ export default {
             if (this.gameStatus.phase == "READY") {
                 return "READY";
             } else {
-                return "DAY " + this.gameStatus.day;
+                if (this.gameStatus.phase !== "NIGHT_VOTE") {
+                    return "DAY " + this.gameStatus.day;
+                } else {
+                    return "NIGHT " + this.gameStatus.day;
+                }
             }
         },
-    },
-    created() {
-        // this.isHost = true;
     },
     methods: {
         gameStart() {
@@ -162,22 +202,27 @@ export default {
             }, 200);
         },
         countDownTimer() {
-            var interval = setInterval(() => {
+            this.interval = setInterval(() => {
                 this.time -= 1;
                 this.leftTime = this.gameStatus.timer - this.time;
             }, 1000);
 
             setTimeout(() => {
-                clearInterval(interval);
+                clearInterval(this.interval);
                 this.leftTime = 0;
                 this.clickStartButton = false; //다시 start button 활성화
             }, 1000 * this.gameStatus.timer);
         },
         confirmVote() {
             //투표 확정
-            if (this.gameStatus.phase == "DAY_DISCUSSION") {
+            if (
+                this.gameStatus.phase == "DAY_DISCUSSION" ||
+                this.gameStatus.phase == "DAY_ELIMINATION" ||
+                this.gameStatus.phase == "NIGHT_VOTE"
+            ) {
                 this.$emit("emitConfirmDataUpdate");
                 this.$refs.confirm.classList.add("unhover");
+                this.$refs.confirm.classList.remove("confirm-button-active");
             }
         },
     },

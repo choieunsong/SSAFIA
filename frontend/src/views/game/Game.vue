@@ -410,9 +410,7 @@ export default {
                 if (localPhase === "READY") {
                     state.stompClient.send(`/pub/${state.mySessionId}/join`, {});
                 } else {
-                    state.stompClient.send(
-                        `/pub/${state.mySessionId}/rejoin`,
-                    );
+                    state.stompClient.send(`/pub/${state.mySessionId}/rejoin`);
                 }
             } else {
                 state.stompClient.send(`/pub/${state.mySessionId}/join`, {});
@@ -452,7 +450,7 @@ export default {
                 state.stompClient.send(
                     `/pub/${state.mySessionId}/confirm`,
                     JSON.stringify(Message),
-                    {},
+                    {}
                 );
             }
         }
@@ -477,7 +475,7 @@ export default {
                 state.stompClient.send(
                     `/pub/${state.mySessionId}/${state.role}/vote`,
                     JSON.stringify(message),
-                    {},                    
+                    {}
                 );
             }
         }
@@ -491,7 +489,7 @@ export default {
                 state.stompClient.send(
                     `/pub/${state.mySessionId}/${state.role}/confirm`,
                     JSON.stringify(message),
-                    {},
+                    {}
                 );
             }
         }
@@ -558,10 +556,10 @@ export default {
                 }
             } else {
                 //color, suspicious, alive update
-                if (message === null || message === false) {
-                    state.playerMe[key] = message === null ? null : false;
+                if (message === null || typeof message == "boolean") {
+                    state.playerMe[key] = message === null ? null : message;
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
-                        state.playersGameInfo[i][key] = message === null ? null : false;
+                        state.playersGameInfo[i][key] = message === null ? null : message;
                     }
                 } else {
                     state.playerMe[key] = message.playerMap[state.playerMe.playerId][key];
@@ -808,7 +806,7 @@ export default {
                             state.subscribers[i].subscribeToVideo(true);
                         }
 
-                        infoUpdater("alive", null);
+                        infoUpdater("alive", true);
                         infoUpdater("suspicious", null);
                         infoUpdater("voters", null);
                         infoUpdater("isMafia", null);
