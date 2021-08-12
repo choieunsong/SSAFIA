@@ -1,6 +1,6 @@
 @keyframes suntrack {
     from {
-        transform: rotate(0.15turn);
+        transform: rotate(1turn);
     }
     to {
         transform: rotate(-0.85turn);
@@ -20,6 +20,19 @@
     }
 }
 
+@keyframes moon-effect {
+    from {
+        box-shadow: 0 0 10px rgb(255, 255, 253), 0 0 50px rgb(187, 198, 201),
+            0 0 75px rgb(133, 163, 168), 0 0 0 20px rgba(255, 231, 164, 0.1),
+            0 0 0 40px rgba(255, 240, 163, 0.07), 0 0 0 70px rgba(247, 223, 102, 0.03);
+    }
+    to {
+        box-shadow: 0 0 10px rgb(255, 255, 253), 0 0 50px rgb(187, 198, 201),
+            0 0 75px rgb(133, 163, 168), 0 0 8px 30px rgba(255, 249, 232, 0.08),
+            0 0 10px 70px rgba(255, 247, 210, 0.05), 0 0 20px 100px rgba(255, 248, 214, 0.03);
+    }
+}
+
 @keyframes gradient-animation {
     0% {
         background-position: 0% 50%;
@@ -32,15 +45,6 @@
     }
 }
 
-@keyframes day-elimination {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
 .animation-day {
     background: linear-gradient(270deg, #69bef7 0%, #479dee 50%, #3795ff 100%);
     animation: gradient-animation 10s ease infinite;
@@ -49,7 +53,14 @@
 .animation-day-elimination {
     background: -webkit-linear-gradient(-45deg, #69bef7 0%, #d094e7 50%, #d67e91 100%);
     opacity: 0;
-    animation: day-elimination 1s linear forwards, gradient-animation 10s ease infinite;
+    animation: fadein 1s linear forwards, gradient-animation 10s ease infinite;
+}
+
+.animation-night-vote {
+    background-color: #171c28;
+    opacity: 1;
+    transition-delay: 0.4s;
+    transition: background-color 0.4s ease;
 }
 
 #animtaion-wrap {
@@ -72,6 +83,87 @@
     right: 7vw;
     transform-origin: -28vw 7vw;
     animation: sun-effect 2s alternate infinite;
+}
+
+$pale-yellow: #f0f0e3;
+$color-carter: #f0f0e3;
+.moon {
+    opacity: 0;
+    width: 15vw;
+    height: 15vw;
+    background: #fff;
+    border-radius: 100%;
+    position: absolute;
+    bottom: -9vw;
+    right: 7vw;
+    transform-origin: -28vw 7vw;
+    border: 20px solid white;
+}
+
+.carter {
+    width: 70px;
+    height: 70px;
+    background-color: $color_carter;
+    border-radius: 50%;
+    position: absolute;
+    left: 40%;
+    top: 40%;
+    z-index: 3;
+
+    &.second {
+        width: 27px;
+        height: 27px;
+        left: 84%;
+        top: 55%;
+        z-index: 2;
+    }
+
+    &.third {
+        width: 40px;
+        height: 40px;
+        left: 65%;
+        top: 75%;
+        z-index: 1;
+    }
+}
+
+.star {
+    opacity: 1;
+    border-radius: 50%;
+    background: white;
+    position: absolute;
+    animation: star linear infinite;
+    @for $i from 1 through 60 {
+        &:nth-child(#{$i}) {
+            $size: random(7) + 3px;
+            width: $size;
+            height: $size;
+            animation-duration: random(30) + 15s;
+            animation-delay: random(40) - 40s;
+            top: random(101) - 1vh;
+        }
+    }
+}
+
+@keyframes star {
+    from {
+        transform: translate3d(-100%, 0, 1px);
+    }
+    to {
+        transform: translate3d(100vw, 0, 1px);
+    }
+}
+
+.fadeout {
+    opacity: 0;
+    transition-delay: 0.5s;
+    transition: opacity 1s ease forwards;
+}
+
+.fadein {
+    opacity: 1;
+    transition-delay: 0.5s;
+    transition: opacity 1s ease forwards;
 }
 
 body {
@@ -104,6 +196,15 @@ body {
     }
     100% {
         margin-left: -200px;
+    }
+}
+
+@keyframes moveCloudToRight {
+    0% {
+        margin-left: 0px;
+    }
+    100% {
+        margin-left: 1000px;
     }
 }
 /* ANIMATIONS */
