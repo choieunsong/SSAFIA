@@ -109,7 +109,8 @@ public class GameSession {
     }
   }
 
-  public void changePhase(GamePhase phase, int timer) {
+  public List<String> changePhase(GamePhase phase, int timer) {
+    List<String> victims = new ArrayList<>();
     this.phase = phase;
     this.phaseCount++;
     setTimer(timer);
@@ -117,37 +118,22 @@ public class GameSession {
     Map<String, Player> playerMap = getPlayerMap();
     playerMap.forEach((playerId, player) -> {
       Integer leftPhaseCount = player.getLeftPhaseCount();
-      if (leftPhaseCount == null || leftPhaseCount >= this.phaseCount) {
+      if (leftPhaseCount == null || leftPhaseCount != this.phaseCount - 1) {
         return;
       }
-      player.setLeftPhaseCount(null);
+      
+      log.info("changePhase player : " + playerId);
+      
+      // player.setLeftPhaseCount(null);
       eliminatePlayer(playerId);
+      victims.add(player.getNickname());
     });
+
+    return victims;
   }
 
   public void passADay() {
     this.day++;
-  }
-
-  public GameResult getGameResult() {
-    GameResult gameResult = new GameResult();
-    gameResult.setTimer(15);
-    // 마피아 >= 시민인 경우
-    if (aliveMafia >= alivePlayer - aliveMafia) {
-      gameResult.setWinner(GameRole.MAFIA);
-    }
-    // 모든 마피아를 제거한 경우
-    if (aliveMafia == 0) {
-      gameResult.setWinner(GameRole.CIVILIAN);
-    }
-
-    // 15턴 모두 소요된 경우
-    if (day >= 15) {
-      gameResult.setWinner(GameRole.CIVILIAN);
-      gameResult.setTurnOver(true);
-    }
-
-    return gameResult;
   }
 
   public static GameSession of(GameSessionDao dao, OpenVidu openVidu) {
@@ -177,8 +163,8 @@ public class GameSession {
             dao.getCreatedTime(), entitySession, playerMap)
         .finishedTime(dao.getFinishedTime()).day(dao.getDay()).isNight(dao.isNight())
         .aliveMafia(dao.getAliveMafia()).timer(dao.getTimer()).phase(dao.getPhase())
-        .lastEnter(dao.getLastEnter()).state(dao.getState()).mafias(mafias)
-        .alivePlayer(dao.getAlivePlayer()).hostId(dao.getHostId())
+        .phaseCount(dao.getPhaseCount()).lastEnter(dao.getLastEnter()).state(dao.getState())
+        .mafias(mafias).alivePlayer(dao.getAlivePlayer()).hostId(dao.getHostId())
         .aliveNotCivilian(dao.getAliveNotCivilian()).build();
 
     return gameSession;

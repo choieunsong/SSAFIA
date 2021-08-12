@@ -127,8 +127,6 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   private void publishRedis(String roomId, Vote vote) {
     GameSession gameSession = gameSessionService.findById(roomId);
 
-    // TODO: 여기에서 나간사람 체크
-
     if (gameSession.getPhase() == GamePhase.DAY_DISCUSSION) {
       DayDiscussionMessage dayDiscussionMessage =
           new DayDiscussionMessage(roomId, getSuspiciousList(gameSession, vote.getVoteResult()));

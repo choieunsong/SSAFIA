@@ -34,8 +34,6 @@ public class Player implements Serializable {
   // Player가 게임 진행 중 나간 시점의 phaseCount (phase 변환 시 해당 값을 확인하여 사망 처리하기 위한 목적)
   private Integer leftPhaseCount;
 
-  private List<String> mafias;
-
   public static PlayerBuilder builder(String id, String nickname, Color color) {
     return new PlayerBuilder()
         .id(id)

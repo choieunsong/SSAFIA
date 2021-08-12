@@ -1,5 +1,6 @@
 package s05.p12a104.mafia.redispubsub;
 
+import java.util.List;
 import java.util.Timer;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -35,10 +36,10 @@ public class DayEliminationFinSubscriber {
       String roomId = dayEliminationMessage.getRoomId();
       String deadPlayerId = dayEliminationMessage.getDeadPlayerId();
       GameSession gameSession = gameSessionService.findById(roomId);
-      setDayToNight(gameSession, deadPlayerId);
+      List<String> victims = setDayToNight(gameSession, deadPlayerId);
 
       // 종료 여부 체크
-      if (gameSessionService.isDone(gameSession)) {
+      if (gameSessionService.isDone(gameSession, victims)) {
         return;
       }
 
@@ -55,16 +56,19 @@ public class DayEliminationFinSubscriber {
     }
   }
 
-  private void setDayToNight(GameSession gameSession, String deadPlayerId) {
+  private List<String> setDayToNight(GameSession gameSession, String deadPlayerId) {
     log.info("deadPlayer: " + deadPlayerId);
     // 나간 사람 체크 및 기본 세팅
-    gameSession.changePhase(GamePhase.DAY_TO_NIGHT, 15);
+    List<String> victims = gameSession.changePhase(GamePhase.DAY_TO_NIGHT, 15);
 
     // 사망 처리
     if (deadPlayerId != null) {
       gameSession.eliminatePlayer(deadPlayerId);
+      victims.add(gameSession.getPlayerMap().get(deadPlayerId).getNickname());
     }
 
     gameSessionService.update(gameSession);
+
+    return victims;
   }
 }

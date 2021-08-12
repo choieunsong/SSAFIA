@@ -8,7 +8,9 @@ import io.openvidu.java.client.OpenViduJavaClientException;
 import io.openvidu.java.client.OpenViduRole;
 import io.openvidu.java.client.Session;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
@@ -79,8 +81,7 @@ public class GameSessionServiceImpl implements GameSessionService {
 
     Session newSession = openVidu.createSession();
     String newRoomId =
-        RoomIdUtils.getIdPrefix(typeInfo.getAccessType())
-        + newSession.getSessionId().split("_")[1];
+        RoomIdUtils.getIdPrefix(typeInfo.getAccessType()) + newSession.getSessionId().split("_")[1];
 
     LocalDateTime createdTime = LocalDateTime.now();
     GameSession newGameSession = GameSession.builder(newRoomId, user.getEmail(),
@@ -184,19 +185,26 @@ public class GameSessionServiceImpl implements GameSessionService {
     }
 
     player.setLeftPhaseCount(gameSession.getPhaseCount());
+    update(gameSession);
 
     final int TIME_TO_DIE = 30; // 30초
     Timer timer = new Timer();
     TimerTask timerTask = new TimerTask() {
       @Override
       public void run() {
-        if (player.getLeftPhaseCount() == null) {
+        GameSession gameSessionTemp = findById(gameSession.getRoomId());
+        if (gameSessionTemp.getState() == GameState.READY) {
           return;
         }
 
-        String playerId = player.getId();
-        gameSession.eliminatePlayer(playerId);
-        update(gameSession);
+        Player playerTemp = gameSessionTemp.getPlayerMap().get(player.getId());
+        if (playerTemp.getLeftPhaseCount() == null) {
+          return;
+        }
+
+        String playerId = playerTemp.getId();
+        gameSessionTemp.eliminatePlayer(playerId);
+        update(gameSessionTemp);
       }
     };
     timer.schedule(timerTask, TIME_TO_DIE * 1000);
@@ -304,8 +312,8 @@ public class GameSessionServiceImpl implements GameSessionService {
   }
 
   @Override
-  public boolean isDone(GameSession gameSession) {
-    GameResult gameResult = gameSession.getGameResult();
+  public boolean isDone(GameSession gameSession, List<String> victims) {
+    GameResult gameResult = GameResult.of(gameSession, victims);
     if (gameResult.getWinner() == null) {
       return false;
     }
@@ -319,11 +327,15 @@ public class GameSessionServiceImpl implements GameSessionService {
     // 중간에 나간 사람, 다시 들어오지 않은 사람 playerMap에서 제거 -> leave 처리
     // 그러면 hostId가 처리가 되겠지..?
     Map<String, Player> playerMap = gameSession.getPlayerMap();
+    List<Player> removePlayers = new ArrayList<>();
     for (Player player : playerMap.values()) {
       if (player.getLeftPhaseCount() == null) {
         continue;
       }
+      removePlayers.add(player);
+    }
 
+    for (Player player : removePlayers) {
       removeReadyUser(gameSession, player);
     }
 
