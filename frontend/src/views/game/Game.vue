@@ -813,14 +813,16 @@ export default {
                         state.mafias = undefined;
                         state.message = `Room: ${state.mySessionId}에 오신 걸 환영합니다.  부디 SSAFIA를 즐겨주시기 바랍니다`;
                         state.submessage = "";
-
-                        for (let j = 0; j < state.subscribers.length; j++) {
+                        for (let j = state.subscribers.length-1; j >= 0; j--) {
                             if (state.removeList.includes(j)) {
                                 state.subscribers.splice(j, 1);
                                 state.playersGameInfo.splice(j, 1);
                                 state.playerNum--;
                             }
                         }
+                        state.removeList = []
+                        state.publisher.publishAudio(true)
+                        state.publisher.publishVideo(true)
                         for (let i = 0; i < state.subscribers.length; i++) {
                             state.subscribers[i].subscribeToAudio(true);
                             state.subscribers[i].subscribeToVideo(true);
