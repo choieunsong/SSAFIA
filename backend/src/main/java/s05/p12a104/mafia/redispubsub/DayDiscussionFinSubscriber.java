@@ -43,7 +43,7 @@ public class DayDiscussionFinSubscriber {
         setDayToNight(roomId);
         return;
       }
-      
+
       // DAY ELIMINATION으로
       List<String> vitims = setDayElimination(gameSession, suspiciousList);
 
@@ -72,8 +72,9 @@ public class DayDiscussionFinSubscriber {
 
   private List<String> setDayElimination(GameSession gameSession, List<String> suspiciousList) {
     log.info("suspiciousList : " + suspiciousList.toString());
-    List<String> vitims = gameSession.changePhase(GamePhase.DAY_ELIMINATION, 30 * suspiciousList.size());
-    
+    List<String> vitims =
+        gameSession.changePhase(GamePhase.DAY_ELIMINATION, 30 * suspiciousList.size());
+
     // 의심자 체크
     Map<String, Player> playerMap = gameSession.getPlayerMap();
     for (String suspicious : suspiciousList) {
@@ -81,7 +82,7 @@ public class DayDiscussionFinSubscriber {
     }
 
     gameSessionService.update(gameSession);
-    
+
     return vitims;
   }
 

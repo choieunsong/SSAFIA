@@ -59,7 +59,7 @@ public class DayEliminationFinSubscriber {
   private List<String> setDayToNight(GameSession gameSession, String deadPlayerId) {
     log.info("deadPlayer: " + deadPlayerId);
     // 나간 사람 체크 및 기본 세팅
-    List<String> vitims =gameSession.changePhase(GamePhase.DAY_TO_NIGHT, 15);
+    List<String> vitims = gameSession.changePhase(GamePhase.DAY_TO_NIGHT, 15);
 
     // 사망 처리
     if (deadPlayerId != null) {
@@ -68,7 +68,7 @@ public class DayEliminationFinSubscriber {
     }
 
     gameSessionService.update(gameSession);
-    
+
     return vitims;
   }
 }
