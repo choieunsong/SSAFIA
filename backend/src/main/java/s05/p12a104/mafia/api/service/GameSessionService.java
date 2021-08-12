@@ -1,5 +1,6 @@
 package s05.p12a104.mafia.api.service;
 
+import java.util.List;
 import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
 import s05.p12a104.mafia.api.requset.GameSessionPostReq;
@@ -26,7 +27,7 @@ public interface GameSessionService {
   
   void startGame(GameSession gameSession);
 
-  boolean isDone(GameSession gameSession);
+  boolean isDone(GameSession gameSession, List<String> victims);
 
   void endGame(GameSession gameSession);
 }
