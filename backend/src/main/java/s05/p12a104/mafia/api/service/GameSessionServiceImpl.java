@@ -9,6 +9,7 @@ import io.openvidu.java.client.OpenViduRole;
 import io.openvidu.java.client.Session;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
@@ -184,19 +185,25 @@ public class GameSessionServiceImpl implements GameSessionService {
     }
 
     player.setLeftPhaseCount(gameSession.getPhaseCount());
+    update(gameSession);
 
     final int TIME_TO_DIE = 30; // 30초
     Timer timer = new Timer();
     TimerTask timerTask = new TimerTask() {
       @Override
       public void run() {
-        if (player.getLeftPhaseCount() == null) {
+        GameSession gameSessionTemp = findById(gameSession.getRoomId());
+        if(gameSessionTemp.getState() == GameState.READY)
+          return;
+        
+        Player playerTemp = gameSessionTemp.getPlayerMap().get(player.getId());
+        if (playerTemp.getLeftPhaseCount() == null) {
           return;
         }
 
-        String playerId = player.getId();
-        gameSession.eliminatePlayer(playerId);
-        update(gameSession);
+        String playerId = playerTemp.getId();
+        gameSessionTemp.eliminatePlayer(playerId);
+        update(gameSessionTemp);
       }
     };
     timer.schedule(timerTask, TIME_TO_DIE * 1000);
@@ -304,13 +311,12 @@ public class GameSessionServiceImpl implements GameSessionService {
   }
 
   @Override
-  public boolean isDone(GameSession gameSession) {
-    GameResult gameResult = gameSession.getGameResult();
-    if (gameResult.getWinner() == null) {
+  public boolean isDone(GameSession gameSession, List<String> vitims) {
+    if(vitims.isEmpty()) {
       return false;
     }
-
-    redisPublisher.publish(topicEnd, new EndMessgae(gameSession.getRoomId(), gameResult));
+    
+    redisPublisher.publish(topicEnd, new EndMessgae(gameSession.getRoomId(), GameResult.of(gameSession, vitims)));
     return true;
   }
 
