@@ -312,8 +312,8 @@ public class GameSessionServiceImpl implements GameSessionService {
   }
 
   @Override
-  public boolean isDone(GameSession gameSession, List<String> vitims) {
-    GameResult gameResult = GameResult.of(gameSession, vitims);
+  public boolean isDone(GameSession gameSession, List<String> victims) {
+    GameResult gameResult = GameResult.of(gameSession, victims);
     if (gameResult.getWinner() == null) {
       return false;
     }

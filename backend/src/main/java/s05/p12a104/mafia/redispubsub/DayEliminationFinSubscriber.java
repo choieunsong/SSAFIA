@@ -36,10 +36,10 @@ public class DayEliminationFinSubscriber {
       String roomId = dayEliminationMessage.getRoomId();
       String deadPlayerId = dayEliminationMessage.getDeadPlayerId();
       GameSession gameSession = gameSessionService.findById(roomId);
-      List<String> vitims = setDayToNight(gameSession, deadPlayerId);
+      List<String> victims = setDayToNight(gameSession, deadPlayerId);
 
       // 종료 여부 체크
-      if (gameSessionService.isDone(gameSession, vitims)) {
+      if (gameSessionService.isDone(gameSession, victims)) {
         return;
       }
 
@@ -59,16 +59,16 @@ public class DayEliminationFinSubscriber {
   private List<String> setDayToNight(GameSession gameSession, String deadPlayerId) {
     log.info("deadPlayer: " + deadPlayerId);
     // 나간 사람 체크 및 기본 세팅
-    List<String> vitims = gameSession.changePhase(GamePhase.DAY_TO_NIGHT, 15);
+    List<String> victims = gameSession.changePhase(GamePhase.DAY_TO_NIGHT, 15);
 
     // 사망 처리
     if (deadPlayerId != null) {
       gameSession.eliminatePlayer(deadPlayerId);
-      vitims.add(gameSession.getPlayerMap().get(deadPlayerId).getNickname());
+      victims.add(gameSession.getPlayerMap().get(deadPlayerId).getNickname());
     }
 
     gameSessionService.update(gameSession);
 
-    return vitims;
+    return victims;
   }
 }

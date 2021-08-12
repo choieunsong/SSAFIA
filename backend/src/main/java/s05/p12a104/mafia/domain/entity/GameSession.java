@@ -110,7 +110,7 @@ public class GameSession {
   }
 
   public List<String> changePhase(GamePhase phase, int timer) {
-    List<String> vitims = new ArrayList<>();
+    List<String> victims = new ArrayList<>();
     this.phase = phase;
     this.phaseCount++;
     setTimer(timer);
@@ -126,10 +126,10 @@ public class GameSession {
       
       // player.setLeftPhaseCount(null);
       eliminatePlayer(playerId);
-      vitims.add(player.getNickname());
+      victims.add(player.getNickname());
     });
 
-    return vitims;
+    return victims;
   }
 
   public void passADay() {

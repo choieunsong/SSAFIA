@@ -31,12 +31,12 @@ public class StartFinSubscriber {
       GameSession gameSession = gameSessionService.findById(roomId);
 
       // 나간 사람 체크 및 기본 세팅
-      List<String> vitims = gameSession.changePhase(GamePhase.DAY_DISCUSSION, 100);
+      List<String> victims = gameSession.changePhase(GamePhase.DAY_DISCUSSION, 100);
       gameSession.passADay();
       gameSessionService.update(gameSession);
 
       // 종료 여부 체크
-      if (gameSessionService.isDone(gameSession, vitims)) {
+      if (gameSessionService.isDone(gameSession, victims)) {
         return;
       }
 

@@ -45,10 +45,10 @@ public class DayDiscussionFinSubscriber {
       }
 
       // DAY ELIMINATION으로
-      List<String> vitims = setDayElimination(gameSession, suspiciousList);
+      List<String> victims = setDayElimination(gameSession, suspiciousList);
 
       // 종료 여부 체크
-      if (gameSessionService.isDone(gameSession, vitims)) {
+      if (gameSessionService.isDone(gameSession, victims)) {
         return;
       }
 
@@ -72,7 +72,7 @@ public class DayDiscussionFinSubscriber {
 
   private List<String> setDayElimination(GameSession gameSession, List<String> suspiciousList) {
     log.info("suspiciousList : " + suspiciousList.toString());
-    List<String> vitims =
+    List<String> victims =
         gameSession.changePhase(GamePhase.DAY_ELIMINATION, 30 * suspiciousList.size());
 
     // 의심자 체크
@@ -83,7 +83,7 @@ public class DayDiscussionFinSubscriber {
 
     gameSessionService.update(gameSession);
 
-    return vitims;
+    return victims;
   }
 
   private void setDayToNight(String roomId) {

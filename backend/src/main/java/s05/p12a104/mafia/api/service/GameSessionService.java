@@ -27,7 +27,7 @@ public interface GameSessionService {
   
   void startGame(GameSession gameSession);
 
-  boolean isDone(GameSession gameSession, List<String> vitims);
+  boolean isDone(GameSession gameSession, List<String> victims);
 
   void endGame(GameSession gameSession);
 }

@@ -16,9 +16,9 @@ public class GameResult {
   private GameRole winner;
   private int timer;
   private boolean turnOver;
-  private List<String> vitims;
+  private List<String> victims;
 
-  public static GameResult of(GameSession gameSession, List<String> vitims) {
+  public static GameResult of(GameSession gameSession, List<String> victims) {
     GameResult gameResult = new GameResult();
     gameResult.timer = 15;
     
@@ -41,7 +41,7 @@ public class GameResult {
       gameResult.turnOver = true;
     }
     
-    gameResult.vitims = vitims;
+    gameResult.victims = victims;
 
     return gameResult;
   }
