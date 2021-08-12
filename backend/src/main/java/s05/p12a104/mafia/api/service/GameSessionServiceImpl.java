@@ -169,7 +169,9 @@ public class GameSessionServiceImpl implements GameSessionService {
         removeReadyUser(gameSession, player);
       }
     }
-    update(gameSession);
+    if (gameSessionRedisRepository.findById(roomId).isPresent()) {
+      update(gameSession);
+    }
     return gameSession;
   }
 
@@ -339,12 +341,14 @@ public class GameSessionServiceImpl implements GameSessionService {
       removeReadyUser(gameSession, player);
     }
 
-    gameSession.setState(GameState.READY);
-    gameSession.setTimer(0);
-    gameSession.setDay(0);
-    gameSession.setAliveMafia(0);
+    if (gameSessionRedisRepository.findById(gameSession.getRoomId()).isPresent()) {
+      gameSession.setState(GameState.READY);
+      gameSession.setTimer(0);
+      gameSession.setDay(0);
+      gameSession.setAliveMafia(0);
 
-    update(gameSession);
+      update(gameSession);
+    }
   }
 
   @Override
