@@ -315,6 +315,52 @@ export default {
 
             state.session.on("exception", ({ exception }) => {
                 console.warn(exception);
+                // exception시 다시 연결하려는 시도 해보고 오류생기면 지워야할듯
+                 state.session
+                .connect(state.openviduToken, {
+                    clientData: `${state.myUserName},${state.playerId}`,
+                })
+                .then(() => {
+                    // --- Get your own camera stream with the desired properties ---
+
+                    let publisher = state.OV.initPublisher(undefined, {
+                        audioSource: undefined, // The source of audio. If undefined default microphone
+                        videoSource: undefined, // The source of video. If undefined default webcam
+                        publishAudio: false, // Whether you want to start publishing with your audio unmuted or not
+                        publishVideo: true, // Whether you want to start publishing with your video enabled or not
+                        resolution: "311x170", // The resolution of your video
+                        frameRate: 30, // The frame rate of your video
+                        insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
+                        mirror: false, // Whether to mirror your local video or not
+                    });
+
+                    state.publisher = publisher;
+
+                    state.session.publish(state.publisher);
+
+                    //내 정보 playerMe에 저장하기
+                    state.playerMe = {
+                        playerId: state.playerId,
+                        nickname: state.myUserName,
+                        alive: true,
+                        suspicious: false,
+                        voters: [],
+                        color: "red",
+                        isMafia: null,
+                        isHost: false,
+                        isTalking: false,
+                        role: null,
+                    };
+
+                    state.newSubscriberOn = true;
+                })
+                .catch((error) => {
+                    console.log(
+                        "There was an error connecting to the session:",
+                        error.code,
+                        error.message
+                    );
+                });
             });
 
             state.session.on("publisherStartSpeaking", (event) => {
