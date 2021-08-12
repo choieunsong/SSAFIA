@@ -93,10 +93,14 @@ export default {
     });
 
     onMounted(() => {
+      console.log("onMounted")
+      console.log(store.getters["token/getRoomId"])
+      console.log(store.getters["ingame/getPhase"])
       if (
-        store.getters["token/roomId"] === route.params.roomId &&
+        store.getters["token/getRoomId"] === route.params.roomId &&
         store.getters["ingame/getPhase"] !== "READY"
       ) {
+        console.log("rejoin tried")
         const url = API_BASE_URL + `/api/gamesession/${route.params.roomId}`;
         axios
           .get(url, {
@@ -105,8 +109,9 @@ export default {
             },
           })
           .then(({ data }) => {
+            console.log(data)
             if (data.code === "success" && data.data.state === "REJOIN") {
-              store.dispatch("setOpenviduToken", data.data.token).then(
+              store.dispatch("token/setOpenviduToken", data.data.token).then(
                 router.push({
                   name: "Game",
                   params: { roomId: route.params.roomId },
@@ -120,6 +125,7 @@ export default {
             }
           })
           .catch(({ response }) => {
+            console.log(response)
             if (response.status === 500) {
               router.push({ path: "/:catchAll(.*)" });
             } else if (response.status === 404) {
@@ -128,6 +134,9 @@ export default {
               console.log(response);
             }
           });
+          setTimeout(() => {
+          isShow.value = true;
+        }, 1000);
       } else {
         axios({
           method: "GET",
