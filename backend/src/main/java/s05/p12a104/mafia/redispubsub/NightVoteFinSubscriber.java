@@ -1,5 +1,6 @@
 package s05.p12a104.mafia.redispubsub;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -46,10 +47,10 @@ public class NightVoteFinSubscriber {
         deadPlayerId = null;
       }
 
-      setNightToDay(gameSession, deadPlayerId, protectedPlayerId);
+      List<String> vitims = setNightToDay(gameSession, deadPlayerId, protectedPlayerId);
 
       // 종료 여부 체크
-      if (gameSessionService.isDone(gameSession)) {
+      if (gameSessionService.isDone(gameSession, vitims)) {
         return;
       }
 
@@ -82,15 +83,18 @@ public class NightVoteFinSubscriber {
     }
   }
 
-  private void setNightToDay(GameSession gameSession, String deadPlayerId,
+  private List<String> setNightToDay(GameSession gameSession, String deadPlayerId,
       String protectedPlayerId) {
     // 나간 사람 체크 및 기본 세팅
-    gameSession.changePhase(GamePhase.NIGHT_TO_DAY, 15);
+    List<String> vitims = gameSession.changePhase(GamePhase.NIGHT_TO_DAY, 15);
 
     if (deadPlayerId != null) {
       gameSession.eliminatePlayer(deadPlayerId);
+      vitims.add(gameSession.getPlayerMap().get(deadPlayerId).getNickname());
     }
 
     gameSessionService.update(gameSession);
+
+    return vitims;
   }
 }

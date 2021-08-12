@@ -310,13 +310,14 @@ public class GameSessionServiceImpl implements GameSessionService {
     update(gameSession);
   }
 
-  @Override
-  public boolean isDone(GameSession gameSession, List<String> vitims) {
-    if(vitims.isEmpty()) {
+    @Override
+  public boolean isDone(GameSession gameSession) {
+    GameResult gameResult = gameSession.getGameResult();
+    if (gameResult.getWinner() == null) {
       return false;
     }
-    
-    redisPublisher.publish(topicEnd, new EndMessgae(gameSession.getRoomId(), GameResult.of(gameSession, vitims)));
+
+    redisPublisher.publish(topicEnd, new EndMessgae(gameSession.getRoomId(), gameResult));
     return true;
   }
 
