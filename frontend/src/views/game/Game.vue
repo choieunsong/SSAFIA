@@ -613,7 +613,7 @@ export default {
                         );
                         audio.play();
                         state.gameStatus = message.gameStatus;
-                        this.newSubscriberOn = true;
+                        state.newSubscriberOn = true;
                         infoUpdater("alive", message);
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
                         break;
@@ -631,7 +631,7 @@ export default {
                                 "당신은 <span style='font-size: 25px; color:pink'>관전자</span>입니다. <br/> 게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
                         }
                         state.gameStatus = message.gameStatus;
-                        this.newSubscriberOn = true;
+                        state.newSubscriberOn = true;
                         infoUpdater("alive", message);
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
                         break;
@@ -777,7 +777,7 @@ export default {
                             state.message = "밤의 투표 결과, 아무도 죽지 않았습니다.";
                         }
                         state.gameStatus = message.gameStatus;
-                        this.newSubscriberOn = true;
+                        state.newSubscriberOn = true;
                         infoUpdater("alive", message);
                         infoUpdater("voters", null);
                         state.isConfirm = false;
@@ -978,7 +978,7 @@ export default {
                         );
                         audio.play();
                         state.gameStatus = message.gameStatus;
-                        this.newSubscriberOn = true;
+                        state.newSubscriberOn = true;
                         infoUpdater("alive", message);
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
                         break;
@@ -997,7 +997,7 @@ export default {
                                 "당신은 관전자입니다.  게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
                         }
                         state.gameStatus = message.gameStatus;
-                        this.newSubscriberOn = true;
+                        state.newSubscriberOn = true;
                         infoUpdater("alive", message);
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
                         break;
@@ -1060,7 +1060,7 @@ export default {
                             }
                         }
                         state.gameStatus = message.gameStatus;
-                        this.newSubscriberOn = true;
+                        state.newSubscriberOn = true;
                         infoUpdater("alive", message);
                         infoUpdater("suspicious", null);
                         infoUpdater("voters", null);
@@ -1142,7 +1142,7 @@ export default {
                             state.message = "밤의 투표 결과, 아무도 죽지 않았습니다.";
                         }
                         state.gameStatus = message.gameStatus;
-                        this.newSubscriberOn = true;
+                        state.newSubscriberOn = true;
                         infoUpdater("alive", message);
                         infoUpdater("voters", null);
                         state.isConfirm = false;
