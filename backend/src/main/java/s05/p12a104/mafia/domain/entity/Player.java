@@ -40,4 +40,5 @@ public class Player implements Serializable {
         .nickname(nickname)
         .color(color);
   }
+
 }

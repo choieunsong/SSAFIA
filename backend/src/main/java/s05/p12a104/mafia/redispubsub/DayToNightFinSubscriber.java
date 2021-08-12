@@ -32,14 +32,14 @@ public class DayToNightFinSubscriber {
       String roomId = objectMapper.readValue(redisMessageStr, String.class);
       GameSession gameSession = gameSessionService.findById(roomId);
       // 나간 사람 체크 및 기본 세팅
-      List<String> vitims = gameSession.changePhase(GamePhase.NIGHT_VOTE, 30);
+      List<String> victims = gameSession.changePhase(GamePhase.NIGHT_VOTE, 30);
       gameSession.setAliveNotCivilian(gameSession.getPlayerMap().entrySet().stream()
           .filter(e -> e.getValue().getRole() != GameRole.CIVILIAN)
           .filter(e -> e.getValue().isAlive()).collect(Collectors.toList()).size());
       gameSessionService.update(gameSession);
 
       // 종료 여부 체크
-      if (gameSessionService.isDone(gameSession, vitims)) {
+      if (gameSessionService.isDone(gameSession, victims)) {
         return;
       }
       

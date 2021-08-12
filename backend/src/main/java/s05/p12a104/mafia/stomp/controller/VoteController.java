@@ -61,14 +61,22 @@ public class VoteController {
       @DestinationVariable GameRole roleName, @Payload GameSessionVoteReq req) {
     String playerId = accessor.getUser().getName();
 
-    GameSession gameSession = gameSessionService.findById(roomId);
+    // GamePhase 체크
+    if (req.getPhase() != GamePhase.NIGHT_VOTE) {
+      return;
+    }
 
     Vote vote = gameSessionVoteService.nightVote(roomId, playerId, req, roleName);
+    Vote forObserver = gameSessionVoteService.getVote(roomId, req);
 
     if (vote != null) {
-      simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + roleName.toString(),
+      simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + roleName,
           VoteResultRes.of(vote));
+      simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + GameRole.OBSERVER,
+          VoteResultRes.of(forObserver));
     }
+
+
   }
 
   @MessageMapping("/{roomId}/{roleName}/confirm")
