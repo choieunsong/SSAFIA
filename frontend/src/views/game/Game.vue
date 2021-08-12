@@ -806,7 +806,8 @@ export default {
             if (message.gameStatus.turnOver === true) {
               state.message = `게임이 종료되었습니다. <br/> 최종승자는 ${winner}입니다. <br/> 시간이 지체되어 최종승자가 승리하게 되었습니다.`;
             } else {
-              state.message = `게임이 종료되었습니다. <br/> 최종승자는 ${winnder}입니다. <br/> 승리조건을 만족하여 승리하게 되었습니다.`;
+              let victims = message.gameStatus.victims.join(',')
+              state.message = `게임이 종료되었습니다. <br/> 최종승자는 ${winner}입니다. <br/> ${victims}가 사망하여 승리하게 되었습니다.`;
             }
             break;
           }
