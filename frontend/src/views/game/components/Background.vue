@@ -1,7 +1,7 @@
 <template>
     <div id="animtaion-wrap" ref="background">
-        <div class="sun" ref="sun"></div>
-        <div class="moon" ref="moon">
+        <div v-if="this.phase != 'NIGHT_VOTE'" class="sun" ref="sun"></div>
+        <div v-if="this.phase == 'NIGHT_VOTE'" class="moon" ref="moon">
             <div class="carter first"></div>
             <div class="carter second"></div>
             <div class="carter third"></div>
@@ -25,8 +25,8 @@
         <div class="x5" ref="c5">
             <div v-if="this.phase != 'NIGHT_VOTE'" class="cloud c5"></div>
         </div>
+        <!-- <div v-if="this.phase == 'NIGHT_VOTE'"> -->
         <div v-if="this.phase == 'NIGHT_VOTE'">
-            <!-- <div v-if="!this.p"> -->
             <div class="star" ref="star"></div>
             <div class="star" ref="star"></div>
             <div class="star" ref="star"></div>
@@ -88,7 +88,6 @@
             <div class="star" ref="star"></div>
             <div class="star" ref="star"></div>
         </div>
-        <!-- <button @click="this.p = !this.p" class="temp">click</button> -->
     </div>
 </template>
 <script>
@@ -101,115 +100,47 @@ export default {
     data() {
         return {
             p: true,
+            firstNight: true,
         };
+    },
+    methods: {
+        pclick() {
+            if (this.p) {
+                this.p = false;
+            } else {
+                this.p = true;
+            }
+            console.log("ppppp", this.p);
+        },
     },
     mounted() {
         this.$refs.background.classList.add("animation-day");
-
-        //////
-        // this.$refs.sun.classList.add("sun-rise");
-        // this.$refs.c1.classList.add("move-cloud");
-        // this.$refs.c2.classList.add("move-cloud");
-        // this.$refs.c3.classList.add("move-cloud");
-        // this.$refs.c4.classList.add("move-cloud");
-        // this.$refs.c5.classList.add("move-cloud");
     },
     watch: {
-        // p: {
-        //     handler() {
-        //         if (this.p) {
-        //             this.$refs.moon.classList.add("animation-pause");
-
-        //             this.$refs.background.classList.add("animation-day");
-        //             this.$refs.background.classList.remove("animation-night-vote");
-
-        //             this.$refs.sun.classList.add("animation-running");
-
-        //             this.$refs.c1.classList.add("animation-running");
-
-        //             this.$refs.c2.classList.add("animation-running");
-
-        //             this.$refs.c3.classList.add("animation-running");
-
-        //             this.$refs.c4.classList.add("animation-running");
-
-        //             this.$refs.c5.classList.add("animation-running");
-        //         } else {
-        //             this.$refs.moon.classList.add("moon-rise");
-        //             this.$refs.sun.classList.add("animation-pause");
-
-        //             this.$refs.c1.classList.add("animation-pause");
-
-        //             this.$refs.c2.classList.add("animation-pause");
-
-        //             this.$refs.c3.classList.add("animation-pause");
-
-        //             this.$refs.c4.classList.add("animation-pause");
-
-        //             this.$refs.c5.classList.add("animation-pause");
-
-        //             this.$refs.background.classList.remove("animation-day");
-        //             this.$refs.background.classList.add("animation-night-vote");
-
-        //             this.$refs.moon.classList.add("animation-running");
-        //         }
-        //     },
-        // },
         phase: {
             handler() {
                 if (this.phase == "READY") {
                     this.$refs.background.classList.add("animation-day");
                 }
                 if (this.phase == "START") {
-                    this.$refs.sun.classList.add("sun-rise");
-                    this.$refs.c1.classList.add("move-cloud");
-                    this.$refs.c2.classList.add("move-cloud");
-                    this.$refs.c3.classList.add("move-cloud");
-                    this.$refs.c4.classList.add("move-cloud");
-                    this.$refs.c5.classList.add("move-cloud");
+                    // this.$refs.sun.classList.add("sun-rise");
+                    // this.$refs.c1.classList.add("move-cloud");
+                    // this.$refs.c2.classList.add("move-cloud");
+                    // this.$refs.c3.classList.add("move-cloud");
+                    // this.$refs.c4.classList.add("move-cloud");
+                    // this.$refs.c5.classList.add("move-cloud");
                 } else if (this.phase == "DAY_ELIMINATION") {
                     console.log("day elimination");
                     this.$refs.background.classList.remove("animation-day");
                     this.$refs.background.classList.add("animation-day-elimination");
                 } else if (this.phase == "NIGHT_VOTE") {
-                    this.$refs.sun.classList.add("animation-pause");
-                    this.$refs.sun.classList.add("fadeout");
-                    this.$refs.c1.classList.add("animation-pause");
-                    this.$refs.c1.classList.add("fadeout");
-                    this.$refs.c2.classList.add("animation-pause");
-                    this.$refs.c2.classList.add("fadeout");
-                    this.$refs.c3.classList.add("animation-pause");
-                    this.$refs.c3.classList.add("fadeout");
-                    this.$refs.c4.classList.add("animation-pause");
-                    this.$refs.c4.classList.add("fadeout");
-                    this.$refs.c5.classList.add("animation-pause");
-                    this.$refs.c5.classList.add("fadeout");
-
                     this.$refs.background.classList.remove("animation-day");
                     this.$refs.background.classList.remove("animation-day-elimination");
+
                     this.$refs.background.classList.add("animation-night-vote");
-
-                    this.$refs.moon.classList.add("fadein");
-                    this.$refs.moon.classList.add("moon-rise");
                 } else if (this.phase == "NIGHT_TO_DAY") {
-                    this.$refs.moon.classList.add("animation-pause");
-                    this.$refs.moon.classList.add("fadeout");
-
                     this.$refs.background.classList.add("animation-day");
                     this.$refs.background.classList.remove("animation-night-vote");
-
-                    this.$refs.sun.classList.add("fadein");
-                    this.$refs.sun.classList.add("animation-running");
-                    this.$refs.c1.classList.add("fadein");
-                    this.$refs.c1.classList.add("animation-running");
-                    this.$refs.c2.classList.add("fadein");
-                    this.$refs.c2.classList.add("animation-running");
-                    this.$refs.c3.classList.add("fadein");
-                    this.$refs.c3.classList.add("animation-running");
-                    this.$refs.c4.classList.add("fadeout");
-                    this.$refs.c4.classList.add("animation-running");
-                    this.$refs.c5.classList.add("fadein");
-                    this.$refs.c5.classList.add("animation-running");
                 }
             },
         },

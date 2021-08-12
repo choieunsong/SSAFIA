@@ -45,6 +45,15 @@
     }
 }
 
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
 .animation-day {
     background: linear-gradient(270deg, #69bef7 0%, #479dee 50%, #3795ff 100%);
     animation: gradient-animation 10s ease infinite;
@@ -53,7 +62,7 @@
 .animation-day-elimination {
     background: -webkit-linear-gradient(-45deg, #69bef7 0%, #d094e7 50%, #d67e91 100%);
     opacity: 0;
-    animation: fadein 1s linear forwards, gradient-animation 10s ease infinite;
+    animation: fadein 1s ease forwards, gradient-animation 10s ease infinite;
 }
 
 .animation-night-vote {
@@ -82,13 +91,12 @@
     bottom: -9vw;
     right: 7vw;
     transform-origin: -28vw 7vw;
-    animation: sun-effect 2s alternate infinite;
 }
 
 $pale-yellow: #f0f0e3;
 $color-carter: #f0f0e3;
 .moon {
-    opacity: 0;
+    opacity: 1;
     width: 15vw;
     height: 15vw;
     background: #fff;
@@ -98,6 +106,8 @@ $color-carter: #f0f0e3;
     right: 7vw;
     transform-origin: -28vw 7vw;
     border: 20px solid white;
+
+    animation: suntrack 30s infinite forwards linear, moon-effect 2s alternate infinite;
 }
 
 .carter {
@@ -182,7 +192,7 @@ body {
     position: fixed;
     right: 0;
     top: 0;
-    z-index: -1;
+    z-index: 1;
 }
 
 /* KEYFRAMES */

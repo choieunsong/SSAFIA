@@ -77,6 +77,12 @@
                                     : ' vertical-align: middle; text-align: center; ',
                             ]"
                         ></span>
+                        <br />
+                        <span
+                            class="info-text"
+                            v-html="state.submessage"
+                            :style="[' vertical-align: middle; text-align: center; ']"
+                        ></span>
 
                         <div v-if="state.gameStatus.phase == 'READY'" class="url-copy-box">
                             <span class="url-title">친구를 초대해 보세요!</span>
@@ -255,6 +261,7 @@ export default {
                         isMafia: null,
                         color: null,
                         isHost: false,
+                        role: null,
                     });
                     // 플레이어 수 1 증가
                     state.playerNum += 1;
@@ -380,6 +387,7 @@ export default {
                         isMafia: null,
                         isHost: false,
                         isTalking: false,
+                        role: null,
                     };
 
                     state.newSubscriberOn = true;
@@ -605,6 +613,7 @@ export default {
                         );
                         audio.play();
                         state.gameStatus = message.gameStatus;
+                        this.newSubscriberOn = true;
                         infoUpdater("alive", message);
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
                         break;
@@ -622,6 +631,7 @@ export default {
                                 "당신은 <span style='font-size: 25px; color:pink'>관전자</span>입니다. <br/> 게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
                         }
                         state.gameStatus = message.gameStatus;
+                        this.newSubscriberOn = true;
                         infoUpdater("alive", message);
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
                         break;
@@ -673,7 +683,8 @@ export default {
                                             break;
                                         }
                                     }
-                                    const victimJob = message.victimIsMafia ? "마피아" : "시민";
+                                    let victimJob = "";
+                                    const targetJob = message.isMafia ? "마피아" : "시민";
                                     state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${victimNickname}님의 직업은 ${victimJob}이였습니다  곧 밤으로 넘어갑니다.`;
 
                                     // 죽는 애니메이션
@@ -755,12 +766,18 @@ export default {
                                     }
                                 }
                             }
-                            const victimJob = message.gameStatus.victimIsMafia ? "마피아" : "시민";
-                            state.message = `밤의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${victimNickname}님의 직업은 ${victimJob}이였습니다  곧 낮으로 넘어갑니다.`;
+                            let victimJob = "";
+                            if (message.victimIsMafia === true) {
+                                victimJob = "마피아";
+                            } else {
+                                victimJob = "시민";
+                            }
+                            state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${victimNickname}님의 직업은 ${victimJob}이였습니다  곧 밤으로 넘어갑니다.`;
                         } else {
                             state.message = "밤의 투표 결과, 아무도 죽지 않았습니다.";
                         }
                         state.gameStatus = message.gameStatus;
+                        this.newSubscriberOn = true;
                         infoUpdater("alive", message);
                         infoUpdater("voters", null);
                         state.isConfirm = false;
@@ -776,8 +793,11 @@ export default {
                             "https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3"
                         );
                         audio.play();
-                        let winner = message.gameStatus.winner === "mafia" ? "마피아" : "시민";
-                        state.message = `게임이 종료되었습니다. 최종승자는 ${winner}입니다.`;
+                        if (message.gameStatus.winner === "MAFIA") {
+                            state.message = `게임이 종료되었습니다. <br> 시민 수가 마피아 수 이하가 됐으므로 <span style="font-size: 25px; color:#DC143C">마피아측 진영</span>의 승리입니다.`;
+                        } else {
+                            state.message = `게임이 종료되었습니다. <br> 마피아를 모두 제거하였으므로 <span style="font-size: 25px; color:#1E90FF">시민측 진영</span>이 승리하였습니다.`;
+                        }
                         break;
                     }
                     case "READY": {
@@ -844,7 +864,7 @@ export default {
                             }
                         }
                         const mafiaNicknameString = mafiaNicknames.join(" , ");
-                        state.message = `게임이 시작되었습니다. <br/>당신은 <span style='font-size: 25px; color:DodgerBlue'>마피아<span>입니다. <br/>마피아 동료와 함께 시민의 수를 마피아의 수와 같게 만들면 당신의 승리입니다. <br/>밤마다 마피아 동료들과 상의해 시민을 한명씩 제거해나가세요. <br/>당신의 마피아 동료는 ${mafiaNicknameString}들입니다`;
+                        state.message = `게임이 시작되었습니다. <br/>당신은 <span style='font-size: 25px; color:DodgerBlue'>마피아<span>입니다. <br/>마피아 동료와 함께 시민의 수를 마피아의 수와 같게 만들면 당신의 승리입니다. <br/>밤마다 마피아 동료들과 상의해 시민을 한명씩 제거해나가세요. <br/>당신의 마피아 동료는 ${mafiaNicknameString}입니다`;
                     }
                 } else if (state.role === "POLICE") {
                     state.message =
@@ -876,10 +896,16 @@ export default {
                         }
                     }
                 }
+                if (state.jobClicnt) {
+                    state.jobClient.unsubscribe();
+                }
                 state.jobClient = state.stompClient.subscribe(
                     `/sub/${state.mySessionId}/${state.role}`,
                     onJobMessageReceived
                 );
+                if (state.role === "OBSERVER") {
+                    state.stompClient.send(`/pub/${state.mySessionId}/${state.role}`);
+                }
             } else if (message.type === "REJOIN") {
                 const keys = Object.keys(message.playerMap);
                 for (let i = 0; i < keys.length; i++) {
@@ -942,6 +968,9 @@ export default {
                     `/sub/${state.mySessionId}/${state.role}`,
                     onJobMessageReceived
                 );
+                if (state.role === "OBSERVER") {
+                    state.stompClient.send(`/pub/${state.mySessionId}/${state.role}`);
+                }
                 switch (message.gameStatus.phase) {
                     case "START": {
                         const audio = new Audio(
@@ -949,6 +978,7 @@ export default {
                         );
                         audio.play();
                         state.gameStatus = message.gameStatus;
+                        this.newSubscriberOn = true;
                         infoUpdater("alive", message);
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
                         break;
@@ -967,6 +997,7 @@ export default {
                                 "당신은 관전자입니다.  게임에 개입할 수는 없지만, 모든 종류의 일어나고 있는 일들에 대한 정보를 받아볼 수 있습니다.";
                         }
                         state.gameStatus = message.gameStatus;
+                        this.newSubscriberOn = true;
                         infoUpdater("alive", message);
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
                         break;
@@ -1015,7 +1046,12 @@ export default {
                                             break;
                                         }
                                     }
-                                    const victimJob = message.victimIsMafia ? "마피아" : "시민";
+                                    let victimJob = "";
+                                    if (message.victimIsMafia === true) {
+                                        victimJob = "마피아";
+                                    } else {
+                                        victimJob = "시민";
+                                    }
                                     state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${victimNickname}님의 직업은 ${victimJob}이였습니다  곧 밤으로 넘어갑니다.`;
                                 }
                             } else {
@@ -1024,6 +1060,7 @@ export default {
                             }
                         }
                         state.gameStatus = message.gameStatus;
+                        this.newSubscriberOn = true;
                         infoUpdater("alive", message);
                         infoUpdater("suspicious", null);
                         infoUpdater("voters", null);
@@ -1094,12 +1131,18 @@ export default {
                                     }
                                 }
                             }
-                            const victimJob = message.gameStatus.victimIsMafia ? "마피아" : "시민";
+                            let victimJob = "";
+                            if (message.victimIsMafia === true) {
+                                victimJob = "마피아";
+                            } else {
+                                victimJob = "시민";
+                            }
                             state.message = `밤의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${victimNickname}님의 직업은 ${victimJob}이였습니다  곧 낮으로 넘어갑니다.`;
                         } else {
                             state.message = "밤의 투표 결과, 아무도 죽지 않았습니다.";
                         }
                         state.gameStatus = message.gameStatus;
+                        this.newSubscriberOn = true;
                         infoUpdater("alive", message);
                         infoUpdater("voters", null);
                         state.isConfirm = false;
@@ -1115,42 +1158,8 @@ export default {
                             "https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3"
                         );
                         audio.play();
-                        let winner = message.gameStatus.winner === "mafia" ? "마피아" : "시민";
+                        let winner = message.gameStatus.winner === "MAFIA" ? "마피아" : "시민";
                         state.message = `게임이 종료되었습니다. 최종승자는 ${winner}입니다.`;
-
-                        // 초기화
-                        state.role = undefined;
-                        state.gameStatus = {
-                            date: 0,
-                            phase: "READY",
-                            timer: 0,
-                            aliveMafia: 0,
-                        };
-                        state.jobClient = undefined;
-                        state.mafias = undefined;
-                        state.message = `Room: ${state.mySessionId}에 오신 걸 환영합니다.  부디 SSAFIA를 즐겨주시기 바랍니다`;
-                        state.submessage = "";
-
-                        for (let j = 0; j < state.subscribers.length; j++) {
-                            if (state.removeList.includes(j)) {
-                                state.subscribers.splice(j, 1);
-                                state.playersGameInfo.splice(j, 1);
-                                state.playerNum--;
-                            }
-                        }
-                        for (let i = 0; i < state.subscribers.length; i++) {
-                            state.subscribers[i].subscribeToAudio(true);
-                            state.subscribers[i].subscribeToVideo(true);
-                        }
-
-                        infoUpdater("alive", null);
-                        infoUpdater("suspicious", null);
-                        infoUpdater("voters", null);
-                        infoUpdater("isMafia", null);
-                        state.vote = null;
-                        state.isConfirm = false;
-                        store.dispatch("ingame/setPhase", state.gameStatus.phase);
-                        break;
                     }
                 }
             }
@@ -1159,9 +1168,9 @@ export default {
         // 직업 채널로 온 메세지에 따라 할 일
         function onJobMessageReceived(payload) {
             const message = JSON.parse(payload.body);
-            if (state.role === "MAFIA" || state.role === "OBSERVER") {
+            if (message.type === "UPDATE") {
                 infoUpdater("voters", message);
-            } else if (state.role === "POLICE") {
+            } else if (message.type === "POLICE") {
                 let targetNickname = "";
                 for (let i = 0; i < state.playersGameInfo.length; i++) {
                     if (state.playersGameInfo[i].playerId === message.vote) {
@@ -1170,9 +1179,16 @@ export default {
                     }
                 }
                 const targetJob = message.isMafia ? "마피아" : "시민";
-                state.submessage = `당신이 지목한 ${targetNickname}의 직업은 ${targetJob}입니다.`;
+                if (state.role === "POLICE") {
+                    state.submessage = `당신이 지목한 ${targetNickname}의 직업은 ${targetJob}입니다.`;
+                } else {
+                    state.submessage = `경찰이 지목한 ${targetNickname}의 직업은 ${targetJob}입니다.`;
+                }
+            } else if (message.type === "DEAD") {
+                infoUpdater("role", message);
             }
         }
+
         // 게임 페이지 떠날 때 할일
         function leaveGame() {
             state.stompClient.send(`/pub/${state.mySessionId}/leave`, {});
