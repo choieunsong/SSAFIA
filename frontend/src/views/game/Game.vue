@@ -730,8 +730,8 @@ export default {
                                         }
                                     }
                                     let victimJob = "";
-                                    const targetJob = message.isMafia ? "마피아" : "시민";
-                                    state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${victimNickname}님의 직업은 ${victimJob}이였습니다  곧 밤으로 넘어갑니다.`;
+                                    const targetJob = message.victimIsMafia ? "마피아" : "시민";
+                                    state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${victimNickname}님의 직업은 ${targetJob}이였습니다  곧 밤으로 넘어갑니다.`;
 
                                     // 죽는 애니메이션
                                 }
@@ -1267,7 +1267,7 @@ export default {
         }
 
         /////////////////set url//////////////
-        state.inviteUrl = API_CLIENT_URL + "/game/" + route.params.roomId;
+        state.inviteUrl = API_CLIENT_URL + "/nickname/" + route.params.roomId;
 
         //////////// 플레이어 수에 따라 그리드 변경
         const getJustifyClassFirstRow = computed(() => {
