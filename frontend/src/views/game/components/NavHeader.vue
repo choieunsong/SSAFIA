@@ -99,12 +99,15 @@ export default {
             handler() {
                 console.log("watch change", this.gameStatus.phase);
                 if (this.gameStatus.phase == "READY") {
+                    clearInterval(this.interval);
                     console.log("watch ready");
                 } else if (this.gameStatus.phase == "START") {
+                    clearInterval(this.interval);
                     console.log("watch start");
                     this.clickStartButton = true;
                     this.startCountDown();
                 } else if (this.gameStatus.phase == "DAY_DISCUSSION") {
+                    clearInterval(this.interval);
                     this.$refs.confirm.classList.remove("unhover");
                     this.$refs.confirm.classList.add("confirm-button-active");
                     this.startCountDown();
