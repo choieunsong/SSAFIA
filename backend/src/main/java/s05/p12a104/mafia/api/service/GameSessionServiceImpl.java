@@ -193,9 +193,10 @@ public class GameSessionServiceImpl implements GameSessionService {
       @Override
       public void run() {
         GameSession gameSessionTemp = findById(gameSession.getRoomId());
-        if(gameSessionTemp.getState() == GameState.READY)
+        if (gameSessionTemp.getState() == GameState.READY){
           return;
-        
+        }
+
         Player playerTemp = gameSessionTemp.getPlayerMap().get(player.getId());
         if (playerTemp.getLeftPhaseCount() == null) {
           return;
@@ -310,14 +311,14 @@ public class GameSessionServiceImpl implements GameSessionService {
     update(gameSession);
   }
 
-    @Override
-  public boolean isDone(GameSession gameSession) {
-    GameResult gameResult = gameSession.getGameResult();
-    if (gameResult.getWinner() == null) {
+  @Override
+  public boolean isDone(GameSession gameSession, List<String> vitims) {
+    if (vitims.isEmpty()) {
       return false;
     }
 
-    redisPublisher.publish(topicEnd, new EndMessgae(gameSession.getRoomId(), gameResult));
+    redisPublisher.publish(topicEnd,
+        new EndMessgae(gameSession.getRoomId(), GameResult.of(gameSession, vitims)));
     return true;
   }
 
