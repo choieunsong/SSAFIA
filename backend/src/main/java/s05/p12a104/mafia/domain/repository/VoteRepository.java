@@ -3,71 +3,85 @@ package s05.p12a104.mafia.domain.repository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Repository;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import s05.p12a104.mafia.domain.entity.Vote;
 import s05.p12a104.mafia.domain.enums.GamePhase;
+import s05.p12a104.mafia.domain.enums.GameRole;
 
-@Getter
 @RequiredArgsConstructor
 @Repository
 public class VoteRepository {
 
-  private final RedisTemplate<String, Vote> redisTemplate;
-  private HashOperations<String, String, Vote> opsHashVote;
-  private Map<String, ChannelTopic> topics;
-  private final String key = "Vote";
+  private final VoteRedisRepository voteRedisRepository;
+  private Map<String, Map<String, GameRole>> votersMap;
 
   @PostConstruct
   private void init() {
-    opsHashVote = redisTemplate.opsForHash();
-    topics = new HashMap<>();
+    votersMap = new HashMap();
   }
 
-  public List<Vote> findAllVote() {
-    return opsHashVote.values(key);
+  public void startVote(String roomId, GamePhase phase, Map<String, GameRole> players) {
+    votersMap.put(roomId, players);
+    voteRedisRepository.startVote(getVoters(roomId), phase);
   }
 
-  public Vote findVoteById(String voteId) {
-    return opsHashVote.get(key, voteId);
+  public boolean isValid(String playerId, GamePhase phase) {
+    return voteRedisRepository.getVote(playerId) != null
+        ? (voteRedisRepository.getVote(playerId).getPhase() == phase ? true : false)
+        : false;
   }
 
-  public Vote createVote(String roomId, GamePhase phase, Map players) {
-    String voteId = roomId + phase.toString();
-    Vote vote = Vote.builder(voteId, phase, players);
-    opsHashVote.put(key, voteId, vote);
-    return vote;
+  public Map<String, String> getVoteResult(String roomId) {
+    return voteResultConvert(getVoteResult(getVoters(roomId)));
   }
 
-  public void deleteVote(String voteId) {
-    opsHashVote.delete(key, voteId);
+  public Map<String, String> vote(String roomId, GamePhase phase, String playerId, String player) {
+    voteRedisRepository.vote(playerId, player);
+
+    return voteResultConvert(getVoteResult(getVoters(roomId)));
   }
 
-  public void finishVote(String roomId, GamePhase phase) {
-    String voteId = roomId + phase.toString();
-    opsHashVote.delete(key, voteId);
+  public Map<String, String> nightVote(String roomId, GamePhase phase, String playerId,
+      String player, GameRole roleName) {
+    voteRedisRepository.vote(playerId, player);
+
+    return voteResultConvert(getVoteResult(getNightVoters(roomId, roleName)));
   }
 
-  public Vote vote(String voteId, String playerId, String player) {
-    Vote vote = opsHashVote.get(key, voteId);
-    vote.getVoteResult().put(playerId, player);
-    opsHashVote.put(key, voteId, vote);
-    return vote;
-  }
+  public int confirmVote(String roomId, String playerId) {
+    voteRedisRepository.confirmVote(playerId);
+    Map<String, Vote> voteResult = getVoteResult(getVoters(roomId));
 
-  public int confirm(String voteId, String playerId) {
-    Vote vote = opsHashVote.get(key, voteId);
-    int confirmCnt = vote.incrConfirm();
-    opsHashVote.put(key, voteId, vote);
+    int confirmCnt = voteResult.entrySet().stream().filter(e -> e.getValue().isConfirm() == true)
+        .collect(Collectors.toList()).size();
     return confirmCnt;
   }
 
-  public ChannelTopic getTopic(String voteId) {
-    return topics.get(voteId);
+  public void endVote(String roomId, GamePhase phase) {
+    voteRedisRepository.endVote(getVoters(roomId), phase);
+  }
+
+  private List<String> getVoters(String roomId) {
+    return votersMap.get(roomId).keySet().stream().collect(Collectors.toList());
+  }
+
+  private List<String> getNightVoters(String roomId, GameRole roleName) {
+    Map<String, GameRole> voters = votersMap.get(roomId);
+    return voters.keySet().stream().collect(Collectors.toList()).stream()
+        .filter(key -> voters.get(key) == roleName).collect(Collectors.toList());
+  }
+
+  private Map<String, String> voteResultConvert(Map<String, Vote> voteResult) {
+    return voteResult.entrySet().stream()
+        .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().getVote()));
+  }
+
+  private Map<String, Vote> getVoteResult(List<String> voters) {
+    Map<String, Vote> voteResult;
+    voteResult = voteRedisRepository.getVoteResult(voters);
+    return voteResult;
   }
 }

@@ -21,7 +21,7 @@ import s05.p12a104.mafia.stomp.response.GameSessionStompJoinRes;
 import s05.p12a104.mafia.stomp.response.GameSessionStompLeaveRes;
 import s05.p12a104.mafia.stomp.response.StompResForRejoiningPlayer;
 import s05.p12a104.mafia.stomp.response.GameStatusRes;
-import s05.p12a104.mafia.stomp.response.ObserberJoinRes;
+import s05.p12a104.mafia.stomp.response.ObserverJoinRes;
 import s05.p12a104.mafia.stomp.response.PlayerRoleRes;
 import s05.p12a104.mafia.stomp.response.StompRejoinPlayer;
 import s05.p12a104.mafia.stomp.task.StartFinTimerTask;
@@ -108,7 +108,7 @@ public class RoomController {
 
     Map<String, GameRole> playerRole = gameSessionService.addObserver(roomId, playerId);
     simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + GameRole.OBSERVER,
-        ObserberJoinRes.of(playerRole));
+        ObserverJoinRes.of(playerRole));
   }
 
 }

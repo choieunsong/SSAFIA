@@ -1,8 +1,6 @@
 package s05.p12a104.mafia.domain.entity;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import org.springframework.data.annotation.Id;
@@ -21,22 +19,17 @@ import s05.p12a104.mafia.domain.enums.GamePhase;
 public class Vote implements Serializable {
 
   @Id
-  private String voteId;
+  private String playerId;
 
   @Enumerated(EnumType.STRING)
   private GamePhase phase;
 
-  private int confirmCnt;
+  private String vote;
 
-  private Map<String, String> voteResult;
+  private boolean confirm;
 
-  public int incrConfirm() {
-    return ++this.confirmCnt;
-  }
-
-  public static Vote builder(String voteId, GamePhase phase, Map players) {
-    return new VoteBuilder().voteId(voteId).phase(phase).confirmCnt(0).voteResult(players)
-        .build();
+  public static Vote builder(String playerId, GamePhase phase) {
+    return new VoteBuilder().playerId(playerId).phase(phase).vote(null).confirm(false).build();
   }
 
 }

@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.common.util.TimeUtils;
 import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.entity.Player;
-import s05.p12a104.mafia.domain.entity.Vote;
 import s05.p12a104.mafia.domain.enums.GamePhase;
 import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.domain.repository.VoteRepository;
@@ -40,7 +39,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
 
   @Override
   public void startVote(String roomId, GamePhase phase, LocalDateTime time, Map players) {
-    voteRepository.createVote(roomId, phase, players);
+    voteRepository.startVote(roomId, phase, getVoters(players, phase));
     Timer timer = new Timer();
     VoteFinTimerTask task = new VoteFinTimerTask(this);
     task.setRoomId(roomId);
@@ -51,100 +50,76 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
 
   @Override
   public void endVote(String roomId, GamePhase phase) {
-    String voteId = getVoteId(roomId, phase);
-    Vote vote = voteRepository.findVoteById(voteId);
+    Map<String, String> vote = voteRepository.getVoteResult(roomId);
     if (vote == null) {
       return;
     } else {
       publishRedis(roomId, vote);
-      voteRepository.deleteVote(voteId);
+      voteRepository.endVote(roomId, phase);
     }
   }
 
   @Override
-  public Vote vote(String roomId, String playerId, GameSessionVoteReq req) {
+  public Map<String, String> vote(String roomId, String playerId, GameSessionVoteReq req) {
 
-    String voteId = getVoteId(roomId, req);
-
-    if (voteRepository.findVoteById(voteId) == null) {
+    if (!voteRepository.isValid(playerId, req.getPhase())) {
       return null;
     }
 
-    return voteRepository.vote(voteId, playerId, req.getVote());
+    return voteRepository.vote(roomId, req.getPhase(), playerId, req.getVote());
   }
 
   @Override
-  public Vote nightVote(String roomId, String playerId, GameSessionVoteReq req, GameRole roleName) {
+  public Map<String, String> nightVote(String roomId, String playerId, GameSessionVoteReq req,
+      GameRole roleName) {
 
-    String voteId = getVoteId(roomId, GamePhase.NIGHT_VOTE);
-
-    if (voteRepository.findVoteById(voteId) == null) {
+    if (!voteRepository.isValid(playerId, req.getPhase())) {
       return null;
     }
 
-    Vote vote = voteRepository.vote(voteId, playerId, req.getVote());
-    GameSession gameSession = gameSessionService.findById(roomId);
-    Map<String, Player> playerMap = gameSession.getPlayerMap();
-
-    Map<String, String> roleVote = new HashMap();
-
-    vote.getVoteResult().forEach((id, player) -> {
-      if (playerMap.get(id).getRole() == roleName) {
-        roleVote.put(id, player);
-      }
-    });
-    vote.setVoteResult(roleVote);
-
-    return vote;
+    return voteRepository.nightVote(roomId, req.getPhase(), playerId, req.getVote(), roleName);
   }
 
   @Override
-  public Vote getVote(String roomId, GameSessionVoteReq req) {
-    String voteId = getVoteId(roomId, req);
-    return voteRepository.findVoteById(voteId);
+  public Map<String, String> getVote(String roomId, GameSessionVoteReq req) {
+    return voteRepository.getVoteResult(roomId);
   }
 
   @Override
   public int confirmVote(String roomId, String playerId, GameSessionVoteReq req) {
 
-    String voteId = getVoteId(roomId, req);
-    return voteRepository.confirm(voteId, playerId);
+    return voteRepository.confirmVote(roomId, playerId);
   }
 
   @Override
   public void finishVote(String roomId, GameSessionVoteReq req) {
-    voteRepository.finishVote(roomId, req.getPhase());
+    voteRepository.endVote(roomId, req.getPhase());
   }
 
-  private String getVoteId(String roomId, GameSessionVoteReq req) {
-    String voteId = roomId + req.getPhase();
-    return voteId;
-  }
-
-  private String getVoteId(String roomId, GamePhase phase) {
-    String voteId = roomId + phase;
-    return voteId;
-  }
-
-  private void publishRedis(String roomId, Vote vote) {
+  private void publishRedis(String roomId, Map<String, String> vote) {
     GameSession gameSession = gameSessionService.findById(roomId);
 
     if (gameSession.getPhase() == GamePhase.DAY_DISCUSSION) {
       DayDiscussionMessage dayDiscussionMessage =
-          new DayDiscussionMessage(roomId, getSuspiciousList(gameSession, vote.getVoteResult()));
+          new DayDiscussionMessage(roomId, getSuspiciousList(gameSession, vote));
       redisPublisher.publish(topicDayDiscussionFin, dayDiscussionMessage);
     } else if (gameSession.getPhase() == GamePhase.DAY_ELIMINATION) {
-      DayEliminationMessage dayEliminationMessage = new DayEliminationMessage(roomId,
-          getEliminationPlayer(gameSession, vote.getVoteResult()));
+      DayEliminationMessage dayEliminationMessage =
+          new DayEliminationMessage(roomId, getEliminationPlayer(gameSession, vote));
       redisPublisher.publish(topicDayEliminationFin, dayEliminationMessage);
     } else if (gameSession.getPhase() == GamePhase.NIGHT_VOTE) {
       NightVoteMessage nightVoteMessage =
-          new NightVoteMessage(roomId, getNightVoteResult(gameSession, vote.getVoteResult()));
+          new NightVoteMessage(roomId, getNightVoteResult(gameSession, vote));
       redisPublisher.publish(topicNightVoteFin, nightVoteMessage);
     }
   }
 
-  public List<String> getSuspiciousList(GameSession gameSession, Map<String, String> voteResult) {
+  private Map<String, GameRole> getVoters(Map<String, Player> players, GamePhase phase) {
+      return players.entrySet().stream()
+          .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().getRole()));
+  }
+
+  private List<String> getSuspiciousList(GameSession gameSession, Map<String, String> voteResult) {
     List<String> suspiciousList = new ArrayList<>();
 
     Map<String, Integer> voteNum = new HashMap<String, Integer>();

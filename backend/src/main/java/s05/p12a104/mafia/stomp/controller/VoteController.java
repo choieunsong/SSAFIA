@@ -1,5 +1,6 @@
 package s05.p12a104.mafia.stomp.controller;
 
+import java.util.Map;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -31,9 +32,9 @@ public class VoteController {
       @Payload GameSessionVoteReq req) {
     String playerId = accessor.getUser().getName();
 
-    Vote vote = gameSessionVoteService.vote(roomId, playerId, req);
-    if (vote != null) {
-      simpMessagingTemplate.convertAndSend("/sub/" + roomId, VoteResultRes.of(vote));
+    Map<String, String> voteResult = gameSessionVoteService.vote(roomId, playerId, req);
+    if (voteResult != null) {
+      simpMessagingTemplate.convertAndSend("/sub/" + roomId, VoteResultRes.of(voteResult));
     }
   }
 
@@ -66,12 +67,12 @@ public class VoteController {
       return;
     }
 
-    Vote vote = gameSessionVoteService.nightVote(roomId, playerId, req, roleName);
-    Vote forObserver = gameSessionVoteService.getVote(roomId, req);
+    Map<String, String> voteResult = gameSessionVoteService.nightVote(roomId, playerId, req, roleName);
+    Map<String, String> forObserver = gameSessionVoteService.getVote(roomId, req);
 
-    if (vote != null) {
+    if (voteResult != null) {
       simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + roleName,
-          VoteResultRes.of(vote));
+          VoteResultRes.of(voteResult));
       simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + GameRole.OBSERVER,
           VoteResultRes.of(forObserver));
     }
