@@ -237,6 +237,10 @@ export default {
         var joinSession = function() {
             // --- Get an OpenVidu object ---
             state.OV = new OpenVidu();
+            state.OV.setAdvancedConfiguration({
+                noStreamPlayingEventExceptionTimeout: 7000,
+                iceConnectionDisconnectedExceptionTimeout: 7000
+            });
 
             // --- Init a session ---
             state.session = state.OV.initSession();
