@@ -50,6 +50,7 @@
     font-size: small;
     left: 5%;
     bottom: 20%;
+    padding: 2px;
 }
 
 .vote-box {
@@ -88,6 +89,45 @@
     top: 2%;
     font-weight: bold;
     text-shadow: #ba55d3 2px 2px 10px;
+}
+
+.role-box {
+    position: absolute;
+    width: 100px;
+    height: 60px;
+    left: -10%;
+    top: -6%;
+}
+
+.role-title {
+    position: absolute;
+    color: white;
+    background-color: #000080;
+    font-size: medium;
+    left: 70%;
+    top: 5%;
+    padding: 3px;
+}
+
+.role-icon {
+    width: 2.5rem;
+    border-radius: 50%;
+}
+
+.civilian {
+    background: #fffafa;
+}
+
+.police {
+    background-color: #1e90ff;
+}
+
+.doctor {
+    background-color: #48d1cc;
+}
+
+.mafia {
+    background-color: #b22222;
 }
 
 @keyframes light {

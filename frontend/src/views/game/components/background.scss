@@ -62,7 +62,7 @@
 .animation-day-elimination {
     background: -webkit-linear-gradient(-45deg, #69bef7 0%, #d094e7 50%, #d67e91 100%);
     opacity: 0;
-    animation: fadein 1s ease forwards, gradient-animation 10s ease infinite;
+    animation: fadein 1s linear forwards, gradient-animation 10s ease infinite;
 }
 
 .animation-night-vote {
@@ -91,12 +91,13 @@
     bottom: -9vw;
     right: 7vw;
     transform-origin: -28vw 7vw;
+    animation: suntrack 30s infinite forwards linear, sun-effect 2s alternate infinite;
 }
 
 $pale-yellow: #f0f0e3;
 $color-carter: #f0f0e3;
 .moon {
-    opacity: 1;
+    opacity: 0;
     width: 15vw;
     height: 15vw;
     background: #fff;
@@ -106,7 +107,6 @@ $color-carter: #f0f0e3;
     right: 7vw;
     transform-origin: -28vw 7vw;
     border: 20px solid white;
-
     animation: suntrack 30s infinite forwards linear, moon-effect 2s alternate infinite;
 }
 
@@ -164,18 +164,6 @@ $color-carter: #f0f0e3;
     }
 }
 
-.fadeout {
-    opacity: 0;
-    transition-delay: 0.5s;
-    transition: opacity 1s ease forwards;
-}
-
-.fadein {
-    opacity: 1;
-    transition-delay: 0.5s;
-    transition: opacity 1s ease forwards;
-}
-
 body {
     color: #333;
     font: 100% Arial, Sans Serif;
@@ -192,7 +180,7 @@ body {
     position: fixed;
     right: 0;
     top: 0;
-    z-index: 1;
+    z-index: -1;
 }
 
 /* KEYFRAMES */
@@ -223,6 +211,7 @@ body {
     -webkit-transform: scale(0.65);
     -moz-transform: scale(0.65);
     transform: scale(0.65);
+    animation: animateCloud 105s linear alternate infinite;
 }
 
 .c1 {
@@ -239,24 +228,28 @@ body {
     -webkit-transform: scale(0.3);
     -moz-transform: scale(0.3);
     transform: scale(0.3);
+    animation: animateCloud 105s linear alternate infinite;
 }
 
 .x3 {
     -webkit-transform: scale(0.5);
     -moz-transform: scale(0.5);
     transform: scale(0.5);
+    animation: animateCloud 105s linear alternate infinite;
 }
 
 .x4 {
     -webkit-transform: scale(0.4);
     -moz-transform: scale(0.4);
     transform: scale(0.4);
+    animation: animateCloud 105s linear alternate infinite;
 }
 
 .x5 {
     -webkit-transform: scale(0.55);
     -moz-transform: scale(0.55);
     transform: scale(0.55);
+    animation: animateCloud 105s linear alternate infinite;
 }
 
 /* OBJECTS */

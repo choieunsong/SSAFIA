@@ -683,9 +683,8 @@ export default {
                                             break;
                                         }
                                     }
-                                    let victimJob = "";
                                     const targetJob = message.isMafia ? "마피아" : "시민";
-                                    state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${victimNickname}님의 직업은 ${victimJob}이였습니다  곧 밤으로 넘어갑니다.`;
+                                    state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${targetJob}님의 직업은 ${targetJob}이였습니다  곧 밤으로 넘어갑니다.`;
 
                                     // 죽는 애니메이션
                                 }
@@ -772,7 +771,7 @@ export default {
                             } else {
                                 victimJob = "시민";
                             }
-                            state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${victimNickname}님의 직업은 ${victimJob}이였습니다  곧 밤으로 넘어갑니다.`;
+                            state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  <span style="font-size: 25px; color:#FF1493">${victimNickname}</span>님의 직업은  <span style="font-size: 25px; color:#1E90FF">${victimJob}</span>이였습니다  곧 밤으로 넘어갑니다.`;
                         } else {
                             state.message = "밤의 투표 결과, 아무도 죽지 않았습니다.";
                         }
@@ -849,6 +848,7 @@ export default {
         // 개인 메세지 채널로 온 메세지에 따라 할 일
         function onPersonalMessageReceived(payload) {
             const message = JSON.parse(payload.body);
+            console.log("ON Personal Message Received", message);
             if (message.type === "ROLE") {
                 state.role = message.role;
                 state.mafias = message.mafias;
@@ -903,9 +903,16 @@ export default {
                     `/sub/${state.mySessionId}/${state.role}`,
                     onJobMessageReceived
                 );
-                if (state.role === "OBSERVER") {
-                    state.stompClient.send(`/pub/${state.mySessionId}/${state.role}`);
-                }
+                // if (state.role === "OBSERVER") {
+                //     console.log("OBSERVER ROLE messgae received");
+                //     state.stompClient.send(`/pub/${state.mySessionId}/${state.role}`);
+                // }
+            } else if (message.type == "DEAD") {
+                console.log("OBSERVER ROLE messgae received");
+                state.stompClient.send(
+                    `/pub/${state.mySessionId}/${state.role}`,
+                    onJobMessageReceived
+                );
             } else if (message.type === "REJOIN") {
                 const keys = Object.keys(message.playerMap);
                 for (let i = 0; i < keys.length; i++) {
@@ -969,6 +976,7 @@ export default {
                     onJobMessageReceived
                 );
                 if (state.role === "OBSERVER") {
+                    state.message = ``;
                     state.stompClient.send(`/pub/${state.mySessionId}/${state.role}`);
                 }
                 switch (message.gameStatus.phase) {
@@ -1091,17 +1099,20 @@ export default {
                         if (state.role === "MAFIA") {
                             for (let i = 0; i < state.subscribers.length; i++) {
                                 if (state.playersGameInfo[i].isMafia !== true) {
+                                    console.log("mafia turn off");
                                     state.subscribers[i].subscribeToAudio(false);
                                     state.subscribers[i].subscribeToVideo(false);
                                 }
                             }
                         } else if (state.role === "OBSERVER") {
                             for (let i = 0; i < state.subscribers.length; i++) {
+                                console.log("observer turn on");
                                 state.subscribers[i].subscribeToAudio(true);
                                 state.subscribers[i].subscribeToVideo(true);
                             }
                         } else {
                             for (let i = 0; i < state.subscribers.length; i++) {
+                                console.log("civilian turn on");
                                 state.subscribers[i].subscribeToAudio(false);
                                 state.subscribers[i].subscribeToVideo(false);
                             }
@@ -1169,6 +1180,8 @@ export default {
         function onJobMessageReceived(payload) {
             const message = JSON.parse(payload.body);
             if (message.type === "UPDATE") {
+                state.newSubscriberOn = true;
+                console.log("OBSERVER vote update", message);
                 infoUpdater("voters", message);
             } else if (message.type === "POLICE") {
                 let targetNickname = "";
@@ -1185,6 +1198,7 @@ export default {
                     state.submessage = `경찰이 지목한 ${targetNickname}의 직업은 ${targetJob}입니다.`;
                 }
             } else if (message.type === "DEAD") {
+                console.log("OBSERVER dead meesage", message);
                 state.newSubscriberOn = true;
                 infoUpdater("role", message);
             }

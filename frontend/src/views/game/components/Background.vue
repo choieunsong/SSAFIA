@@ -1,28 +1,77 @@
 <template>
     <div id="animtaion-wrap" ref="background">
-        <div v-if="this.phase != 'NIGHT_VOTE'" class="sun" ref="sun"></div>
+        <div
+            v-if="this.phase != 'NIGHT_VOTE'"
+            class="sun"
+            ref="sun"
+            :style="[
+                this.phase == 'READY'
+                    ? 'animation-play-state: paused;'
+                    : 'animation-play-state: running;',
+            ]"
+        ></div>
         <div v-if="this.phase == 'NIGHT_VOTE'" class="moon" ref="moon">
             <div class="carter first"></div>
             <div class="carter second"></div>
             <div class="carter third"></div>
         </div>
-        <div class="x1" ref="c1">
+        <div
+            class="x1"
+            ref="c1"
+            :style="[
+                this.phase == 'READY'
+                    ? 'animation-play-state: paused;'
+                    : 'animation-play-state: running;',
+            ]"
+        >
             <div v-if="this.phase != 'NIGHT_VOTE'" class="cloud c1"></div>
         </div>
 
-        <div class="x2" ref="c2">
+        <div
+            class="x2"
+            ref="c2"
+            :style="[
+                this.phase == 'READY'
+                    ? 'animation-play-state: paused;'
+                    : 'animation-play-state: running;',
+            ]"
+        >
             <div v-if="this.phase != 'NIGHT_VOTE'" class="cloud c2"></div>
         </div>
 
-        <div class="x3" ref="c3">
+        <div
+            class="x3"
+            ref="c3"
+            :style="[
+                this.phase == 'READY'
+                    ? 'animation-play-state: paused;'
+                    : 'animation-play-state: running;',
+            ]"
+        >
             <div v-if="this.phase != 'NIGHT_VOTE'" class="cloud c3"></div>
         </div>
 
-        <div class="x4" ref="c4">
+        <div
+            class="x4"
+            ref="c4"
+            :style="[
+                this.phase == 'READY'
+                    ? 'animation-play-state: paused;'
+                    : 'animation-play-state: running;',
+            ]"
+        >
             <div v-if="this.phase != 'NIGHT_VOTE'" class="cloud c4"></div>
         </div>
 
-        <div class="x5" ref="c5">
+        <div
+            class="x5"
+            ref="c5"
+            :style="[
+                this.phase == 'READY'
+                    ? 'animation-play-state: paused;'
+                    : 'animation-play-state: running;',
+            ]"
+        >
             <div v-if="this.phase != 'NIGHT_VOTE'" class="cloud c5"></div>
         </div>
         <!-- <div v-if="this.phase == 'NIGHT_VOTE'"> -->
@@ -121,6 +170,8 @@ export default {
             handler() {
                 if (this.phase == "READY") {
                     this.$refs.background.classList.add("animation-day");
+                    this.$refs.background.classList.remove("animation-day-elimination");
+                    this.$refs.background.classList.remove("animation-night-vote");
                 }
                 if (this.phase == "START") {
                     // this.$refs.sun.classList.add("sun-rise");
@@ -154,10 +205,6 @@ export default {
 
 .moon-rise {
     animation: suntrack 30s infinite forwards linear, moon-effect 2s alternate infinite;
-}
-
-.move-cloud {
-    animation: animateCloud 105s linear alternate infinite;
 }
 
 .move-cloud {
