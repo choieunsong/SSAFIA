@@ -94,6 +94,7 @@ export default {
         gameStatus: Object,
         isConfirm: Boolean,
         role: String,
+        playerMe: Object,
     },
 
     computed: {
@@ -171,7 +172,7 @@ export default {
             handler() {
                 if (this.playersGameInfo && this.$refs.cell && this.isConfirm) {
                     if (this.playersGameInfo.alive === true) {
-                        if (this.isConfirm ) {
+                        if (this.isConfirm) {
                             this.$refs.cell.classList.remove("cell-hover");
                             this.$refs.cell.removeEventListener("click", this.votePlayer);
                         } else {
@@ -185,7 +186,10 @@ export default {
                                 this.$refs.cell.classList.add("cell-hover");
                                 this.$refs.cell.addEventListener("click", this.votePlayer);
                             } else if (this.gameStatus.phase === "NIGHT_VOTE") {
-                                if (this.role === "MAFIA" && this.playersGameInfo.isMafia === false) {
+                                if (
+                                    this.role === "MAFIA" &&
+                                    this.playersGameInfo.isMafia === false
+                                ) {
                                     this.$refs.cell.classList.add("cell-hover");
                                     this.$refs.cell.addEventListener("click", this.votePlayer);
                                 } else if (this.role === "DOCTOR") {
