@@ -28,7 +28,7 @@
             </div>
 
             <!-- OBSERVER에게 직업보이는 칸 -->
-            <div v-if="this.role == 'OBSERVER'" class="role-box">
+            <div v-if="this.role == 'OBSERVER' && !this.playerMe" class="role-box">
                 <img
                     v-if="this.playersGameInfo.role == 'CIVILIAN'"
                     src="../../../assets/image/civilian.png"
@@ -44,11 +44,7 @@
                     src="../../../assets/image/doctor.png"
                     class="role-icon doctor"
                 />
-                <img
-                    v-else-if="this.playersGameInfo.role == 'MAFIA'"
-                    src="../../../assets/image/mafia.png"
-                    class="role-icon mafia"
-                />
+                <img v-else src="../../../assets/image/mafia.png" class="role-icon mafia" />
                 <span class="font-jua role-title">{{ this.playersGameInfo.role }}</span>
             </div>
 
@@ -58,7 +54,7 @@
                     v-for="voter in this.playersGameInfo.voters"
                     :key="voter"
                     class="voter-icon-span"
-                    ><i class="fas fa-user-circle fa-2x" :style="'color:' + voter"></i
+                    ><i class="fas fa-user-circle fa-2x voter-icon" :style="'color:' + voter"></i
                 ></span>
             </div>
         </div>
@@ -114,11 +110,17 @@ export default {
                         this.$refs.cell.classList.remove("cell-hover");
                         this.$refs.cell.removeEventListener("click", this.votePlayer);
                         this.$refs.cell.classList.remove("cell-unsuspicious");
-                        if (this.gameStatus.phase === "DAY_DISCUSSION" && this.role !== "OBSERVER") {
+                        if (
+                            this.gameStatus.phase === "DAY_DISCUSSION" &&
+                            this.role !== "OBSERVER"
+                        ) {
                             console.log("DAY_DISCUSSION");
                             this.$refs.cell.classList.add("cell-hover");
                             this.$refs.cell.addEventListener("click", this.votePlayer);
-                        } else if (this.gameStatus.phase === "DAY_ELIMINATION" && this.role !== "OBSERVER") {
+                        } else if (
+                            this.gameStatus.phase === "DAY_ELIMINATION" &&
+                            this.role !== "OBSERVER"
+                        ) {
                             console.log("userVideo day elimination");
                             if (this.playersGameInfo.suspicious === true) {
                                 console.log(this.playersGameInfo.suspicious);
@@ -176,12 +178,16 @@ export default {
                             this.$refs.cell.classList.remove("cell-hover");
                             this.$refs.cell.removeEventListener("click", this.votePlayer);
                         } else {
-                            if (this.gameStatus.phase === "DAY_DISCUSSION" && this.role !== "OBSERVER") {
+                            if (
+                                this.gameStatus.phase === "DAY_DISCUSSION" &&
+                                this.role !== "OBSERVER"
+                            ) {
                                 this.$refs.cell.classList.add("cell-hover");
                                 this.$refs.cell.addEventListener("click", this.votePlayer);
                             } else if (
                                 this.gameStatus.phase === "DAY_ELIMINATION" &&
-                                this.playersGameInfo.suspicious === true && this.role !== "OBSERVER"
+                                this.playersGameInfo.suspicious === true &&
+                                this.role !== "OBSERVER"
                             ) {
                                 this.$refs.cell.classList.add("cell-hover");
                                 this.$refs.cell.addEventListener("click", this.votePlayer);
