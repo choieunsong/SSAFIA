@@ -13,7 +13,6 @@ import s05.p12a104.mafia.api.service.GameSessionService;
 import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.entity.Player;
 import s05.p12a104.mafia.domain.enums.GamePhase;
-import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.redispubsub.message.DayEliminationMessage;
 import s05.p12a104.mafia.stomp.response.GameStatusKillRes;
 import s05.p12a104.mafia.stomp.response.PlayerDeadRes;
@@ -59,7 +58,7 @@ public class DayEliminationFinSubscriber {
       Timer timer = new Timer();
       StartFinTimerTask task = new StartFinTimerTask(redisPublisher, topicDayToNightFin);
       task.setRoomId(roomId);
-      timer.schedule(task, gameSession.getTimer() * 1000);
+      timer.schedule(task, gameSession.getTimer());
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }

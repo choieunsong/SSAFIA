@@ -2,6 +2,7 @@ package s05.p12a104.mafia.api.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,13 +38,13 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   private final ChannelTopic topicNightVoteFin;
 
   @Override
-  public void startVote(String roomId, GamePhase phase, int time, Map players) {
+  public void startVote(String roomId, GamePhase phase, Date time, Map players) {
     voteRepository.createVote(roomId, phase, players);
     Timer timer = new Timer();
     VoteFinTimerTask task = new VoteFinTimerTask(this);
     task.setRoomId(roomId);
     task.setPhase(phase);
-    timer.schedule(task, time * 1000);
+    timer.schedule(task, time);
   }
 
 

@@ -85,7 +85,7 @@ public class NightVoteFinSubscriber {
       Timer timer = new Timer();
       StartFinTimerTask task = new StartFinTimerTask(redisPublisher, topicStartFin);
       task.setRoomId(roomId);
-      timer.schedule(task, gameSession.getTimer() * 1000);
+      timer.schedule(task, gameSession.getTimer());
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }

@@ -1,6 +1,7 @@
 package s05.p12a104.mafia.domain.dao;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EnumType;
@@ -38,7 +39,7 @@ public class GameSessionDao {
 
   private int aliveNotCivilian;
 
-  private int timer;
+  private Date timer;
 
   private List<String> mafias;
 

@@ -2,6 +2,7 @@ package s05.p12a104.mafia.stomp.response;
 
 import lombok.Getter;
 import lombok.Setter;
+import s05.p12a104.mafia.common.util.TimeUtils;
 import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.enums.GameState;
 
@@ -17,7 +18,7 @@ public class GameReadyStatus {
     GameReadyStatus gameReadyStatus = new GameReadyStatus();
     gameReadyStatus.day = gameSession.getDay();
     gameReadyStatus.phase = gameSession.getState();
-    gameReadyStatus.timer = gameSession.getTimer();
+    gameReadyStatus.timer = TimeUtils.getRemainingTime(gameSession.getTimer());
     gameReadyStatus.aliveMafia = gameSession.getAliveMafia();
     return gameReadyStatus;
   }
