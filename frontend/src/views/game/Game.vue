@@ -219,6 +219,7 @@ export default {
             //tempPlayerMap
             tempPlayerMap: null,
             newSubscriberOn: false,
+            subscribeObserverFirst: false,
         });
 
         // 화상 채팅 관련
@@ -250,9 +251,12 @@ export default {
                 subscriber.nickname = tmp[0];
                 subscriber.playerId = tmp[1];
 
+                state.subscribers.push(subscriber);
+                console.log(state.subscribers);
+
                 if (state.gameStatus.phase == "READY") {
-                    state.subscribers.push(subscriber);
-                    console.log(state.subscribers);
+                    // state.subscribers.push(subscriber);
+                    // console.log(state.subscribers);
                     //subscribers의 info 세팅
                     state.playersGameInfo.push({
                         playerId: tmp[1],
@@ -318,51 +322,51 @@ export default {
             state.session.on("exception", ({ exception }) => {
                 console.warn(exception);
                 // exception시 다시 연결하려는 시도 해보고 오류생기면 지워야할듯
-                state.session
-                    .connect(state.openviduToken, {
-                        clientData: `${state.myUserName},${state.playerId}`,
-                    })
-                    .then(() => {
-                        // --- Get your own camera stream with the desired properties ---
+                // state.session
+                //     .connect(state.openviduToken, {
+                //         clientData: `${state.myUserName},${state.playerId}`,
+                //     })
+                //     .then(() => {
+                //         // --- Get your own camera stream with the desired properties ---
 
-                        let publisher = state.OV.initPublisher(undefined, {
-                            audioSource: true, // The source of audio. If undefined default microphone
-                            videoSource: undefined, // The source of video. If undefined default webcam
-                            publishAudio: false, // Whether you want to start publishing with your audio unmuted or not
-                            publishVideo: true, // Whether you want to start publishing with your video enabled or not
-                            resolution: "311x170", // The resolution of your video
-                            frameRate: 30, // The frame rate of your video
-                            insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
-                            mirror: false, // Whether to mirror your local video or not
-                        });
+                //         let publisher = state.OV.initPublisher(undefined, {
+                //             audioSource: true, // The source of audio. If undefined default microphone
+                //             videoSource: undefined, // The source of video. If undefined default webcam
+                //             publishAudio: false, // Whether you want to start publishing with your audio unmuted or not
+                //             publishVideo: true, // Whether you want to start publishing with your video enabled or not
+                //             resolution: "311x170", // The resolution of your video
+                //             frameRate: 30, // The frame rate of your video
+                //             insertMode: "APPEND", // How the video is inserted in the target element 'video-container'
+                //             mirror: false, // Whether to mirror your local video or not
+                //         });
 
-                        state.publisher = publisher;
+                //         state.publisher = publisher;
 
-                        state.session.publish(state.publisher);
+                //         state.session.publish(state.publisher);
 
-                        //내 정보 playerMe에 저장하기
-                        state.playerMe = {
-                            playerId: state.playerId,
-                            nickname: state.myUserName,
-                            alive: true,
-                            suspicious: false,
-                            voters: [],
-                            color: "red",
-                            isMafia: null,
-                            isHost: false,
-                            isTalking: false,
-                            role: null,
-                        };
+                //         //내 정보 playerMe에 저장하기
+                //         state.playerMe = {
+                //             playerId: state.playerId,
+                //             nickname: state.myUserName,
+                //             alive: true,
+                //             suspicious: false,
+                //             voters: [],
+                //             color: "red",
+                //             isMafia: null,
+                //             isHost: false,
+                //             isTalking: false,
+                //             role: null,
+                //         };
 
-                        state.newSubscriberOn = true;
-                    })
-                    .catch((error) => {
-                        console.log(
-                            "There was an error connecting to the session:",
-                            error.code,
-                            error.message
-                        );
-                    });
+                //         state.newSubscriberOn = true;
+                // })
+                // .catch((error) => {
+                //     console.log(
+                //         "There was an error connecting to the session:",
+                //         error.code,
+                //         error.message
+                //     );
+                // });
             });
 
             state.session.on("publisherStartSpeaking", (event) => {
@@ -888,6 +892,8 @@ export default {
                         infoUpdater("isHost", message);
                         state.vote = null;
                         state.isConfirm = false;
+                        state.subscribeObserverFirst = false;
+                        state.newSubscriberOn = false;
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
                         break;
                     }
@@ -921,7 +927,7 @@ export default {
                             }
                         }
                         const mafiaNicknameString = mafiaNicknames.join(" , ");
-                        state.message = `게임이 시작되었습니다. <br/>당신은 <span style='font-size: 25px; color:DodgerBlue'>마피아<span>입니다. <br/>마피아 동료와 함께 시민의 수를 마피아의 수와 같게 만들면 당신의 승리입니다. <br/>밤마다 마피아 동료들과 상의해 시민을 한명씩 제거해나가세요. <br/>당신의 마피아 동료는 ${mafiaNicknameString}입니다`;
+                        state.message = `게임이 시작되었습니다. <br/>당신은 <span style='font-size: 25px; color:DodgerBlue'>마피아</span>입니다. <br/>마피아 동료와 함께 시민의 수를 마피아의 수와 같게 만들면 당신의 승리입니다. <br/>밤마다 마피아 동료들과 상의해 시민을 한명씩 제거해나가세요. <br/>당신의 마피아 동료는 ${mafiaNicknameString}입니다`;
                     }
                 } else if (state.role === "POLICE") {
                     state.message =
@@ -934,7 +940,7 @@ export default {
                         "게임이 시작되었습니다. <br/>당신은 <span style='font-size: 25px; color:DodgerBlue'>시민</span>입니다. <br/>다른 시민과 함께 마피아를 모두 제거하면 당신의 승리입니다.";
                 } else {
                     console.log("OBSERVER ROLE messgae received");
-                    state.stompClient.send(`/pub/${state.mySessionId}/${state.role}`);
+
                     state.message =
                         "당신은 관전자입니다. <br/>게임에 개입할 수는 없지만, 일어나고 있는 일들에 대한 모든 정보를 받아볼 수 있습니다.";
                     state.publisher.publishAudio(false);
@@ -959,6 +965,7 @@ export default {
                 if (state.jobClient) {
                     state.jobClient.unsubscribe();
                 }
+                state.subscribeObserverFirst = true;
                 state.jobClient = state.stompClient.subscribe(
                     `/sub/${state.mySessionId}/${state.role}`,
                     onJobMessageReceived
@@ -1025,10 +1032,7 @@ export default {
                     `/sub/${state.mySessionId}/${state.role}`,
                     onJobMessageReceived
                 );
-                if (state.role === "OBSERVER") {
-                    state.message = ``;
-                    state.stompClient.send(`/pub/${state.mySessionId}/${state.role}`);
-                }
+
                 switch (message.gameStatus.phase) {
                     case "START": {
                         const audio = new Audio(
@@ -1244,9 +1248,9 @@ export default {
                 }
                 const targetJob = message.mafia ? "마피아" : "시민";
                 if (state.role === "POLICE") {
-                    state.submessage = `당신이 지목한 ${targetNickname}의 직업은 ${targetJob}입니다.`;
+                    state.submessage = `당신이 지목한 <span>${targetNickname}</span>의 직업은 <span>${targetJob}</span>입니다.`;
                 } else {
-                    state.submessage = `경찰이 지목한 ${targetNickname}의 직업은 ${targetJob}입니다.`;
+                    state.submessage = `경찰이 지목한 <span>${targetNickname}</span>의 직업은 <span>${targetJob}</span>입니다.`;
                 }
             } else if (message.type === "DEAD") {
                 console.log("OBSERVER DEAD meesage", message);
@@ -1258,6 +1262,12 @@ export default {
                         message.playerMap[state.playersGameInfo[i].playerId];
                 }
                 console.log("playersGameInfo", state.playersGameInfo);
+            }
+
+            if (state.subscribeObserverFirst) {
+                console.log("SEND OBSERVER MSG", state.role);
+                state.subscribeObserverFirst = false;
+                state.stompClient.send(`/pub/${state.mySessionId}/${state.role}`);
             }
         }
 
