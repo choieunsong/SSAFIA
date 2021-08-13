@@ -140,7 +140,7 @@ export default {
                                 this.$refs.cell.addEventListener("click", this.votePlayer);
                             } else if (this.role === "POLICE") {
                                 if (this.playerMe === false) {
-                                    this.$refs.cell.classList.add("cell-hober");
+                                    this.$refs.cell.classList.add("cell-hover");
                                     this.$refs.cell.addEventListener("click", this.votePlayer);
                                 }
                             }
@@ -174,26 +174,28 @@ export default {
                         this.$refs.cell.classList.remove("cell-hover");
                         this.$refs.cell.removeEventListener("click", this.votePlayer);
                     } else {
-                        if (this.gameStatus.phase === "DAY_DISCUSSION") {
-                            this.$refs.cell.classList.add("cell-hover");
-                            this.$refs.cell.addEventListener("click", this.votePlayer);
-                        } else if (
-                            this.gameStatus.phase === "DAY_ELIMINATION" &&
-                            this.playersGameInfo.suspicious === true
-                        ) {
-                            this.$refs.cell.classList.add("cell-hover");
-                            this.$refs.cell.addEventListener("click", this.votePlayer);
-                        } else if (this.gameStatus.phase === "NIGHT_VOTE") {
-                            if (this.role === "MAFIA" && this.playersGameInfo.isMafia === false) {
+                        if (this.playersGameInfo.alive === true) {
+                            if (this.gameStatus.phase === "DAY_DISCUSSION") {
                                 this.$refs.cell.classList.add("cell-hover");
                                 this.$refs.cell.addEventListener("click", this.votePlayer);
-                            } else if (this.role === "DOCTOR") {
+                            } else if (
+                                this.gameStatus.phase === "DAY_ELIMINATION" &&
+                                this.playersGameInfo.suspicious === true
+                            ) {
                                 this.$refs.cell.classList.add("cell-hover");
                                 this.$refs.cell.addEventListener("click", this.votePlayer);
-                            } else if (this.role === "POLICE") {
-                                if (this.playerMe === false) {
-                                    this.$refs.cell.classList.add("cell-hober");
+                            } else if (this.gameStatus.phase === "NIGHT_VOTE") {
+                                if (this.role === "MAFIA" && this.playersGameInfo.isMafia === false) {
+                                    this.$refs.cell.classList.add("cell-hover");
                                     this.$refs.cell.addEventListener("click", this.votePlayer);
+                                } else if (this.role === "DOCTOR") {
+                                    this.$refs.cell.classList.add("cell-hover");
+                                    this.$refs.cell.addEventListener("click", this.votePlayer);
+                                } else if (this.role === "POLICE") {
+                                    if (this.playerMe === false) {
+                                        this.$refs.cell.classList.add("cell-hober");
+                                        this.$refs.cell.addEventListener("click", this.votePlayer);
+                                    }
                                 }
                             }
                         }
