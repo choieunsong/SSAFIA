@@ -170,11 +170,11 @@ export default {
         isConfirm: {
             handler() {
                 if (this.playersGameInfo && this.$refs.cell && this.isConfirm) {
-                    if (this.isConfirm) {
-                        this.$refs.cell.classList.remove("cell-hover");
-                        this.$refs.cell.removeEventListener("click", this.votePlayer);
-                    } else {
-                        if (this.playersGameInfo.alive === true) {
+                    if (this.playersGameInfo.alive === true) {
+                        if (this.isConfirm ) {
+                            this.$refs.cell.classList.remove("cell-hover");
+                            this.$refs.cell.removeEventListener("click", this.votePlayer);
+                        } else {
                             if (this.gameStatus.phase === "DAY_DISCUSSION") {
                                 this.$refs.cell.classList.add("cell-hover");
                                 this.$refs.cell.addEventListener("click", this.votePlayer);
