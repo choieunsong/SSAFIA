@@ -933,6 +933,8 @@ export default {
                     state.message =
                         "게임이 시작되었습니다. <br/>당신은 <span style='font-size: 25px; color:DodgerBlue'>시민</span>입니다. <br/>다른 시민과 함께 마피아를 모두 제거하면 당신의 승리입니다.";
                 } else {
+                    console.log("OBSERVER ROLE messgae received");
+                    state.stompClient.send(`/pub/${state.mySessionId}/${state.role}`);
                     state.message =
                         "당신은 관전자입니다. <br/>게임에 개입할 수는 없지만, 일어나고 있는 일들에 대한 모든 정보를 받아볼 수 있습니다.";
                     state.publisher.publishAudio(false);
@@ -942,6 +944,7 @@ export default {
                         state.subscribers[i].subscribeToVideo(true);
                     }
                 }
+
                 if (!state.mafias) {
                     infoUpdater("isMafia", null);
                 } else {
@@ -960,10 +963,6 @@ export default {
                     `/sub/${state.mySessionId}/${state.role}`,
                     onJobMessageReceived
                 );
-                if (state.role === "OBSERVER") {
-                    console.log("OBSERVER ROLE messgae received");
-                    state.stompClient.send(`/pub/${state.mySessionId}/${state.role}`);
-                }
             } else if (message.type === "REJOIN") {
                 const keys = Object.keys(message.playerMap);
                 for (let i = 0; i < keys.length; i++) {
@@ -1251,8 +1250,14 @@ export default {
                 }
             } else if (message.type === "DEAD") {
                 console.log("OBSERVER DEAD meesage", message);
-                state.newSubscriberOn = true;
-                infoUpdater("role", message);
+                console.log("STATE ROLE", state.role);
+                // state.newSubscriberOn = true;
+                // infoUpdater("role", message);
+                for (let i = 0; i < state.playersGameInfo.length; i++) {
+                    state.playersGameInfo[i]["role"] =
+                        message.playerMap[state.playersGameInfo[i].playerId];
+                }
+                console.log("playersGameInfo", state.playersGameInfo);
             }
         }
 
