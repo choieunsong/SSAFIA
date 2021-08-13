@@ -18,7 +18,7 @@ import s05.p12a104.mafia.domain.enums.GameState;
 import s05.p12a104.mafia.redispubsub.RedisPublisher;
 import s05.p12a104.mafia.stomp.response.GameSessionStompJoinRes;
 import s05.p12a104.mafia.stomp.response.GameSessionStompLeaveRes;
-import s05.p12a104.mafia.stomp.response.GameSessionStompRejoinRes;
+import s05.p12a104.mafia.stomp.response.StompResForRejoiningPlayer;
 import s05.p12a104.mafia.stomp.response.GameStatusRes;
 import s05.p12a104.mafia.stomp.response.ObserberJoinRes;
 import s05.p12a104.mafia.stomp.response.PlayerRoleRes;
@@ -56,11 +56,18 @@ public class RoomController {
       @DestinationVariable String roomId) {
     String playerId = accessor.getUser().getName();
     GameSession gameSession = gameSessionService.findById(roomId);
-    GameSessionStompRejoinRes publicRes = GameSessionStompRejoinRes.of(gameSession, playerId);
-    simpMessagingTemplate.convertAndSend("/sub/" + roomId, publicRes);
+    if (gameSession.getState() != GameState.STARTED) {
+      joinGameSession(roomId);
+      return;
+    }
 
-    StompRejoinPlayer privateRes = StompRejoinPlayer.of(gameSession.getPlayerMap().get(playerId));
-    simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + playerId, privateRes);
+    StompResForRejoiningPlayer resForRejoningPlayer =
+        StompResForRejoiningPlayer.of(gameSession, playerId);
+    simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + playerId, resForRejoningPlayer);
+
+    StompRejoinPlayer resForExistingPlayer =
+        StompRejoinPlayer.of(gameSession.getPlayerMap().get(playerId));
+    simpMessagingTemplate.convertAndSend("/sub/" + roomId, resForExistingPlayer);
   }
 
   @MessageMapping("/{roomId}/start")
