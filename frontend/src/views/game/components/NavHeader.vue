@@ -103,6 +103,7 @@ export default {
         isHost: Boolean,
         gameStatus: Object,
         finishStartAnimation: Boolean,
+        playerMe: Object,
         role: String,
     },
     watch: {
@@ -114,13 +115,12 @@ export default {
                     console.log("watch ready");
                 } else if (this.gameStatus.phase == "START") {
                     console.log("watch start");
-                    this.clickStartButton = true;
                     this.startCountDown();
-                } else if (this.gameStatus.phase == "DAY_DISCUSSION") {
+                } else if (this.getAlive && this.gameStatus.phase == "DAY_DISCUSSION") {
                     this.$refs.confirm.classList.remove("unhover");
                     this.$refs.confirm.classList.add("confirm-button-active");
                     this.startCountDown();
-                } else if (this.gameStatus.phase == "DAY_ELIMINATION") {
+                } else if (this.getAlive && this.gameStatus.phase == "DAY_ELIMINATION") {
                     clearInterval(this.interval);
                     this.$refs.confirm.classList.remove("unhover");
                     this.$refs.confirm.classList.add("confirm-button-active");
@@ -133,7 +133,7 @@ export default {
                     this.$refs.sun.classList.add("sun-logo-deactive");
                     this.$refs.moon.classList.add("moon-logo-active");
                     this.startCountDown();
-                    if (this.role == "CIVILIAN") {
+                    if (this.role == "CIVILIAN" || !this.getAlive) {
                         this.$refs.confirm.classList.add("unhover");
                         this.$refs.confirm.classList.remove("confirm-button-active");
                     } else {
@@ -183,6 +183,9 @@ export default {
                 }
             }
         },
+        getAlive() {
+            return this.playerMe.alive;
+        },
     },
     methods: {
         gameStart() {
@@ -225,9 +228,10 @@ export default {
         confirmVote() {
             //투표 확정
             if (
-                this.gameStatus.phase == "DAY_DISCUSSION" ||
-                this.gameStatus.phase == "DAY_ELIMINATION" ||
-                this.gameStatus.phase == "NIGHT_VOTE"
+                this.playerMe.alive &&
+                (this.gameStatus.phase == "DAY_DISCUSSION" ||
+                    this.gameStatus.phase == "DAY_ELIMINATION" ||
+                    (this.gameStatus.phase == "NIGHT_VOTE" && this.playerMe.role != "CIVILIAN"))
             ) {
                 this.$emit("emitConfirmDataUpdate");
                 this.$refs.confirm.classList.add("unhover");
