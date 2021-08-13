@@ -729,9 +729,8 @@ export default {
                                             break;
                                         }
                                     }
-                                    let victimJob = "";
-                                    const targetJob = message.victimIsMafia ? "마피아" : "시민";
-                                    state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${victimNickname}님의 직업은 ${targetJob}이였습니다  곧 밤으로 넘어갑니다.`;
+                                    const victimJob = message.gameStatus.victimIsMafia ? "마피아" : "시민";
+                                    state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${victimNickname}님의 직업은 ${victimJob}이였습니다  곧 밤으로 넘어갑니다.`;
 
                                     // 죽는 애니메이션
                                 }
@@ -812,12 +811,7 @@ export default {
                                     }
                                 }
                             }
-                            let victimJob = "";
-                            if (message.victimIsMafia === true) {
-                                victimJob = "마피아";
-                            } else {
-                                victimJob = "시민";
-                            }
+                            let victimJob = message.gameStatus.victimIsMafia ? "마피아" : "시민";
                             state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  <span style="font-size: 25px; color:#FF1493">${victimNickname}</span>님의 직업은  <span style="font-size: 25px; color:#1E90FF">${victimJob}</span>이였습니다  곧 밤으로 넘어갑니다.`;
                         } else {
                             state.message = "밤의 투표 결과, 아무도 죽지 않았습니다.";
@@ -881,7 +875,6 @@ export default {
                             state.subscribers[i].subscribeToAudio(true);
                             state.subscribers[i].subscribeToVideo(true);
                         }
-
                         infoUpdater("alive", true);
                         infoUpdater("suspicious", null);
                         infoUpdater("voters", null);
@@ -942,7 +935,7 @@ export default {
                         state.subscribers[i].subscribeToVideo(true);
                     }
                 }
-                if (state.mafias === null) {
+                if (state.mafias) {
                     infoUpdater("isMafia", null);
                 } else {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
@@ -960,10 +953,10 @@ export default {
                     `/sub/${state.mySessionId}/${state.role}`,
                     onJobMessageReceived
                 );
-                // if (state.role === "OBSERVER") {
-                //     console.log("OBSERVER ROLE messgae received");
-                //     state.stompClient.send(`/pub/${state.mySessionId}/${state.role}`);
-                // }
+                if (state.role === "OBSERVER") {
+                    console.log("OBSERVER ROLE messgae received");
+                    state.stompClient.send(`/pub/${state.mySessionId}/${state.role}`);
+                }
             } else if (message.type == "DEAD") {
                 console.log("OBSERVER ROLE messgae received");
                 state.stompClient.send(
@@ -1017,7 +1010,7 @@ export default {
                         state.subscribers[i].subscribeToVideo(true);
                     }
                 }
-                if (state.mafias === null) {
+                if (state.mafias) {
                     infoUpdater("isMafia", null);
                 } else {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
@@ -1111,13 +1104,8 @@ export default {
                                             break;
                                         }
                                     }
-                                    let victimJob = "";
-                                    if (message.victimIsMafia === true) {
-                                        victimJob = "마피아";
-                                    } else {
-                                        victimJob = "시민";
-                                    }
-                                    state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${victimNickname}님의 직업은 ${victimJob}이였습니다  곧 밤으로 넘어갑니다.`;
+                                    let victimJob = message.gameStatus.victimIsMafia ? "마피아" : "시민";
+                                    state.message = `낮의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${victimNickname}님의 직업은 ${victimJob}이였습니다  곧 밤으로 넘어갑니다.`
                                 }
                             } else {
                                 state.message =
@@ -1199,12 +1187,7 @@ export default {
                                     }
                                 }
                             }
-                            let victimJob = "";
-                            if (message.victimIsMafia === true) {
-                                victimJob = "마피아";
-                            } else {
-                                victimJob = "시민";
-                            }
+                            let victimJob = message.gameStatus.victimIsMafia ? "마피아" : "시민";
                             state.message = `밤의 투표 결과로 인해, ${victimNickname}님이 제거되었습니다.  ${victimNickname}님의 직업은 ${victimJob}이였습니다  곧 낮으로 넘어갑니다.`;
                         } else {
                             state.message = "밤의 투표 결과, 아무도 죽지 않았습니다.";
@@ -1257,7 +1240,7 @@ export default {
                         break;
                     }
                 }
-                const targetJob = message.isMafia ? "마피아" : "시민";
+                const targetJob = message.mafia ? "마피아" : "시민";
                 if (state.role === "POLICE") {
                     state.submessage = `당신이 지목한 ${targetNickname}의 직업은 ${targetJob}입니다.`;
                 } else {
