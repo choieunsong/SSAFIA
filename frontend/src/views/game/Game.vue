@@ -935,7 +935,7 @@ export default {
                         state.subscribers[i].subscribeToVideo(true);
                     }
                 }
-                if (state.mafias === null) {
+                if (state.mafias) {
                     infoUpdater("isMafia", null);
                 } else {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
@@ -1010,7 +1010,7 @@ export default {
                         state.subscribers[i].subscribeToVideo(true);
                     }
                 }
-                if (state.mafias === null) {
+                if (state.mafias) {
                     infoUpdater("isMafia", null);
                 } else {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
