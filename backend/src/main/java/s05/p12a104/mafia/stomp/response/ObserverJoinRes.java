@@ -17,7 +17,7 @@ public class ObserverJoinRes {
     playerRoleRes.type = StompMessageType.DEAD;
     playerRoleRes.playerMap = new HashMap();
     playerMap.forEach((playerId, role) -> {
-      playerRoleRes.playerMap.put(playerId, ObserverRole.of(role));
+      playerRoleRes.playerMap.put(playerId, new ObserverRole(role));
     });
     return playerRoleRes;
   }
