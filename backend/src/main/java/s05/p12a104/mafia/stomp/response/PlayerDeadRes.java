@@ -12,7 +12,7 @@ public class PlayerDeadRes {
 
   public static PlayerDeadRes of() {
     PlayerDeadRes playerRoleRes = new PlayerDeadRes();
-    playerRoleRes.type = StompMessageType.DEAD;
+    playerRoleRes.type = StompMessageType.ROLE;
     playerRoleRes.role = GameRole.OBSERVER;
     return playerRoleRes;
   }
