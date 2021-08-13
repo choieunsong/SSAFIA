@@ -1,8 +1,8 @@
 package s05.p12a104.mafia.api.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +12,7 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import s05.p12a104.mafia.common.util.TimeUtils;
 import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.entity.Player;
 import s05.p12a104.mafia.domain.entity.Vote;
@@ -38,13 +39,13 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   private final ChannelTopic topicNightVoteFin;
 
   @Override
-  public void startVote(String roomId, GamePhase phase, Date time, Map players) {
+  public void startVote(String roomId, GamePhase phase, LocalDateTime time, Map players) {
     voteRepository.createVote(roomId, phase, players);
     Timer timer = new Timer();
     VoteFinTimerTask task = new VoteFinTimerTask(this);
     task.setRoomId(roomId);
     task.setPhase(phase);
-    timer.schedule(task, time);
+    timer.schedule(task, TimeUtils.convertToDate(time));
   }
 
 

@@ -39,7 +39,7 @@ public class GameSessionDao {
 
   private int aliveNotCivilian;
 
-  private Date timer;
+  private LocalDateTime timer;
 
   private List<String> mafias;
 
