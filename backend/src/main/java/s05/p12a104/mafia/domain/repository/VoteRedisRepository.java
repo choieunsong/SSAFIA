@@ -19,7 +19,7 @@ public class VoteRedisRepository {
 
   private final RedisTemplate<String, Vote> redisTemplate;
   private HashOperations<String, String, Vote> opsHashVote;
-  private final String key = "Vote";
+  private static final String key = "Vote";
 
   @PostConstruct
   private void init() {
