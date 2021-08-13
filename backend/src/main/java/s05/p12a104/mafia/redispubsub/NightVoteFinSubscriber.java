@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.api.service.GameSessionService;
+import s05.p12a104.mafia.common.util.TimeUtils;
 import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.entity.Player;
 import s05.p12a104.mafia.domain.enums.GamePhase;
@@ -85,7 +86,7 @@ public class NightVoteFinSubscriber {
       Timer timer = new Timer();
       StartFinTimerTask task = new StartFinTimerTask(redisPublisher, topicStartFin);
       task.setRoomId(roomId);
-      timer.schedule(task, gameSession.getTimer() * 1000);
+      timer.schedule(task, TimeUtils.convertToDate(gameSession.getTimer()));
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }
