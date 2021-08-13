@@ -111,6 +111,7 @@ export default {
           .then(({ data }) => {
             console.log(data)
             if (data.code === "success" && data.data.state === "REJOIN") {
+              store.dispatch("ingame/setIsREJOIN", true)
               store.dispatch("token/setOpenviduToken", data.data.token).then(
                 router.push({
                   name: "Game",

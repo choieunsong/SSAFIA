@@ -461,12 +461,13 @@ export default {
             state.stompClient.subscribe(`/sub/${state.mySessionId}`, onMessageReceived);
 
             // 구독했다고 서버에 알리기, 나갔다 오면 다른 경로로
-            if (store.getters["ingame/getPhase"]) {
-                const localPhase = store.getters["ingame/getPhase"];
-                if (localPhase === "READY") {
-                    state.stompClient.send(`/pub/${state.mySessionId}/join`, {});
+            if (store.getters["ingame/getIsREJOIN"]) {
+                const isREJOIN = store.getters["ingame/getIsREJOIN"];
+                console.log(isREJOIN)
+                if (isREJOIN) {
+                    state.stompClient.send(`/pub/${state.mySessionId}/rejoin`, {});
                 } else {
-                    state.stompClient.send(`/pub/${state.mySessionId}/rejoin`);
+                    state.stompClient.send(`/pub/${state.mySessionId}/join`);
                 }
             } else {
                 state.stompClient.send(`/pub/${state.mySessionId}/join`, {});
@@ -993,6 +994,7 @@ export default {
                             isMafia: null,
                             color: null,
                             isHost: false,
+                            role: null,
                         });
                     }
                 }
