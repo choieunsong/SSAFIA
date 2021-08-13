@@ -19,11 +19,11 @@ import s05.p12a104.mafia.domain.enums.GameState;
 import s05.p12a104.mafia.redispubsub.RedisPublisher;
 import s05.p12a104.mafia.stomp.response.GameSessionStompJoinRes;
 import s05.p12a104.mafia.stomp.response.GameSessionStompLeaveRes;
-import s05.p12a104.mafia.stomp.response.StompResForRejoiningPlayer;
 import s05.p12a104.mafia.stomp.response.GameStatusRes;
 import s05.p12a104.mafia.stomp.response.ObserverJoinRes;
 import s05.p12a104.mafia.stomp.response.PlayerRoleRes;
 import s05.p12a104.mafia.stomp.response.StompRejoinPlayer;
+import s05.p12a104.mafia.stomp.response.StompResForRejoiningPlayer;
 import s05.p12a104.mafia.stomp.task.StartFinTimerTask;
 
 @Slf4j
