@@ -118,7 +118,7 @@ export default {
                             console.log("DAY_DISCUSSION");
                             this.$refs.cell.classList.add("cell-hover");
                             this.$refs.cell.addEventListener("click", this.votePlayer);
-                        } else if (this.gameStatus.phase === "DAY_ELIMINATION") {
+                        } else if (this.gameStatus.phase === "DAY_ELIMINATION" && this.role !== "OBSERVER") {
                             console.log("userVideo day elimination");
                             if (this.playersGameInfo.suspicious === true) {
                                 console.log(this.playersGameInfo.suspicious);
@@ -181,7 +181,7 @@ export default {
                                 this.$refs.cell.addEventListener("click", this.votePlayer);
                             } else if (
                                 this.gameStatus.phase === "DAY_ELIMINATION" &&
-                                this.playersGameInfo.suspicious === true
+                                this.playersGameInfo.suspicious === true && this.role !== "OBSERVER"
                             ) {
                                 this.$refs.cell.classList.add("cell-hover");
                                 this.$refs.cell.addEventListener("click", this.votePlayer);
