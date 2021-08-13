@@ -7,17 +7,17 @@ import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.domain.enums.StompMessageType;
 
 @Getter
-public class ObserberJoinRes {
+public class ObserverJoinRes {
 
   private StompMessageType type;
-  private Map<String, ObserberRole> playerMap;
+  private Map<String, ObserverRole> playerMap;
 
-  public static ObserberJoinRes of(Map<String, GameRole> playerMap) {
-    ObserberJoinRes playerRoleRes = new ObserberJoinRes();
+  public static ObserverJoinRes of(Map<String, GameRole> playerMap) {
+    ObserverJoinRes playerRoleRes = new ObserverJoinRes();
     playerRoleRes.type = StompMessageType.DEAD;
     playerRoleRes.playerMap = new HashMap();
     playerMap.forEach((playerId, role) -> {
-      playerRoleRes.playerMap.put(playerId, ObserberRole.of(role));
+      playerRoleRes.playerMap.put(playerId, ObserverRole.of(role));
     });
     return playerRoleRes;
   }

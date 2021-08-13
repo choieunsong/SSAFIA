@@ -4,12 +4,12 @@ import lombok.Getter;
 import s05.p12a104.mafia.domain.enums.GameRole;
 
 @Getter
-public class ObserberRole {
+public class ObserverRole {
 
   private GameRole role;
 
-  public static ObserberRole of(GameRole role) {
-    ObserberRole obserberRole = new ObserberRole();
+  public static ObserverRole of(GameRole role) {
+    ObserverRole obserberRole = new ObserverRole();
     obserberRole.role = role;
     return obserberRole;
   }
