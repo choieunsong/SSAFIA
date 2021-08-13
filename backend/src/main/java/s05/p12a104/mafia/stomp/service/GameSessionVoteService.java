@@ -1,4 +1,4 @@
-package s05.p12a104.mafia.api.service;
+package s05.p12a104.mafia.stomp.service;
 
 import java.time.LocalDateTime;
 import java.util.Map;

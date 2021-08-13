@@ -4,8 +4,8 @@ import java.util.TimerTask;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import s05.p12a104.mafia.api.service.GameSessionVoteService;
 import s05.p12a104.mafia.domain.enums.GamePhase;
+import s05.p12a104.mafia.stomp.service.GameSessionVoteService;
 
 @RequiredArgsConstructor
 @Service

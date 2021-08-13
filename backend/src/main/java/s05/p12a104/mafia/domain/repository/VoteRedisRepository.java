@@ -28,25 +28,36 @@ public class VoteRedisRepository {
 
   public Map<String, Vote> startVote(List<String> players, GamePhase phase) {
     Map<String, Vote> voteResult = new HashMap<String, Vote>();
+
     players.forEach((playerId) -> {
-      Vote voteDao = getVote(playerId);
-      if (voteDao == null) {
-        Vote.builder(playerId, phase);
+      Vote vote;
+      if (!isExist(playerId)) {
+        vote = Vote.builder(playerId, phase);
+      } else {
+        vote = getVote(playerId);
       }
-      updateVote(playerId, voteDao);
+
+      updateVote(playerId, vote);
     });
     return voteResult;
+  }
+
+  public void removeVote(String playerId) {
+    deleteVote(playerId);
+  }
+
+  public boolean isExist(String playerId) {
+    return opsHashVote.hasKey(key, playerId);
   }
 
   public Vote getVote(String playerId) {
     return opsHashVote.get(key, playerId);
   }
 
-  public Vote vote(String playerId, String vote) {
+  public void vote(String playerId, String vote) {
     Vote voteDao = getVote(playerId);
     voteDao.setVote(vote);
     updateVote(playerId, voteDao);
-    return voteDao;
   }
 
   public boolean confirmVote(String playerId) {

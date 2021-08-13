@@ -1,4 +1,4 @@
-package s05.p12a104.mafia.api.service;
+package s05.p12a104.mafia.stomp.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -12,6 +12,7 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import s05.p12a104.mafia.api.service.GameSessionService;
 import s05.p12a104.mafia.common.util.TimeUtils;
 import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.entity.Player;
@@ -32,14 +33,16 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
 
   private final RedisPublisher redisPublisher;
   private final VoteRepository voteRepository;
+
   private final GameSessionService gameSessionService;
+
   private final ChannelTopic topicDayDiscussionFin;
   private final ChannelTopic topicDayEliminationFin;
   private final ChannelTopic topicNightVoteFin;
 
   @Override
   public void startVote(String roomId, GamePhase phase, LocalDateTime time, Map players) {
-    voteRepository.startVote(roomId, phase, getVoters(players, phase));
+    voteRepository.startVote(roomId, phase, players);
     Timer timer = new Timer();
     VoteFinTimerTask task = new VoteFinTimerTask(this);
     task.setRoomId(roomId);
@@ -112,11 +115,6 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
           new NightVoteMessage(roomId, getNightVoteResult(gameSession, vote));
       redisPublisher.publish(topicNightVoteFin, nightVoteMessage);
     }
-  }
-
-  private Map<String, GameRole> getVoters(Map<String, Player> players, GamePhase phase) {
-      return players.entrySet().stream()
-          .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().getRole()));
   }
 
   private List<String> getSuspiciousList(GameSession gameSession, Map<String, String> voteResult) {

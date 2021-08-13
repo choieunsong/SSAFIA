@@ -29,7 +29,7 @@ public class VoteRepository {
   }
 
   public boolean isValid(String playerId, GamePhase phase) {
-    return voteRedisRepository.getVote(playerId) != null
+    return voteRedisRepository.isExist(playerId) == true
         ? (voteRedisRepository.getVote(playerId).getPhase() == phase ? true : false)
         : false;
   }
@@ -75,13 +75,14 @@ public class VoteRepository {
   }
 
   private Map<String, String> voteResultConvert(Map<String, Vote> voteResult) {
-    return voteResult.entrySet().stream()
-        .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().getVote()));
+    Map<String, String> result = new HashMap<String, String>();
+    voteResult.forEach((playerId, vote) -> {
+      result.put(playerId, vote.getVote());
+    });
+    return result;
   }
 
   private Map<String, Vote> getVoteResult(List<String> voters) {
-    Map<String, Vote> voteResult;
-    voteResult = voteRedisRepository.getVoteResult(voters);
-    return voteResult;
+    return voteRedisRepository.getVoteResult(voters);
   }
 }

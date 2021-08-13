@@ -10,10 +10,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.api.service.GameSessionService;
-import s05.p12a104.mafia.api.service.GameSessionVoteService;
 import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.enums.GamePhase;
+import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.stomp.response.GameStatusRes;
+import s05.p12a104.mafia.stomp.service.GameSessionVoteService;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -44,11 +45,11 @@ public class StartFinSubscriber {
 
       template.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));
 
-      Map<String, String> players = new HashMap();
+      Map<String, GameRole> players = new HashMap();
 
       gameSession.getPlayerMap().forEach((playerId, player) -> {
         if (player.isAlive()) {
-          players.put(playerId, null);
+          players.put(playerId, player.getRole());
         }
       });
 

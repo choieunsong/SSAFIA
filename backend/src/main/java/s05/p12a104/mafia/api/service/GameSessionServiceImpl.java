@@ -45,6 +45,7 @@ import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.domain.enums.GameState;
 import s05.p12a104.mafia.domain.mapper.GameSessionDaoMapper;
 import s05.p12a104.mafia.domain.repository.GameSessionRedisRepository;
+import s05.p12a104.mafia.domain.repository.VoteRedisRepository;
 import s05.p12a104.mafia.redispubsub.RedisPublisher;
 import s05.p12a104.mafia.redispubsub.message.EndMessgae;
 import s05.p12a104.mafia.stomp.response.GameResult;
@@ -55,6 +56,7 @@ import s05.p12a104.mafia.stomp.response.GameResult;
 public class GameSessionServiceImpl implements GameSessionService {
 
   private final GameSessionRedisRepository gameSessionRedisRepository;
+  private final VoteRedisRepository voteRedisRepository;
 
   private final RedisKeyValueTemplate redisKVTemplate;
 
@@ -169,6 +171,7 @@ public class GameSessionServiceImpl implements GameSessionService {
       } else {
         removeReadyUser(gameSession, player);
       }
+      voteRedisRepository.removeVote(playerId);
     }
     if (gameSessionRedisRepository.findById(roomId).isPresent()) {
       update(gameSession);
