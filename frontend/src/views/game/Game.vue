@@ -1235,7 +1235,7 @@ export default {
             const message = JSON.parse(payload.body);
             if (message.type === "UPDATE") {
                 infoUpdater("voters", message);
-            } else if (message.type === "POLICE") {
+            } else if (message.type === "SUSPECT") {
                 let targetNickname = "";
                 for (let i = 0; i < state.playersGameInfo.length; i++) {
                     if (state.playersGameInfo[i].playerId === message.vote) {
