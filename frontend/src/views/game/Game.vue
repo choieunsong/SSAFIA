@@ -942,7 +942,7 @@ export default {
                         state.subscribers[i].subscribeToVideo(true);
                     }
                 }
-                if (state.mafias) {
+                if (!state.mafias) {
                     infoUpdater("isMafia", null);
                 } else {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
@@ -1352,7 +1352,6 @@ export default {
 
         window.onbeforeunload = function(event) {
             leave();
-            return "";
         };
         store.dispatch("token/setRoomId", route.params.roomId);
         console.log(state.gameStatus.phase);

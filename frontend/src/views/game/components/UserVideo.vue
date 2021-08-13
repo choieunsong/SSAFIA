@@ -94,7 +94,7 @@ export default {
         gameStatus: Object,
         isConfirm: Boolean,
         role: String,
-        playerMe: Object,
+        playerMe: Boolean,
     },
 
     computed: {
@@ -114,11 +114,11 @@ export default {
                         this.$refs.cell.classList.remove("cell-hover");
                         this.$refs.cell.removeEventListener("click", this.votePlayer);
                         this.$refs.cell.classList.remove("cell-unsuspicious");
-                        if (this.gameStatus.phase === "DAY_DISCUSSION") {
+                        if (this.gameStatus.phase === "DAY_DISCUSSION" && this.role !== "OBSERVER") {
                             console.log("DAY_DISCUSSION");
                             this.$refs.cell.classList.add("cell-hover");
                             this.$refs.cell.addEventListener("click", this.votePlayer);
-                        } else if (this.gameStatus.phase === "DAY_ELIMINATION") {
+                        } else if (this.gameStatus.phase === "DAY_ELIMINATION" && this.role !== "OBSERVER") {
                             console.log("userVideo day elimination");
                             if (this.playersGameInfo.suspicious === true) {
                                 console.log(this.playersGameInfo.suspicious);
@@ -176,12 +176,12 @@ export default {
                             this.$refs.cell.classList.remove("cell-hover");
                             this.$refs.cell.removeEventListener("click", this.votePlayer);
                         } else {
-                            if (this.gameStatus.phase === "DAY_DISCUSSION") {
+                            if (this.gameStatus.phase === "DAY_DISCUSSION" && this.role !== "OBSERVER") {
                                 this.$refs.cell.classList.add("cell-hover");
                                 this.$refs.cell.addEventListener("click", this.votePlayer);
                             } else if (
                                 this.gameStatus.phase === "DAY_ELIMINATION" &&
-                                this.playersGameInfo.suspicious === true
+                                this.playersGameInfo.suspicious === true && this.role !== "OBSERVER"
                             ) {
                                 this.$refs.cell.classList.add("cell-hover");
                                 this.$refs.cell.addEventListener("click", this.votePlayer);
