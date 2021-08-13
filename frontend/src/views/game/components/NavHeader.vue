@@ -3,10 +3,22 @@
         <nav class="navbar navbar-expand-sm navbar-light bg-light">
             <div>
                 <span class="logo"
-                    ><img src="../../../assets/image/sun.png" class="sun-logo" ref="sun"
+                    ><img
+                        src="../../../assets/image/sun.png"
+                        class="sun-logo"
+                        ref="sun"
+                        :style="[
+                            this.gameStatus.phase != 'NIGHT_VOTE' ? 'opacity: 1' : 'opacity: 0',
+                        ]"
                 /></span>
                 <span class="logo"
-                    ><img src="../../../assets/image/moon.png" class="moon-logo" ref="moon"
+                    ><img
+                        src="../../../assets/image/moon.png"
+                        class="moon-logo"
+                        ref="moon"
+                        :style="[
+                            this.gameStatus.phase != 'NIGHT_VOTE' ? 'opacity: 0' : 'opacity: 1',
+                        ]"
                 /></span>
                 <span id="sun-logo-title" class="font-jua">{{ getDate }}</span>
             </div>
@@ -99,15 +111,12 @@ export default {
             handler() {
                 console.log("watch change", this.gameStatus.phase);
                 if (this.gameStatus.phase == "READY") {
-                    clearInterval(this.interval);
                     console.log("watch ready");
                 } else if (this.gameStatus.phase == "START") {
-                    clearInterval(this.interval);
                     console.log("watch start");
                     this.clickStartButton = true;
                     this.startCountDown();
                 } else if (this.gameStatus.phase == "DAY_DISCUSSION") {
-                    clearInterval(this.interval);
                     this.$refs.confirm.classList.remove("unhover");
                     this.$refs.confirm.classList.add("confirm-button-active");
                     this.startCountDown();
@@ -117,12 +126,10 @@ export default {
                     this.$refs.confirm.classList.add("confirm-button-active");
                     this.startCountDown();
                 } else if (this.gameStatus.phase == "DAY_TO_NIGHT") {
-                    clearInterval(this.interval);
                     this.$refs.confirm.classList.add("unhover");
                     this.$refs.confirm.classList.remove("confirm-button-active");
                     this.startCountDown();
                 } else if (this.gameStatus.phase == "NIGHT_VOTE") {
-                    clearInterval(this.interval);
                     this.$refs.sun.classList.add("sun-logo-deactive");
                     this.$refs.moon.classList.add("moon-logo-active");
                     this.startCountDown();
@@ -134,7 +141,6 @@ export default {
                         this.$refs.confirm.classList.add("confirm-button-active");
                     }
                 } else if (this.gameStatus.phase == "NIGHT_TO_DAY") {
-                    clearInterval(this.interval);
                     this.$refs.sun.classList.remove("sun-logo-deactive");
                     this.$refs.moon.classList.remove("moon-logo-active");
                     this.$refs.sun.classList.add("sun-logo-active");
@@ -144,7 +150,6 @@ export default {
                     this.$refs.confirm.classList.remove("confirm-button-active");
                     this.startCountDown();
                 } else if (this.gameStatus.phase == "END") {
-                    clearInterval(this.interval);
                     this.$refs.confirm.classList.add("unhover");
                     this.$refs.confirm.classList.remove("confirm-button-active");
                     this.startCountDown();
@@ -190,6 +195,10 @@ export default {
             this.$emit("gameStart");
         },
         startCountDown() {
+            if (this.interval) {
+                clearInterval(this.interval);
+            }
+
             this.multiplier = 100 / this.gameStatus.timer; //곱해줄 값 구하기
             this.time = this.gameStatus.timer; // 시간 구하기
             this.leftTime = 0;
@@ -199,22 +208,19 @@ export default {
             console.log("leftTime", this.leftTime);
             console.log("maxTime", this.gameStatus.timer);
 
-            this.clickStartButton = true;
             setTimeout(() => {
                 this.countDownTimer();
             }, 200);
         },
         countDownTimer() {
             this.interval = setInterval(() => {
-                this.time -= 1;
-                this.leftTime = this.gameStatus.timer - this.time;
+                if (this.leftTime == this.gameStatus.timer) {
+                    clearInterval(this.interval);
+                } else {
+                    this.time -= 1;
+                    this.leftTime = this.gameStatus.timer - this.time;
+                }
             }, 1000);
-
-            setTimeout(() => {
-                clearInterval(this.interval);
-                this.leftTime = 0;
-                this.clickStartButton = false; //다시 start button 활성화
-            }, 1000 * this.gameStatus.timer);
         },
         confirmVote() {
             //투표 확정

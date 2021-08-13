@@ -1,6 +1,7 @@
 package s05.p12a104.mafia.stomp.controller;
 
 
+import java.util.Map;
 import java.util.Timer;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -19,6 +20,7 @@ import s05.p12a104.mafia.stomp.response.GameSessionStompJoinRes;
 import s05.p12a104.mafia.stomp.response.GameSessionStompLeaveRes;
 import s05.p12a104.mafia.stomp.response.GameSessionStompRejoinRes;
 import s05.p12a104.mafia.stomp.response.GameStatusRes;
+import s05.p12a104.mafia.stomp.response.ObserberJoinRes;
 import s05.p12a104.mafia.stomp.response.PlayerRoleRes;
 import s05.p12a104.mafia.stomp.response.StompRejoinPlayer;
 import s05.p12a104.mafia.stomp.task.StartFinTimerTask;
@@ -91,4 +93,14 @@ public class RoomController {
 
     });
   }
+
+  @MessageMapping("/{roomId}/OBSERVER")
+  public void observerJoin(SimpMessageHeaderAccessor accessor, @DestinationVariable String roomId) {
+    String playerId = accessor.getUser().getName();
+
+    Map<String, GameRole> playerRole = gameSessionService.addObserver(roomId, playerId);
+    simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + GameRole.OBSERVER,
+        ObserberJoinRes.of(playerRole));
+  }
+
 }

@@ -1,12 +1,5 @@
 package s05.p12a104.mafia.api.service;
 
-import io.openvidu.java.client.ConnectionProperties;
-import io.openvidu.java.client.ConnectionType;
-import io.openvidu.java.client.OpenVidu;
-import io.openvidu.java.client.OpenViduHttpException;
-import io.openvidu.java.client.OpenViduJavaClientException;
-import io.openvidu.java.client.OpenViduRole;
-import io.openvidu.java.client.Session;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,11 +9,18 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisKeyValueTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
+import io.openvidu.java.client.ConnectionProperties;
+import io.openvidu.java.client.ConnectionType;
+import io.openvidu.java.client.OpenVidu;
+import io.openvidu.java.client.OpenViduHttpException;
+import io.openvidu.java.client.OpenViduJavaClientException;
+import io.openvidu.java.client.OpenViduRole;
+import io.openvidu.java.client.Session;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.api.requset.GameSessionPostReq;
 import s05.p12a104.mafia.api.response.GameSessionJoinRes;
 import s05.p12a104.mafia.api.response.PlayerJoinRoomState;
@@ -169,7 +169,9 @@ public class GameSessionServiceImpl implements GameSessionService {
         removeReadyUser(gameSession, player);
       }
     }
-    update(gameSession);
+    if (gameSessionRedisRepository.findById(roomId).isPresent()) {
+      update(gameSession);
+    }
     return gameSession;
   }
 
@@ -287,7 +289,7 @@ public class GameSessionServiceImpl implements GameSessionService {
     gameSession.setDay(0);
     gameSession.setAliveMafia(roleNum.get(GameRole.MAFIA));
     gameSession.setPhase(GamePhase.START);
-    gameSession.setTimer(5);
+    gameSession.setTimer(15);
 
     // player 초기화
     gameSession.getPlayerMap().forEach((playerId, player) -> {
@@ -339,11 +341,24 @@ public class GameSessionServiceImpl implements GameSessionService {
       removeReadyUser(gameSession, player);
     }
 
-    gameSession.setState(GameState.READY);
-    gameSession.setTimer(0);
-    gameSession.setDay(0);
-    gameSession.setAliveMafia(0);
+    if (gameSessionRedisRepository.findById(gameSession.getRoomId()).isPresent()) {
+      gameSession.setState(GameState.READY);
+      gameSession.setTimer(0);
+      gameSession.setDay(0);
+      gameSession.setAliveMafia(0);
 
-    update(gameSession);
+      update(gameSession);
+    }
+  }
+
+  @Override
+  public Map<String, GameRole> addObserver(String roomId, String playerId) {
+    Map<String, GameRole> observer;
+    Map<String, Player> playerMap = findById(roomId).getPlayerMap();
+
+    observer = playerMap.entrySet().stream().filter(e -> e.getValue().getRole() != null)
+        .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().getRole()));
+
+    return observer;
   }
 }

@@ -17,6 +17,8 @@ import s05.p12a104.mafia.domain.enums.GamePhase;
 import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.redispubsub.message.NightVoteMessage;
 import s05.p12a104.mafia.stomp.response.GameStatusKillRes;
+import s05.p12a104.mafia.stomp.response.ObserberJoinRes;
+import s05.p12a104.mafia.stomp.response.PlayerDeadRes;
 import s05.p12a104.mafia.stomp.response.SuspectVoteRes;
 import s05.p12a104.mafia.stomp.task.StartFinTimerTask;
 
@@ -38,7 +40,6 @@ public class NightVoteFinSubscriber {
       Map<GameRole, String> roleVote = nightVoteMessage.getRoleVoteResult();
       GameSession gameSession = gameSessionService.findById(roomId);
 
-
       String deadPlayerId = roleVote.get(GameRole.MAFIA);
       String protectedPlayerId = roleVote.get(GameRole.DOCTOR);
 
@@ -47,6 +48,12 @@ public class NightVoteFinSubscriber {
         deadPlayerId = null;
       }
 
+      Player deadPlayer = gameSession.getPlayerMap().get(deadPlayerId);
+
+      String suspectPlayerId = roleVote.get(GameRole.POLICE);
+
+      Player suspectPlayer = gameSession.getPlayerMap().get(suspectPlayerId);
+
       List<String> victims = setNightToDay(gameSession, deadPlayerId, protectedPlayerId);
 
       // 종료 여부 체크
@@ -54,18 +61,19 @@ public class NightVoteFinSubscriber {
         return;
       }
 
-      Player deadPlayer = gameSession.getPlayerMap().get(deadPlayerId);
-
       // 밤투표 결과
       template.convertAndSend("/sub/" + roomId, GameStatusKillRes.of(gameSession, deadPlayer));
 
-      String suspectPlayerId = roleVote.get(GameRole.POLICE);
-
-      Player suspectPlayer = gameSession.getPlayerMap().get(suspectPlayerId);
+      // 사망자 OBSERVER 변경
+      if (deadPlayer != null) {
+        template.convertAndSend("/sub/" + roomId + "/" + deadPlayerId, PlayerDeadRes.of());
+      }
 
       // 용의자 Role 결과
       if (suspectPlayer != null) {
-        template.convertAndSend("/sub/" + roomId + "/" + GameRole.POLICE.toString(),
+        template.convertAndSend("/sub/" + roomId + "/" + GameRole.POLICE,
+            SuspectVoteRes.of(suspectPlayer));
+        template.convertAndSend("/sub/" + roomId + "/" + GameRole.OBSERVER,
             SuspectVoteRes.of(suspectPlayer));
       }
 

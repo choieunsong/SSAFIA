@@ -7,5 +7,7 @@ public enum StompMessageType {
   START,
   PHASE_CHANGED,
   ROLE,
-  UPDATE
+  UPDATE,
+  DEAD,
+  SUSPECT
 }
