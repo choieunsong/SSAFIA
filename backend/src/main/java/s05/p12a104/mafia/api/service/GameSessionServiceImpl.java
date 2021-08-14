@@ -436,10 +436,9 @@ public class GameSessionServiceImpl implements GameSessionService {
     Map<String, Player> playerMap = gameSession.getPlayerMap();
     List<Player> removePlayers = new ArrayList<>();
     for (Player player : playerMap.values()) {
-      if (player.getLeftPhaseCount() == null) {
-        continue;
+      if (player.isLeft()) {
+        removePlayers.add(player);
       }
-      removePlayers.add(player);
     }
 
     for (Player player : removePlayers) {
