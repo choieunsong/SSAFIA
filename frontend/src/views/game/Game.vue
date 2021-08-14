@@ -652,6 +652,14 @@ export default {
               JSON.stringify(localPlayersGameInfo)
             );
             store.dispatch("ingame/setPhase", state.gameStatus.phase);
+            if (state.role === "OBSERVER") {
+                for (let i=0; i< state.subscribers.length; i++) {
+                    if (!state.removeList.includes(i)) {
+                        state.subscribers[i].subscribeToAudio(true)
+                        state.subscribers[i].subscribeToVideo(true)
+                    }
+                }
+            }
             break;
           }
           case "DAY_DISCUSSION": {
@@ -670,6 +678,14 @@ export default {
             state.newSubscriberOn = true;
             infoUpdater("alive", message);
             store.dispatch("ingame/setPhase", state.gameStatus.phase);
+            if (state.role === "OBSERVER") {
+                for (let i=0; i< state.subscribers.length; i++) {
+                    if (!state.removeList.includes(i)) {
+                        state.subscribers[i].subscribeToAudio(true)
+                        state.subscribers[i].subscribeToVideo(true)
+                    }
+                }
+            }
             break;
           }
           case "DAY_ELIMINATION": {
@@ -736,6 +752,14 @@ export default {
             infoUpdater("voters", null);
             state.isConfirm = false;
             store.dispatch("ingame/setPhase", state.gameStatus.phase);
+            if (state.role === "OBSERVER") {
+                for (let i=0; i< state.subscribers.length; i++) {
+                    if (!state.removeList.includes(i)) {
+                        state.subscribers[i].subscribeToAudio(true)
+                        state.subscribers[i].subscribeToVideo(true)
+                    }
+                }
+            }
             break;
           }
           case "NIGHT_VOTE": {
@@ -818,8 +842,10 @@ export default {
             infoUpdater("voters", null);
             state.isConfirm = false;
             for (let i = 0; i < state.subscribers.length; i++) {
-              state.subscribers[i].subscribeToAudio(true);
-              state.subscribers[i].subscribeToVideo(true);
+              if (!state.removeList.includes(i)) {
+                state.subscribers[i].subscribeToAudio(true);
+                state.subscribers[i].subscribeToVideo(true);
+              }
             }
             store.dispatch("ingame/setPhase", state.gameStatus.phase);
             break;
@@ -926,11 +952,12 @@ export default {
           state.publisher.publishAudio(false);
           state.publisher.publishVideo(false);
           for (let i = 0; i < state.subscribers.length; i++) {
-            state.subscribers[i].subscribeToAudio(true);
-            state.subscribers[i].subscribeToVideo(true);
+            if (!state.removeList.includes(i)) {
+                state.subscribers[i].subscribeToAudio(true);
+                state.subscribers[i].subscribeToVideo(true);
+            }
           }
         }
-
         if (!state.mafias) {
           infoUpdater("isMafia", null);
         } else {
@@ -961,8 +988,10 @@ export default {
           state.publisher.publishAudio(false);
           state.publisher.publishVideo(false);
           for (let i = 0; i < state.subscribers.length; i++) {
-            state.subscribers[i].subscribeToAudio(true);
-            state.subscribers[i].subscribeToVideo(true);
+            if (!state.removeList.includes(i)) {
+                state.subscribers[i].subscribeToAudio(true);
+                state.subscribers[i].subscribeToVideo(true);
+            }
           }
         }
         if (state.mafias) {
@@ -1100,20 +1129,24 @@ export default {
             }
             if (state.role === "MAFIA") {
               for (let i = 0; i < state.subscribers.length; i++) {
-                if (state.playersGameInfo[i].isMafia !== true) {
+                if (state.playersGameInfo[i].isMafia !== true && !state.removeList.includes(i)) {
                   state.subscribers[i].subscribeToAudio(false);
                   state.subscribers[i].subscribeToVideo(false);
                 }
               }
             } else if (state.role === "OBSERVER") {
               for (let i = 0; i < state.subscribers.length; i++) {
-                state.subscribers[i].subscribeToAudio(true);
-                state.subscribers[i].subscribeToVideo(true);
+                if (!state.removeList.includes(i)) {
+                    state.subscribers[i].subscribeToAudio(true);
+                    state.subscribers[i].subscribeToVideo(true);
+                }
               }
             } else {
               for (let i = 0; i < state.subscribers.length; i++) {
-                state.subscribers[i].subscribeToAudio(false);
-                state.subscribers[i].subscribeToVideo(false);
+                if (!state.removeList.includes(i)) {
+                    state.subscribers[i].subscribeToVideo(false);
+                    state.subscribers[i].subscribeToAudio(false);
+                }
               }
             }
             state.gameStatus = message.gameStatus;
@@ -1304,6 +1337,9 @@ export default {
       );
       state.subscribers = localSubscribers;
       state.playersGameInfo = localPlayersGameInfo;
+      for (let i;i<state.subscribers.length;i++) {
+          state.removeList.push(i)
+      }
     } else {
       store.dispatch("ingame/setPhase", state.gameStatus.phase);
     }
