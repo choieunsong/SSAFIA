@@ -249,6 +249,7 @@ export default {
       state.session.on("streamCreated", ({ stream }) => {
         console.log("~~~~~~new subscriber in~~~~~~");
         const subscriber = state.session.subscribe(stream);
+        console.log(subscriber)
         const array = subscriber.stream.connection.data.split('"');
         const tmp = array[3].split(",");
         subscriber.nickname = tmp[0];
@@ -602,13 +603,15 @@ export default {
       } else if (message.type === "LEAVE") {
         infoUpdater("isHost", message);
       } else if (message.type === "REJOIN") {
-        for (let i = 0; i.state.playersGameInfo.length; i++) {
-          if (state.playersGameInfo[i].playerId === message.rejoiningPlayerId) {
-            state.playersGameInfo[i].alive = message.alive;
-            state.playersGameInfo[i].suspicious = message.suspicious;
-            break;
+          if (state.playersGameInfo) {
+              for (let i = 0; state.playersGameInfo.length; i++) {
+                if (state.playersGameInfo[i].playerId === message.rejoiningPlayerId) {
+                  state.playersGameInfo[i].alive = message.alive;
+                  state.playersGameInfo[i].suspicious = message.suspicious;
+                  break;
+                }
+              }
           }
-        }
       } else if (message.type === "PHASE_CHANGED") {
         switch (message.gameStatus.phase) {
           case "START": {
@@ -1336,8 +1339,10 @@ export default {
         localStorage.getItem("localPlayersGameInfo")
       );
       state.subscribers = localSubscribers;
+      console.log("setup state.subscribers")
       console.log(state.subscribers)
       state.playersGameInfo = localPlayersGameInfo;
+      console.log("setup state.playersGameInfo")
       console.log(state.playersGameInfo)
       for (let i;i<state.subscribers.length;i++) {
           state.removeList.push(i)
@@ -1347,7 +1352,9 @@ export default {
     }
     state.openviduToken = store.getters["token/getOpenviduToken"];
     state.myUserName = store.getters["token/getNickname"];
+    console.log(state.myUserName)
     state.playerId = store.getters["token/getPlayerId"];
+    console.log(state.playerId)
     joinSession();
     setTimeout(connect, 500);
 
