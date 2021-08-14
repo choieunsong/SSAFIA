@@ -14,7 +14,6 @@ import s05.p12a104.mafia.common.exception.OpenViduSessionNotFoundException;
 import s05.p12a104.mafia.common.exception.OverMaxIndividualRoomCountException;
 import s05.p12a104.mafia.common.exception.OverMaxPlayerCountException;
 import s05.p12a104.mafia.common.exception.OverMaxTotalRoomCountException;
-import s05.p12a104.mafia.common.exception.PlayerNotFoundException;
 import s05.p12a104.mafia.common.exception.PlayerNotLeftException;
 import s05.p12a104.mafia.common.reponse.ApiResponseDto;
 

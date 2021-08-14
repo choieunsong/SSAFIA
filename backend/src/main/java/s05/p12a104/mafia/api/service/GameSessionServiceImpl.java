@@ -131,6 +131,7 @@ public class GameSessionServiceImpl implements GameSessionService {
       String token = createOpenViduToken(gameSession, player.getNickname());
       player.setToken(token);
       player.setLeft(false);
+      player.setLeftPhaseCount(null);
       update(gameSession);
       return new GameSessionJoinRes(PlayerJoinRoomState.REJOIN, token, playerId);
 
@@ -249,11 +250,12 @@ public class GameSessionServiceImpl implements GameSessionService {
    * @param player : 나간 player
    */
   private void removePlayer(GameSession gameSession, Player player) {
-    if (!player.isAlive()) {
+    if (player.isLeft() || !player.isAlive()) {
       return;
     }
 
     player.setLeftPhaseCount(gameSession.getPhaseCount());
+    player.setLeft(true);
     update(gameSession);
 
     final int TIME_TO_DIE = 30; // 30초
@@ -269,7 +271,8 @@ public class GameSessionServiceImpl implements GameSessionService {
           e.printStackTrace();
         }
         if (!isLocked) {
-          throw new RedissonLockNotAcquiredException("Lock을 얻을 수 없습니다 - Key : " + KEY + gameSession.getRoomId());
+          throw new RedissonLockNotAcquiredException(
+              "Lock을 얻을 수 없습니다 - Key : " + KEY + gameSession.getRoomId());
         }
 
         try {
@@ -282,7 +285,7 @@ public class GameSessionServiceImpl implements GameSessionService {
           }
 
           Player playerTemp = gameSessionTemp.getPlayerMap().get(player.getId());
-          if (playerTemp.getLeftPhaseCount() == null) {
+          if (!playerTemp.isLeft()) {
             return;
           }
 
@@ -302,7 +305,7 @@ public class GameSessionServiceImpl implements GameSessionService {
    * 아직 게임이 시작하지 않은 방에서 나간 Player 제거.
    *
    * @param gameSession : Player가 나간 Game Session
-   * @param player : 나간 player
+   * @param player      : 나간 player
    */
   private void removeReadyUser(GameSession gameSession, Player player) {
     Map<String, Player> playerMap = gameSession.getPlayerMap();
@@ -375,7 +378,8 @@ public class GameSessionServiceImpl implements GameSessionService {
       e.printStackTrace();
     }
     if (!isLocked) {
-      throw new RedissonLockNotAcquiredException("Lock을 얻을 수 없습니다 - Key : " + KEY + gameSession.getRoomId());
+      throw new RedissonLockNotAcquiredException(
+          "Lock을 얻을 수 없습니다 - Key : " + KEY + gameSession.getRoomId());
     }
 
     try {
