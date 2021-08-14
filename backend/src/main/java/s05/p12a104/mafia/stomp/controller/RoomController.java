@@ -3,26 +3,27 @@ package s05.p12a104.mafia.stomp.controller;
 
 import java.util.Map;
 import java.util.Timer;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.api.service.GameSessionService;
+import s05.p12a104.mafia.common.util.TimeUtils;
 import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.domain.enums.GameState;
 import s05.p12a104.mafia.redispubsub.RedisPublisher;
 import s05.p12a104.mafia.stomp.response.GameSessionStompJoinRes;
 import s05.p12a104.mafia.stomp.response.GameSessionStompLeaveRes;
-import s05.p12a104.mafia.stomp.response.StompResForRejoiningPlayer;
 import s05.p12a104.mafia.stomp.response.GameStatusRes;
-import s05.p12a104.mafia.stomp.response.ObserberJoinRes;
+import s05.p12a104.mafia.stomp.response.ObserverJoinRes;
 import s05.p12a104.mafia.stomp.response.PlayerRoleRes;
 import s05.p12a104.mafia.stomp.response.StompRejoinPlayer;
+import s05.p12a104.mafia.stomp.response.StompResForRejoiningPlayer;
 import s05.p12a104.mafia.stomp.task.StartFinTimerTask;
 
 @Slf4j
@@ -85,7 +86,7 @@ public class RoomController {
     Timer timer = new Timer();
     StartFinTimerTask task = new StartFinTimerTask(redisPublisher, topicStartFin);
     task.setRoomId(roomId);
-    timer.schedule(task, gameSession.getTimer() * 1000);
+    timer.schedule(task, TimeUtils.convertToDate(gameSession.getTimer()));
 
     // 전체 전송
     simpMessagingTemplate.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));
@@ -107,7 +108,7 @@ public class RoomController {
 
     Map<String, GameRole> playerRole = gameSessionService.addObserver(roomId, playerId);
     simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + GameRole.OBSERVER,
-        ObserberJoinRes.of(playerRole));
+        ObserverJoinRes.of(playerRole));
   }
 
 }

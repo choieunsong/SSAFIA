@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedHashMap;
+import java.util.Date;
 import java.util.Map;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -17,13 +18,13 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.common.exception.OpenViduSessionNotFoundException;
+import s05.p12a104.mafia.common.util.TimeUtils;
 import s05.p12a104.mafia.domain.dao.GameSessionDao;
 import s05.p12a104.mafia.domain.enums.AccessType;
 import s05.p12a104.mafia.domain.enums.GamePhase;
 import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.domain.enums.GameState;
 import s05.p12a104.mafia.domain.enums.RoomType;
-import s05.p12a104.mafia.stomp.response.GameResult;
 
 @Setter
 @Getter
@@ -47,7 +48,7 @@ public class GameSession {
 
   private int aliveNotCivilian;
 
-  private int timer;
+  private LocalDateTime timer;
 
   private List<String> mafias;
 
@@ -113,12 +114,12 @@ public class GameSession {
     List<String> victims = new ArrayList<>();
     this.phase = phase;
     this.phaseCount++;
-    setTimer(timer);
+    setTimer(TimeUtils.getFinTime(timer));
 
     Map<String, Player> playerMap = getPlayerMap();
     playerMap.forEach((playerId, player) -> {
       Integer leftPhaseCount = player.getLeftPhaseCount();
-      if (leftPhaseCount == null || leftPhaseCount != this.phaseCount - 1) {
+      if (!player.isLeft() || leftPhaseCount == null || leftPhaseCount >= this.phaseCount) {
         return;
       }
       
