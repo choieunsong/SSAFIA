@@ -184,7 +184,7 @@ export default {
               } else {
                 store.dispatch("token/setPlayerId", data.data.playerId);
                 store.dispatch("token/setOpenviduToken", data.data.token);
-                store.dispatch("ingame/setPhase", "READY");
+                store.dispatch("ingame/setIsREJOIN", false)
                 store
                   .dispatch("token/setNickname", state.form.nickname)
                   .then(() => {
