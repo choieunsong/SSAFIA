@@ -256,7 +256,6 @@ export default {
 
                 if (state.gameStatus.phase == "READY") {
                     state.subscribers.push(subscriber);
-                    console.log(state.subscribers);
                     //subscribers의 info 세팅
                     state.playersGameInfo.push({
                         playerId: tmp[1],
@@ -282,14 +281,15 @@ export default {
                         state.newSubscriberOn = false;
                     }
                 } else {
-                    let index = false;
+                    console.log("new subscriber on 'NOT READY'")
+                    let index = -1;
                     for (let i = 0; i < state.subscribers.length; i++) {
                         if (subscriber.playerId === state.subscribers[i].playerId) {
                             index = i;
                             break;
                         }
                     }
-                    if (index !== false) {
+                    if (index >= 0) {
                         for (let j = 0; j < state.removeList.length; j++) {
                             if (state.removeList[j] === index) {
                                 state.removeList.splice(j, 1);
@@ -304,18 +304,15 @@ export default {
             state.session.on("streamDestroyed", ({ stream }) => {
                 if (state.gameStatus.phase === "READY") {
                     const index = state.subscribers.indexOf(stream.streamManager, 0);
-                    console.log("!!!!!!stream destroyed", index);
                     if (index >= 0) {
                         state.subscribers.splice(index, 1);
                         state.playersGameInfo.splice(index, 1);
                     }
                     // 한명 제거
                     state.playerNum -= 1;
-                    console.log("playerNum", state.playerNum);
                 } else {
                     const index = state.subscribers.indexOf(stream.streamManager, 0);
                     state.removeList.push(index);
-                    console.log(state.removeList);
                 }
             });
 
@@ -373,12 +370,8 @@ export default {
                 const array = event.connection.data.split('"');
                 const tmp = array[3].split(",");
                 const targetPlayerId = tmp[1];
-                console.log(targetPlayerId);
-                console.log(state.playerId);
                 if (state.playerId === targetPlayerId) {
-                    console.log("playerMe");
                     state.playerMe.isTalking = true;
-                    console.log(state.playerMe);
                 } else {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
                         if (state.playersGameInfo[i].playerId === targetPlayerId) {
@@ -393,9 +386,7 @@ export default {
                 const tmp = array[3].split(",");
                 const targetPlayerId = tmp[1];
                 if (state.playerId === targetPlayerId) {
-                    console.log("playerMe");
                     state.playerMe.isTalking = false;
-                    console.log(state.playerMe);
                 } else {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
                         if (state.playersGameInfo[i].playerId === targetPlayerId) {
@@ -416,7 +407,7 @@ export default {
                     let publisher = state.OV.initPublisher(undefined, {
                         audioSource: undefined, // The source of audio. If undefined default microphone
                         videoSource: undefined, // The source of video. If undefined default webcam
-                        publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+                        publishAudio: false, // Whether you want to start publishing with your audio unmuted or not
                         publishVideo: true, // Whether you want to start publishing with your video enabled or not
                         resolution: "311x170", // The resolution of your video
                         frameRate: 30, // The frame rate of your video
@@ -467,7 +458,6 @@ export default {
             // 구독했다고 서버에 알리기, 나갔다 오면 다른 경로로
             if (store.getters["ingame/getIsREJOIN"]) {
                 const isREJOIN = store.getters["ingame/getIsREJOIN"];
-                console.log(isREJOIN)
                 if (isREJOIN) {
                     state.stompClient.send(`/pub/${state.mySessionId}/rejoin`, {});
                 } else {
@@ -494,7 +484,6 @@ export default {
                     vote: targetPlayerId,
                     phase: state.gameStatus.phase,
                 };
-                console.log("send vote", JSON.stringify(Message));
                 state.stompClient.send(
                     `/pub/${state.mySessionId}/vote`,
                     JSON.stringify(Message),
@@ -557,7 +546,6 @@ export default {
 
         // playersGameInfo 업데이트용 함수
         function infoUpdater(key, message) {
-            console.log("infoUpdater key:", key, " message: ", message);
             if (key === "voters") {
                 if (message === null) {
                     state.playerMe[key] = [];
@@ -599,7 +587,6 @@ export default {
                         }
                     }
                 }
-                console.log("vote result", message);
             } else if (key === "isHost") {
                 if (state.playerId === message.hostId) {
                     state.amIHost = true;
@@ -618,15 +605,12 @@ export default {
             } else {
                 //color, suspicious, alive update
                 if (message === null || typeof message == "boolean") {
-                    console.log();
                     state.playerMe[key] = message === null ? null : message;
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
                         state.playersGameInfo[i][key] = message === null ? null : message;
                     }
                 } else {
                     state.playerMe[key] = message.playerMap[state.playerMe.playerId][key];
-                    console.log("newSubscriberOn", state.newSubscriberOn);
-                    console.log("!!!!!!!!playerMe", state.playerMe);
                     // 만약 openVidu보다 먼저 stomp 정보 들어오는 경우 temp에 저장
                     if (!state.newSubscriberOn) {
                         state.tempPlayerMap = message.playerMap;
@@ -636,7 +620,6 @@ export default {
                             state.playersGameInfo[i][key] =
                                 message.playerMap[state.playersGameInfo[i].playerId][key];
                         }
-                        console.log("!!!!!!!!!playersGameInfo", state.playersGameInfo);
                         state.newSubscriberOn = false;
                     }
                 }
@@ -646,7 +629,6 @@ export default {
         // 공통 채널에서 메세지를 받았을 경우 할 일
         function onMessageReceived(payload) {
             var message = JSON.parse(payload.body);
-            console.log("onmessageReceived", message);
             if (message.type === "JOIN") {
                 infoUpdater("color", message);
                 infoUpdater("isHost", message);
@@ -670,6 +652,8 @@ export default {
                         state.gameStatus = message.gameStatus;
                         state.newSubscriberOn = true;
                         infoUpdater("alive", message);
+                        localStorage.setItem('localSubscribers', state.subscribers)
+                        localStorage.setItem('localPlayersGameInfo', state.playersGameInfo)
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
                         break;
                     }
@@ -718,13 +702,11 @@ export default {
                         );
                         audio.play();
                         state.vote = null;
-                        console.log("day to night", state.gameStatus.phase);
                         if (state.gameStatus.phase === "DAY_DISCUSSION") {
                             state.message =
                                 "최다 득표자가 너무 많거나 또는 무효투표자가 너무 많은 관계로,<br/>최종 투표를 스킵하고 밤으로 넘어갑니다.";
                         } else {
                             if (message.gameStatus.victim) {
-                                console.log("day elimination", message);
                                 let victimNickname = "nickname";
                                 if (message.gameStatus.victim === state.playerMe.playerId) {
                                     victimNickname = state.playerMe.nickname;
@@ -898,7 +880,6 @@ export default {
                     }
                 }
             } else if (message.type === "UPDATE") {
-                console.log("update voters", message);
                 infoUpdater("voters", message);
             } else {
                 console.log(
@@ -909,11 +890,9 @@ export default {
         // 개인 메세지 채널로 온 메세지에 따라 할 일
         function onPersonalMessageReceived(payload) {
             const message = JSON.parse(payload.body);
-            console.log("ON Personal Message Received", message);
             if (message.type === "ROLE") {
                 state.role = message.role;
                 state.mafias = message.mafias;
-                console.log("ROLE", state.role);
                 if (state.role === "MAFIA") {
                     if (state.mafias.length === 1) {
                         state.message =
@@ -938,7 +917,6 @@ export default {
                     state.message =
                         "게임이 시작되었습니다. <br/>당신은 <span style='font-size: 25px; color:DodgerBlue'>시민</span>입니다. <br/>다른 시민과 함께 마피아를 모두 제거하면 당신의 승리입니다.";
                 } else {
-                    console.log("OBSERVER ROLE messgae received");
                     state.stompClient.send(`/pub/${state.mySessionId}/${state.role}`);
                     state.message =
                         "당신은 관전자입니다. <br/>게임에 개입할 수는 없지만, 일어나고 있는 일들에 대한 모든 정보를 받아볼 수 있습니다.";
@@ -969,38 +947,6 @@ export default {
                     onJobMessageReceived
                 );
             } else if (message.type === "REJOIN") {
-                const keys = Object.keys(message.playerMap);
-                for (let i = 0; i < keys.length; i++) {
-                    const key = keys[i];
-                    let flag = true;
-                    for (let j = 0; j < state.playersGameInfo.length; j++) {
-                        if (state.playersGameInfo[j].playerId === key) {
-                            flag = false;
-                            break;
-                        }
-                    }
-                    if (flag) {
-                        const subscriber = {};
-                        subscriber.nickname = "";
-                        subscriber.playerId = key;
-                        state.subscribers.push(subscriber);
-                        state.removeList.push(state.playerNum);
-                        //subscribers의 info 세팅
-                        // 플레이어 수 1 증가
-                        state.playerNum += 1;
-                        state.playersGameInfo.push({
-                            playerId: key,
-                            nickname: "",
-                            alive: null,
-                            suspicious: null,
-                            voters: [],
-                            isMafia: null,
-                            color: null,
-                            isHost: false,
-                            role: null,
-                        });
-                    }
-                }
                 infoUpdater("color", message);
                 infoUpdater("nickname", message);
                 infoUpdater("isHost", message);
@@ -1152,20 +1098,17 @@ export default {
                         if (state.role === "MAFIA") {
                             for (let i = 0; i < state.subscribers.length; i++) {
                                 if (state.playersGameInfo[i].isMafia !== true) {
-                                    console.log("mafia turn off");
                                     state.subscribers[i].subscribeToAudio(false);
                                     state.subscribers[i].subscribeToVideo(false);
                                 }
                             }
                         } else if (state.role === "OBSERVER") {
                             for (let i = 0; i < state.subscribers.length; i++) {
-                                console.log("observer turn on");
                                 state.subscribers[i].subscribeToAudio(true);
                                 state.subscribers[i].subscribeToVideo(true);
                             }
                         } else {
                             for (let i = 0; i < state.subscribers.length; i++) {
-                                console.log("civilian turn on");
                                 state.subscribers[i].subscribeToAudio(false);
                                 state.subscribers[i].subscribeToVideo(false);
                             }
@@ -1238,7 +1181,6 @@ export default {
             const message = JSON.parse(payload.body);
             if (message.type === "UPDATE") {
                 state.newSubscriberOn = true;
-                console.log("OBSERVER vote update", message);
                 infoUpdater("voters", message);
             } else if (message.type === "SUSPECT") {
                 let targetNickname = "";
@@ -1255,15 +1197,12 @@ export default {
                     state.submessage = `경찰이 지목한 ${targetNickname}의 직업은 ${targetJob}입니다.`;
                 }
             } else if (message.type === "DEAD") {
-                console.log("OBSERVER DEAD meesage", message);
-                console.log("STATE ROLE", state.role);
                 // state.newSubscriberOn = true;
                 // infoUpdater("role", message);
                 for (let i = 0; i < state.playersGameInfo.length; i++) {
                     state.playersGameInfo[i]["role"] =
                         message.playerMap[state.playersGameInfo[i].playerId];
                 }
-                console.log("playersGameInfo", state.playersGameInfo);
             }
         }
 
@@ -1349,24 +1288,26 @@ export default {
             document.execCommand("copy");
         }
 
+        store.dispatch("token/setRoomId", route.params.roomId);
+        if (store.getters['ingame/getIsREJOIN']) {
+            state.gameStatus.phase = store.getters["ingame/getPhase"]
+            let localSubscribers = localStorage.getItem('localSubscribers')
+            let localPlayersGameInfo = localStorage.getItem('localPlayersGameInfo')
+            state.subscribers = localSubscribers
+            state.playersGameInfo = localPlayersGameInfo
+        } else {        
+            store.dispatch("ingame/setPhase", state.gameStatus.phase);
+        }
         state.openviduToken = store.getters["token/getOpenviduToken"];
         state.myUserName = store.getters["token/getNickname"];
         state.playerId = store.getters["token/getPlayerId"];
-        console.log(
-            "state.playerId:",
-            state.playerId,
-            "getters:",
-            store.getters["token/getPlayerId"]
-        );
         joinSession();
         setTimeout(connect, 500);
 
         window.onbeforeunload = function(event) {
             leave();
         };
-        store.dispatch("token/setRoomId", route.params.roomId);
-        console.log(state.gameStatus.phase);
-        store.dispatch("ingame/setPhase", state.gameStatus.phase);
+        
 
         return {
             state,
