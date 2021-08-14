@@ -419,7 +419,7 @@ export default {
         const isREJOIN = store.getters["ingame/getIsREJOIN"];
         if (isREJOIN) {
           state.stompClient.send(`/pub/${state.mySessionId}/rejoin`, {});
-          store.dispatch("setIsREJOIN", false);
+          store.dispatch("ingame/setIsREJOIN", false);
         } else {
           state.stompClient.send(`/pub/${state.mySessionId}/join`);
         }
@@ -1336,7 +1336,9 @@ export default {
         localStorage.getItem("localPlayersGameInfo")
       );
       state.subscribers = localSubscribers;
+      console.log(state.subscribers)
       state.playersGameInfo = localPlayersGameInfo;
+      console.log(state.playersGameInfo)
       for (let i;i<state.subscribers.length;i++) {
           state.removeList.push(i)
       }

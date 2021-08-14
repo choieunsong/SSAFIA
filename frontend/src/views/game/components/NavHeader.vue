@@ -110,11 +110,7 @@ export default {
         gameStatus: {
             deep: true,
             handler() {
-                console.log("watch change", this.gameStatus.phase);
-                if (this.gameStatus.phase == "READY") {
-                    console.log("watch ready");
-                } else if (this.gameStatus.phase == "START") {
-                    console.log("watch start");
+                if (this.gameStatus.phase == "START") {
                     this.startCountDown();
                 } else if (this.getAlive && this.gameStatus.phase == "DAY_DISCUSSION") {
                     this.$refs.confirm.classList.remove("unhover");
@@ -190,7 +186,6 @@ export default {
     methods: {
         gameStart() {
             //Game.vue에 게임 시작 전송
-            console.log("start");
 
             //hover class 떼기
             this.$refs.start.classList.add("unhover");
@@ -205,11 +200,6 @@ export default {
             this.multiplier = 100 / this.gameStatus.timer; //곱해줄 값 구하기
             this.time = this.gameStatus.timer; // 시간 구하기
             this.leftTime = 0;
-
-            console.log("multiplier", this.multiplier);
-            console.log("time", this.time);
-            console.log("leftTime", this.leftTime);
-            console.log("maxTime", this.gameStatus.timer);
 
             setTimeout(() => {
                 this.countDownTimer();
