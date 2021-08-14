@@ -38,6 +38,7 @@ import s05.p12a104.mafia.common.exception.PlayerNotLeftException;
 import s05.p12a104.mafia.common.exception.RedissonLockNotAcquiredException;
 import s05.p12a104.mafia.common.util.RoleUtils;
 import s05.p12a104.mafia.common.util.RoomIdUtils;
+import s05.p12a104.mafia.common.util.TimeUtils;
 import s05.p12a104.mafia.common.util.UrlUtils;
 import s05.p12a104.mafia.domain.dao.GameSessionDao;
 import s05.p12a104.mafia.domain.entity.GameSession;
@@ -386,7 +387,7 @@ public class GameSessionServiceImpl implements GameSessionService {
       gameSession.setDay(0);
       gameSession.setAliveMafia(roleNum.get(GameRole.MAFIA));
       gameSession.setPhase(GamePhase.START);
-      gameSession.setTimer(15);
+      gameSession.setTimer(TimeUtils.getFinTime(15));
 
       // player 초기화
       gameSession.getPlayerMap().forEach((playerId, player) -> {
@@ -443,7 +444,7 @@ public class GameSessionServiceImpl implements GameSessionService {
 
     if (gameSessionRedisRepository.findById(gameSession.getRoomId()).isPresent()) {
       gameSession.setState(GameState.READY);
-      gameSession.setTimer(0);
+      gameSession.setTimer(TimeUtils.getFinTime(0));
       gameSession.setDay(0);
       gameSession.setAliveMafia(0);
 

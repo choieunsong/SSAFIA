@@ -12,7 +12,7 @@ import s05.p12a104.mafia.domain.enums.StompMessageType;
 
 @Getter
 @RequiredArgsConstructor
-public class GameSessionStompRejoinRes {
+public class StompResForRejoiningPlayer {
 
   private final StompMessageType type = StompMessageType.REJOIN;
   private final String hostId;
@@ -21,7 +21,7 @@ public class GameSessionStompRejoinRes {
   private final GameRole role;
   private final List<String> mafias;
 
-  public static GameSessionStompRejoinRes of(GameSession gameSession, String reJoiningplayerId) {
+  public static StompResForRejoiningPlayer of(GameSession gameSession, String reJoiningplayerId) {
     Map<String, StompExistingPlayer> playerMap = new HashMap<>();
     gameSession.getPlayerMap().forEach((playerId, player) ->
         playerMap.put(playerId, StompExistingPlayer.of(player))
@@ -30,7 +30,7 @@ public class GameSessionStompRejoinRes {
     Player rejoiningPlayer = gameSession.getPlayerMap().get(reJoiningplayerId);
     GameStatus gameStatus = GameStatus.of(gameSession);
 
-    return new GameSessionStompRejoinRes(gameSession.getHostId(), gameStatus, playerMap,
+    return new StompResForRejoiningPlayer(gameSession.getHostId(), gameStatus, playerMap,
         rejoiningPlayer.getRole(), gameSession.getMafias());
   }
 }
