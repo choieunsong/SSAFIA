@@ -1,5 +1,12 @@
 package s05.p12a104.mafia.api.service;
 
+import io.openvidu.java.client.ConnectionProperties;
+import io.openvidu.java.client.ConnectionType;
+import io.openvidu.java.client.OpenVidu;
+import io.openvidu.java.client.OpenViduHttpException;
+import io.openvidu.java.client.OpenViduJavaClientException;
+import io.openvidu.java.client.OpenViduRole;
+import io.openvidu.java.client.Session;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -8,19 +15,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.RedisKeyValueTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
-import io.openvidu.java.client.ConnectionProperties;
-import io.openvidu.java.client.ConnectionType;
-import io.openvidu.java.client.OpenVidu;
-import io.openvidu.java.client.OpenViduHttpException;
-import io.openvidu.java.client.OpenViduJavaClientException;
-import io.openvidu.java.client.OpenViduRole;
-import io.openvidu.java.client.Session;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.api.requset.GameSessionPostReq;
 import s05.p12a104.mafia.api.response.GameSessionJoinRes;
 import s05.p12a104.mafia.api.response.PlayerJoinRoomState;
@@ -31,6 +34,8 @@ import s05.p12a104.mafia.common.exception.OpenViduSessionNotFoundException;
 import s05.p12a104.mafia.common.exception.OverMaxIndividualRoomCountException;
 import s05.p12a104.mafia.common.exception.OverMaxPlayerCountException;
 import s05.p12a104.mafia.common.exception.OverMaxTotalRoomCountException;
+import s05.p12a104.mafia.common.exception.PlayerNotLeftException;
+import s05.p12a104.mafia.common.exception.RedissonLockNotAcquiredException;
 import s05.p12a104.mafia.common.util.RoleUtils;
 import s05.p12a104.mafia.common.util.RoomIdUtils;
 import s05.p12a104.mafia.common.util.TimeUtils;
@@ -59,6 +64,9 @@ public class GameSessionServiceImpl implements GameSessionService {
   private final RedisKeyValueTemplate redisKVTemplate;
 
   private final RedisPublisher redisPublisher;
+
+  private final RedissonClient redissonClient;
+
   private final ChannelTopic topicEnd;
 
   private final OpenVidu openVidu;
@@ -66,6 +74,7 @@ public class GameSessionServiceImpl implements GameSessionService {
   private static final int MAX_TOTAL_ROOM_COUNT = 200;
   private static final int MAX_INDIVIDUAL_ROOM_COUNT = 2;
   private static final int MAX_PLAYER_COUNT = 10;
+  private static final String KEY = "GameSession";
 
   @Override
   public GameSession makeGame(User user, GameSessionPostReq typeInfo)
@@ -95,18 +104,41 @@ public class GameSessionServiceImpl implements GameSessionService {
 
   @Override
   public GameSessionJoinRes getPlayerJoinableState(String roomId, String playerId) {
-    GameSession gameSession = findById(roomId);
-    Player player = gameSession.getPlayerMap().get(playerId);
-    if (player == null) {
-      validateToBePossibleToJoin(gameSession);
-      return new GameSessionJoinRes(PlayerJoinRoomState.JOINABLE, null, null);
+
+    RLock lock = redissonClient.getLock(KEY + roomId);
+    boolean isLocked = false;
+    try {
+      isLocked = lock.tryLock(2, 3, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    if (!isLocked) {
+      throw new RedissonLockNotAcquiredException("Lock을 얻을 수 없습니다 - Key : " + KEY + roomId);
     }
 
-    String token = createOpenViduToken(gameSession, player.getNickname());
-    player.setToken(token);
-    update(gameSession);
+    try {
+      GameSession gameSession = findById(roomId);
+      Player player = gameSession.getPlayerMap().get(playerId);
+      if (player == null) {
+        validateToBePossibleToJoin(gameSession);
+        return new GameSessionJoinRes(PlayerJoinRoomState.JOINABLE, null, null);
+      }
 
-    return new GameSessionJoinRes(PlayerJoinRoomState.REJOIN, token, playerId);
+      if (!player.isLeft()) {
+        throw new PlayerNotLeftException();
+      }
+
+      String token = createOpenViduToken(gameSession, player.getNickname());
+      player.setToken(token);
+      player.setLeft(false);
+      player.setLeftPhaseCount(null);
+      update(gameSession);
+      return new GameSessionJoinRes(PlayerJoinRoomState.REJOIN, token, playerId);
+
+    } finally {
+      lock.unlock();
+    }
+
   }
 
   @Override
@@ -127,53 +159,88 @@ public class GameSessionServiceImpl implements GameSessionService {
   public void update(GameSession update) {
     GameSessionDao updateDao = GameSessionDaoMapper.INSTANCE.toDao(update);
     redisKVTemplate.update(updateDao);
+    log.info("Room {} updated", update.getRoomId());
   }
 
   @Override
   public GameSessionJoinRes addUser(String roomId, String nickname) {
     GameSession gameSession = findById(roomId);
-    validateToBePossibleToJoin(gameSession);
-    String token = createOpenViduToken(gameSession, nickname);
 
-    // ex> tok_A1c0pNsLJFwVJTeb
-    String playerId = UrlUtils.getUrlQueryParam(token, "token")
-        .orElseThrow(OpenViduRuntimeException::new).substring(4);
-
-    Player player =
-        Player.builder(playerId, nickname, getNewColor(gameSession)).token(token).build();
-
-    gameSession.getPlayerMap().put(playerId, player);
-    if (gameSession.getPlayerMap().size() == 1) {
-      gameSession.setHostId(playerId);
+    RLock lock = redissonClient.getLock(KEY + roomId);
+    boolean isLocked = false;
+    try {
+      isLocked = lock.tryLock(2, 3, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
-    update(gameSession);
+    if (!isLocked) {
+      throw new RedissonLockNotAcquiredException("Lock을 얻을 수 없습니다 - Key : " + KEY + roomId);
+    }
 
-    return new GameSessionJoinRes(PlayerJoinRoomState.JOIN, token, playerId);
+    try {
+      validateToBePossibleToJoin(gameSession);
+      String token = createOpenViduToken(gameSession, nickname);
+
+      // ex> tok_A1c0pNsLJFwVJTeb
+      String playerId = UrlUtils.getUrlQueryParam(token, "token")
+          .orElseThrow(OpenViduRuntimeException::new).substring(4);
+
+      Player player =
+          Player.builder(playerId, nickname, getNewColor(gameSession)).token(token).build();
+
+      gameSession.getPlayerMap().put(playerId, player);
+      if (gameSession.getPlayerMap().size() == 1) {
+        gameSession.setHostId(playerId);
+      }
+      update(gameSession);
+
+      return new GameSessionJoinRes(PlayerJoinRoomState.JOIN, token, playerId);
+
+    } finally {
+      lock.unlock();
+    }
   }
 
   @Override
   public GameSession removeUser(String roomId, String playerId) {
     GameSession gameSession = findById(roomId);
-    Session session = gameSession.getSession();
-    Map<String, Player> playerMap = gameSession.getPlayerMap();
 
-    if (session == null || playerMap == null) {
-      log.info("Problems in the app server: the SESSION does not exist");
-      throw new OpenViduSessionNotFoundException();
+    RLock lock = redissonClient.getLock(KEY + roomId);
+    boolean isLocked = false;
+    try {
+      isLocked = lock.tryLock(2, 3, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    if (!isLocked) {
+      throw new RedissonLockNotAcquiredException("Lock을 얻을 수 없습니다 - Key : " + KEY + roomId);
     }
 
-    Player player = playerMap.get(playerId);
-    if (player != null) {
-      if (gameSession.getState() == GameState.STARTED) {
-        removePlayer(gameSession, player);
-      } else {
-        removeReadyUser(gameSession, player);
+    try {
+      Session session = gameSession.getSession();
+      Map<String, Player> playerMap = gameSession.getPlayerMap();
+
+      if (session == null || playerMap == null) {
+        log.info("Problems in the app server: the SESSION does not exist");
+        throw new OpenViduSessionNotFoundException();
       }
+
+      Player player = playerMap.get(playerId);
+      if (player != null) {
+        if (gameSession.getState() == GameState.STARTED) {
+          removePlayer(gameSession, player);
+        } else {
+          removeReadyUser(gameSession, player);
+        }
+      }
+      if (gameSessionRedisRepository.findById(roomId).isPresent()) {
+        update(gameSession);
+      }
+      return gameSession;
+
+    } finally {
+      lock.unlock();
     }
-    if (gameSessionRedisRepository.findById(roomId).isPresent()) {
-      update(gameSession);
-    }
-    return gameSession;
   }
 
   /**
@@ -183,11 +250,12 @@ public class GameSessionServiceImpl implements GameSessionService {
    * @param player : 나간 player
    */
   private void removePlayer(GameSession gameSession, Player player) {
-    if (!player.isAlive()) {
+    if (player.isLeft() || !player.isAlive()) {
       return;
     }
 
     player.setLeftPhaseCount(gameSession.getPhaseCount());
+    player.setLeft(true);
     update(gameSession);
 
     final int TIME_TO_DIE = 30; // 30초
@@ -195,19 +263,39 @@ public class GameSessionServiceImpl implements GameSessionService {
     TimerTask timerTask = new TimerTask() {
       @Override
       public void run() {
-        GameSession gameSessionTemp = findById(gameSession.getRoomId());
-        if (gameSessionTemp.getState() == GameState.READY) {
-          return;
+        RLock lock = redissonClient.getLock(KEY + gameSession.getRoomId());
+        boolean isLocked = false;
+        try {
+          isLocked = lock.tryLock(2, 3, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+        if (!isLocked) {
+          throw new RedissonLockNotAcquiredException(
+              "Lock을 얻을 수 없습니다 - Key : " + KEY + gameSession.getRoomId());
         }
 
-        Player playerTemp = gameSessionTemp.getPlayerMap().get(player.getId());
-        if (playerTemp.getLeftPhaseCount() == null) {
-          return;
-        }
+        try {
+          if (!player.isLeft()) {
+            return;
+          }
+          GameSession gameSessionTemp = findById(gameSession.getRoomId());
+          if (gameSessionTemp.getState() == GameState.READY) {
+            return;
+          }
 
-        String playerId = playerTemp.getId();
-        gameSessionTemp.eliminatePlayer(playerId);
-        update(gameSessionTemp);
+          Player playerTemp = gameSessionTemp.getPlayerMap().get(player.getId());
+          if (!playerTemp.isLeft()) {
+            return;
+          }
+
+          String playerId = playerTemp.getId();
+          gameSessionTemp.eliminatePlayer(playerId);
+          update(gameSessionTemp);
+
+        } finally {
+          lock.unlock();
+        }
       }
     };
     timer.schedule(timerTask, TIME_TO_DIE * 1000);
@@ -217,7 +305,7 @@ public class GameSessionServiceImpl implements GameSessionService {
    * 아직 게임이 시작하지 않은 방에서 나간 Player 제거.
    *
    * @param gameSession : Player가 나간 Game Session
-   * @param player : 나간 player
+   * @param player      : 나간 player
    */
   private void removeReadyUser(GameSession gameSession, Player player) {
     Map<String, Player> playerMap = gameSession.getPlayerMap();
@@ -282,36 +370,52 @@ public class GameSessionServiceImpl implements GameSessionService {
 
   @Override
   public void startGame(GameSession gameSession) {
-    // 각 역할에 맞는 인원수 구하기
-    Map<GameRole, Integer> roleNum = RoleUtils.getRoleNum(gameSession);
+    RLock lock = redissonClient.getLock(KEY + gameSession.getRoomId());
+    boolean isLocked = false;
+    try {
+      isLocked = lock.tryLock(2, 3, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    if (!isLocked) {
+      throw new RedissonLockNotAcquiredException(
+          "Lock을 얻을 수 없습니다 - Key : " + KEY + gameSession.getRoomId());
+    }
 
-    // game 초기 setting
-    gameSession.setState(GameState.STARTED);
-    gameSession.setDay(0);
-    gameSession.setAliveMafia(roleNum.get(GameRole.MAFIA));
-    gameSession.setPhase(GamePhase.START);
-    gameSession.setTimer(TimeUtils.getFinTime(15));
+    try {
+      // 각 역할에 맞는 인원수 구하기
+      Map<GameRole, Integer> roleNum = RoleUtils.getRoleNum(gameSession);
 
-    // player 초기화
-    gameSession.getPlayerMap().forEach((playerId, player) -> {
-      player.setAlive(true);
-      player.setSuspicious(false);
-    });
+      // game 초기 setting
+      gameSession.setState(GameState.STARTED);
+      gameSession.setDay(0);
+      gameSession.setAliveMafia(roleNum.get(GameRole.MAFIA));
+      gameSession.setPhase(GamePhase.START);
+      gameSession.setTimer(TimeUtils.getFinTime(15));
 
-    // alive player 초기화
-    gameSession.setAlivePlayer(gameSession.getPlayerMap().size());
+      // player 초기화
+      gameSession.getPlayerMap().forEach((playerId, player) -> {
+        player.setAlive(true);
+        player.setSuspicious(false);
+      });
 
-    // 역할 부여
-    gameSession.setMafias(RoleUtils.assignRole(roleNum, gameSession.getPlayerMap()));
+      // alive player 초기화
+      gameSession.setAlivePlayer(gameSession.getPlayerMap().size());
 
-    // alive Not Civilian 초기화
-    int notCivilianCnt = gameSession.getPlayerMap().entrySet().stream()
-        .filter(e -> e.getValue().getRole() != GameRole.CIVILIAN).collect(Collectors.toList())
-        .size();
-    gameSession.setAliveNotCivilian(notCivilianCnt);
+      // 역할 부여
+      gameSession.setMafias(RoleUtils.assignRole(roleNum, gameSession.getPlayerMap()));
 
-    // redis에 저장
-    update(gameSession);
+      // alive Not Civilian 초기화
+      int notCivilianCnt = gameSession.getPlayerMap().entrySet().stream()
+          .filter(e -> e.getValue().getRole() != GameRole.CIVILIAN).collect(Collectors.toList())
+          .size();
+      gameSession.setAliveNotCivilian(notCivilianCnt);
+
+      // redis에 저장
+      update(gameSession);
+    } finally {
+      lock.unlock();
+    }
   }
 
   @Override
@@ -332,10 +436,9 @@ public class GameSessionServiceImpl implements GameSessionService {
     Map<String, Player> playerMap = gameSession.getPlayerMap();
     List<Player> removePlayers = new ArrayList<>();
     for (Player player : playerMap.values()) {
-      if (player.getLeftPhaseCount() == null) {
-        continue;
+      if (player.isLeft()) {
+        removePlayers.add(player);
       }
-      removePlayers.add(player);
     }
 
     for (Player player : removePlayers) {

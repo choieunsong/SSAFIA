@@ -1,6 +1,7 @@
 package s05.p12a104.mafia.redispubsub;
 
 import java.util.Timer;
+import org.redisson.api.RedissonClient;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,6 +22,7 @@ public class EndSubscriber {
   private final ObjectMapper objectMapper;
   private final SimpMessagingTemplate template;
   private final GameSessionService gameSessionService;
+  private final RedissonClient redissonClient;
 
   public void sendMessage(String message) {
     try {
@@ -28,7 +30,7 @@ public class EndSubscriber {
       String roomId = endMessgae.getRoomId();
       GameResult gameResult = endMessgae.getGameResult();
 
-      ReadyTimerTask task = new ReadyTimerTask(gameSessionService, template);
+      ReadyTimerTask task = new ReadyTimerTask(gameSessionService, template, redissonClient);
       task.setRoomId(roomId);
       Timer timer = new Timer();
       timer.schedule(task, gameResult.getTimer() * 1000);
@@ -41,5 +43,4 @@ public class EndSubscriber {
       e.printStackTrace();
     }
   }
-
 }

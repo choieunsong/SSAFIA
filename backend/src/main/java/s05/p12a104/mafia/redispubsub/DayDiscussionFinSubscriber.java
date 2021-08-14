@@ -3,6 +3,9 @@ package s05.p12a104.mafia.redispubsub;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -12,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.api.service.GameSessionService;
 import s05.p12a104.mafia.api.service.GameSessionVoteService;
+import s05.p12a104.mafia.common.exception.RedissonLockNotAcquiredException;
 import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.entity.Player;
 import s05.p12a104.mafia.domain.enums.GamePhase;
@@ -30,37 +34,55 @@ public class DayDiscussionFinSubscriber {
   private final GameSessionService gameSessionService;
   private final GameSessionVoteService gameSessionVoteService;
   private final ChannelTopic topicDayEliminationFin;
+  private final RedissonClient redissonClient;
+  private static final String KEY = "GameSession";
 
   public void sendMessage(String message) {
     try {
       DayDiscussionMessage dayDisscusionMessage =
           objectMapper.readValue(message, DayDiscussionMessage.class);
       String roomId = dayDisscusionMessage.getRoomId();
-      GameSession gameSession = gameSessionService.findById(roomId);
-      List<String> suspiciousList = dayDisscusionMessage.getSuspiciousList();
-      // DAY_TO_NIGHT으로
-      if (suspiciousList.isEmpty()) {
-        setDayToNight(roomId);
-        return;
+
+      RLock lock = redissonClient.getLock(KEY + roomId);
+      boolean isLocked = false;
+      try {
+        isLocked = lock.tryLock(2, 3, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+      if (!isLocked) {
+        throw new RedissonLockNotAcquiredException("Lock을 얻을 수 없습니다 - Key : " + KEY + roomId);
       }
 
-      // DAY ELIMINATION으로
-      List<String> victims = setDayElimination(gameSession, suspiciousList);
-
-      // 종료 여부 체크
-      if (gameSessionService.isDone(gameSession, victims)) {
-        return;
-      }
-
-      template.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));
-
+      GameSession gameSession = null;
       Map<String, String> players = new HashMap<>();
-
-      gameSession.getPlayerMap().forEach((playerId, player) -> {
-        if (player.isAlive()) {
-          players.put(playerId, null);
+      try {
+        gameSession = gameSessionService.findById(roomId);
+        List<String> suspiciousList = dayDisscusionMessage.getSuspiciousList();
+        // DAY_TO_NIGHT으로
+        if (suspiciousList.isEmpty()) {
+          setDayToNight(roomId);
+          return;
         }
-      });
+
+        // DAY ELIMINATION으로
+        List<String> victims = setDayElimination(gameSession, suspiciousList);
+
+        // 종료 여부 체크
+        if (gameSessionService.isDone(gameSession, victims)) {
+          return;
+        }
+
+        template.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));
+
+        gameSession.getPlayerMap().forEach((playerId, player) -> {
+          if (player.isAlive()) {
+            players.put(playerId, null);
+          }
+        });
+      } finally {
+        lock.unlock();
+      }
 
       gameSessionVoteService.startVote(roomId, gameSession.getPhase(), gameSession.getTimer(),
           players);
