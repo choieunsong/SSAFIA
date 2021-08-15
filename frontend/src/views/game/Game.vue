@@ -245,7 +245,7 @@ export default {
 
             // 새로운 player가 입장
             state.session.on("streamCreated", ({ stream }) => {
-                console.log("~~~~~~new subscriber in~~~~~~");
+                console.log("~~~~~~new subscriber in~~~~~~@@@");
                 const subscriber = state.session.subscribe(stream);
                 console.log(subscriber);
                 const array = subscriber.stream.connection.data.split('"');
