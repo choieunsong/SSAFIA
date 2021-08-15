@@ -603,16 +603,14 @@ export default {
       } else if (message.type === "LEAVE") {
         infoUpdater("isHost", message);
       } else if (message.type === "REJOIN") {
-        if (state.playersGameInfo) {
-          for (let i = 0; state.playersGameInfo.length; i++) {
-            if (
-              state.playersGameInfo[i].playerId === message.rejoiningPlayerId
-            ) {
-              state.playersGameInfo[i].alive = message.alive;
-              state.playersGameInfo[i].suspicious = message.suspicious;
-              break;
+        for (let i = 0; i < state.playersGameInfo.length; i++) {
+          if (
+            state.playersGameInfo[i].playerId === message.rejoiningPlayerId
+          ) {
+            state.playersGameInfo[i].alive = message.alive;
+            state.playersGameInfo[i].suspicious = message.suspicious;
+            break;
             }
-          }
         }
       } else if (message.type === "PHASE_CHANGED") {
         switch (message.gameStatus.phase) {
