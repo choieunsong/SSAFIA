@@ -34,8 +34,7 @@ public class EndSubscriber {
       task.setRoomId(roomId);
       Timer timer = new Timer();
       timer.schedule(task, gameResult.getTimer() * 1000);
-
-      log.info("Game is done: " + gameResult);
+      log.info("Game is done - {} in Room {}", gameResult, roomId);
       template.convertAndSend("/sub/" + roomId, GameResultRes.of(gameResult));
 
 

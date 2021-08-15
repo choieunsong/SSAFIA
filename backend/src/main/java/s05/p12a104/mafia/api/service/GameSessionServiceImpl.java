@@ -420,7 +420,7 @@ public class GameSessionServiceImpl implements GameSessionService {
 
   @Override
   public boolean isDone(GameSession gameSession, List<String> victims) {
-    if (!gameSession.isAllLeft()) {
+    if (gameSession.isAllLeft()) {
       log.info("All player left Room {} while playing", gameSession.getRoomId());
       deleteByRoomId(gameSession.getRoomId());
       return true;
@@ -456,6 +456,7 @@ public class GameSessionServiceImpl implements GameSessionService {
       gameSession.setTimer(TimeUtils.getFinTime(0));
       gameSession.setDay(0);
       gameSession.setAliveMafia(0);
+      gameSession.setFinishedTime(LocalDateTime.now());
 
       update(gameSession);
     }
