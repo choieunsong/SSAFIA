@@ -92,29 +92,20 @@
     animation: float 1s ease-in infinite;
 }
 
-.url-copy-text-wrap {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    height: 30%;
+.url-copy-wrap {
     width: 100%;
-    max-width: 600px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    padding: 0 5%;
 }
 
 .url-copy-text {
-    flex: auto;
+    /* flex: auto; */
     font-size: 0.9em;
     text-shadow: 2px 1px 1px rgb(153, 65, 65);
-    width: 80%;
+    /* width: 80%; */
 }
 
 #url-copy-btn {
-    width: 20%;
+    /* width: 20%; */
+    margin-left: 10px;
     color: white;
     cursor: pointer;
     transition: transform 0.2s ease-out;
