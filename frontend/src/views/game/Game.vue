@@ -249,7 +249,7 @@ export default {
       state.session.on("streamCreated", ({ stream }) => {
         console.log("~~~~~~new subscriber in~~~~~~");
         const subscriber = state.session.subscribe(stream);
-        console.log(subscriber)
+        console.log(subscriber);
         const array = subscriber.stream.connection.data.split('"');
         const tmp = array[3].split(",");
         subscriber.nickname = tmp[0];
@@ -603,15 +603,17 @@ export default {
       } else if (message.type === "LEAVE") {
         infoUpdater("isHost", message);
       } else if (message.type === "REJOIN") {
-          if (state.playersGameInfo) {
-              for (let i = 0; state.playersGameInfo.length; i++) {
-                if (state.playersGameInfo[i].playerId === message.rejoiningPlayerId) {
-                  state.playersGameInfo[i].alive = message.alive;
-                  state.playersGameInfo[i].suspicious = message.suspicious;
-                  break;
-                }
-              }
+        if (state.playersGameInfo) {
+          for (let i = 0; state.playersGameInfo.length; i++) {
+            if (
+              state.playersGameInfo[i].playerId === message.rejoiningPlayerId
+            ) {
+              state.playersGameInfo[i].alive = message.alive;
+              state.playersGameInfo[i].suspicious = message.suspicious;
+              break;
+            }
           }
+        }
       } else if (message.type === "PHASE_CHANGED") {
         switch (message.gameStatus.phase) {
           case "START": {
@@ -656,12 +658,12 @@ export default {
             );
             store.dispatch("ingame/setPhase", state.gameStatus.phase);
             if (state.role === "OBSERVER") {
-                for (let i=0; i< state.subscribers.length; i++) {
-                    if (!state.removeList.includes(i)) {
-                        state.subscribers[i].subscribeToAudio(true)
-                        state.subscribers[i].subscribeToVideo(true)
-                    }
+              for (let i = 0; i < state.subscribers.length; i++) {
+                if (!state.removeList.includes(i)) {
+                  state.subscribers[i].subscribeToAudio(true);
+                  state.subscribers[i].subscribeToVideo(true);
                 }
+              }
             }
             break;
           }
@@ -682,12 +684,12 @@ export default {
             infoUpdater("alive", message);
             store.dispatch("ingame/setPhase", state.gameStatus.phase);
             if (state.role === "OBSERVER") {
-                for (let i=0; i< state.subscribers.length; i++) {
-                    if (!state.removeList.includes(i)) {
-                        state.subscribers[i].subscribeToAudio(true)
-                        state.subscribers[i].subscribeToVideo(true)
-                    }
+              for (let i = 0; i < state.subscribers.length; i++) {
+                if (!state.removeList.includes(i)) {
+                  state.subscribers[i].subscribeToAudio(true);
+                  state.subscribers[i].subscribeToVideo(true);
                 }
+              }
             }
             break;
           }
@@ -756,12 +758,12 @@ export default {
             state.isConfirm = false;
             store.dispatch("ingame/setPhase", state.gameStatus.phase);
             if (state.role === "OBSERVER") {
-                for (let i=0; i< state.subscribers.length; i++) {
-                    if (!state.removeList.includes(i)) {
-                        state.subscribers[i].subscribeToAudio(true)
-                        state.subscribers[i].subscribeToVideo(true)
-                    }
+              for (let i = 0; i < state.subscribers.length; i++) {
+                if (!state.removeList.includes(i)) {
+                  state.subscribers[i].subscribeToAudio(true);
+                  state.subscribers[i].subscribeToVideo(true);
                 }
+              }
             }
             break;
           }
@@ -787,7 +789,10 @@ export default {
             }
             if (state.role === "MAFIA") {
               for (let i = 0; i < state.subscribers.length; i++) {
-                if (state.playersGameInfo[i].isMafia !== true && !state.removeList.includes(i)) {
+                if (
+                  state.playersGameInfo[i].isMafia !== true &&
+                  !state.removeList.includes(i)
+                ) {
                   state.subscribers[i].subscribeToAudio(false);
                   state.subscribers[i].subscribeToVideo(false);
                 }
@@ -795,15 +800,15 @@ export default {
             } else if (state.role === "OBSERVER") {
               for (let i = 0; i < state.subscribers.length; i++) {
                 if (!state.removeList.includes(i)) {
-                    state.subscribers[i].subscribeToAudio(true);
-                    state.subscribers[i].subscribeToVideo(true);
+                  state.subscribers[i].subscribeToAudio(true);
+                  state.subscribers[i].subscribeToVideo(true);
                 }
               }
             } else {
               for (let i = 0; i < state.subscribers.length; i++) {
                 if (!state.removeList.includes(i)) {
-                    state.subscribers[i].subscribeToVideo(false);
-                    state.subscribers[i].subscribeToAudio(false);
+                  state.subscribers[i].subscribeToVideo(false);
+                  state.subscribers[i].subscribeToAudio(false);
                 }
               }
             }
@@ -956,8 +961,8 @@ export default {
           state.publisher.publishVideo(false);
           for (let i = 0; i < state.subscribers.length; i++) {
             if (!state.removeList.includes(i)) {
-                state.subscribers[i].subscribeToAudio(true);
-                state.subscribers[i].subscribeToVideo(true);
+              state.subscribers[i].subscribeToAudio(true);
+              state.subscribers[i].subscribeToVideo(true);
             }
           }
         }
@@ -992,8 +997,8 @@ export default {
           state.publisher.publishVideo(false);
           for (let i = 0; i < state.subscribers.length; i++) {
             if (!state.removeList.includes(i)) {
-                state.subscribers[i].subscribeToAudio(true);
-                state.subscribers[i].subscribeToVideo(true);
+              state.subscribers[i].subscribeToAudio(true);
+              state.subscribers[i].subscribeToVideo(true);
             }
           }
         }
@@ -1132,7 +1137,10 @@ export default {
             }
             if (state.role === "MAFIA") {
               for (let i = 0; i < state.subscribers.length; i++) {
-                if (state.playersGameInfo[i].isMafia !== true && !state.removeList.includes(i)) {
+                if (
+                  state.playersGameInfo[i].isMafia !== true &&
+                  !state.removeList.includes(i)
+                ) {
                   state.subscribers[i].subscribeToAudio(false);
                   state.subscribers[i].subscribeToVideo(false);
                 }
@@ -1140,15 +1148,15 @@ export default {
             } else if (state.role === "OBSERVER") {
               for (let i = 0; i < state.subscribers.length; i++) {
                 if (!state.removeList.includes(i)) {
-                    state.subscribers[i].subscribeToAudio(true);
-                    state.subscribers[i].subscribeToVideo(true);
+                  state.subscribers[i].subscribeToAudio(true);
+                  state.subscribers[i].subscribeToVideo(true);
                 }
               }
             } else {
               for (let i = 0; i < state.subscribers.length; i++) {
                 if (!state.removeList.includes(i)) {
-                    state.subscribers[i].subscribeToVideo(false);
-                    state.subscribers[i].subscribeToAudio(false);
+                  state.subscribers[i].subscribeToVideo(false);
+                  state.subscribers[i].subscribeToAudio(false);
                 }
               }
             }
@@ -1339,22 +1347,22 @@ export default {
         localStorage.getItem("localPlayersGameInfo")
       );
       state.subscribers = localSubscribers;
-      console.log("setup state.subscribers")
-      console.log(state.subscribers)
+      console.log("setup state.subscribers");
+      console.log(state.subscribers);
       state.playersGameInfo = localPlayersGameInfo;
-      console.log("setup state.playersGameInfo")
-      console.log(state.playersGameInfo)
-      for (let i;i<state.subscribers.length;i++) {
-          state.removeList.push(i)
+      console.log("setup state.playersGameInfo");
+      console.log(state.playersGameInfo);
+      for (let i; i < state.subscribers.length; i++) {
+        state.removeList.push(i);
       }
     } else {
       store.dispatch("ingame/setPhase", state.gameStatus.phase);
     }
     state.openviduToken = store.getters["token/getOpenviduToken"];
     state.myUserName = store.getters["token/getNickname"];
-    console.log(state.myUserName)
+    console.log(state.myUserName);
     state.playerId = store.getters["token/getPlayerId"];
-    console.log(state.playerId)
+    console.log(state.playerId);
     joinSession();
     setTimeout(connect, 500);
 
