@@ -114,27 +114,21 @@ export default {
                             this.gameStatus.phase === "DAY_DISCUSSION" &&
                             this.role !== "OBSERVER"
                         ) {
-                            console.log("DAY_DISCUSSION");
                             this.$refs.cell.classList.add("cell-hover");
                             this.$refs.cell.addEventListener("click", this.votePlayer);
                         } else if (
                             this.gameStatus.phase === "DAY_ELIMINATION" &&
                             this.role !== "OBSERVER"
                         ) {
-                            console.log("userVideo day elimination");
                             if (this.playersGameInfo.suspicious === true) {
-                                console.log(this.playersGameInfo.suspicious);
-                                console.log("최종변론 투표");
                                 this.$refs.cell.classList.add("cell-hover");
                                 this.$refs.cell.addEventListener("click", this.votePlayer);
                             }
                             if (!this.playersGameInfo.suspicious) {
-                                console.log("not suspicious");
                                 this.$refs.cell.classList.add("cell-unsuspicious");
                                 this.$refs.cell.classList.remove("cell-hover");
                             }
                         } else if (this.gameStatus.phase === "NIGHT_VOTE") {
-                            console.log("NIGHT VOTE");
                             if (this.role === "MAFIA" && this.playersGameInfo.isMafia === false) {
                                 this.$refs.cell.classList.add("cell-hover");
                                 this.$refs.cell.addEventListener("click", this.votePlayer);
@@ -159,7 +153,6 @@ export default {
         playersGameInfo: {
             deep: true,
             handler() {
-                console.log("user video playersGameInfo change");
                 if (this.streamManager && this.playersGameInfo && this.$refs.cell) {
                     // audio speaking 감지
                     if (this.playersGameInfo.isTalking === true) {
@@ -221,7 +214,6 @@ export default {
         },
         // 투표한 상대 플레이어의 playerId를 얻어오는 method
         votePlayer() {
-            console.log("click", this.playersGameInfo.playerId);
             this.$emit("emitVoteDataUpdate", this.playersGameInfo.playerId);
         },
     },
