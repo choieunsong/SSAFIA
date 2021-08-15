@@ -142,9 +142,9 @@ public class GameSessionServiceImpl implements GameSessionService {
   }
 
   @Override
-  public void removeGameSession(GameSession gameSession) {
-    gameSessionRedisRepository.deleteById(gameSession.getRoomId());
-    log.info("Room {} removed and closed", gameSession.getRoomId());
+  public void deleteByRoomId(String roomId) {
+    gameSessionRedisRepository.deleteById(roomId);
+    log.info("Room {} removed and closed", roomId);
   }
 
   @Override
@@ -314,7 +314,7 @@ public class GameSessionServiceImpl implements GameSessionService {
     }
     // User left the session
     if (playerMap.isEmpty()) {
-      removeGameSession(gameSession);
+      deleteByRoomId(gameSession.getRoomId());
     } else {
       if (player.getId().equals(gameSession.getHostId())) {
         // 다음 player를 방장으로 등록
@@ -337,7 +337,7 @@ public class GameSessionServiceImpl implements GameSessionService {
       throw new OpenViduRuntimeException(e1.getMessage());
     } catch (OpenViduHttpException e2) {
       if (404 == e2.getStatus()) {
-        removeGameSession(gameSession);
+        deleteByRoomId(gameSession.getRoomId());
       }
       throw new OpenViduRuntimeException(e2.getMessage());
     }
@@ -420,6 +420,12 @@ public class GameSessionServiceImpl implements GameSessionService {
 
   @Override
   public boolean isDone(GameSession gameSession, List<String> victims) {
+    if (!gameSession.isAllLeft()) {
+      log.info("All player left Room {} while playing", gameSession.getRoomId());
+      deleteByRoomId(gameSession.getRoomId());
+      return true;
+    }
+
     GameResult gameResult = GameResult.of(gameSession, victims);
     if (gameResult.getWinner() == null) {
       return false;
