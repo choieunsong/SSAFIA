@@ -8,7 +8,7 @@
                         class="sun-logo"
                         ref="sun"
                         :style="[
-                            this.gameStatus.phase != 'NIGHT_VOTE' ? 'opacity: 1' : 'opacity: 0',
+                            this.gameStatus.phase !== 'NIGHT_VOTE' ? 'opacity: 1' : 'opacity: 0',
                         ]"
                 /></span>
                 <span class="logo"
@@ -17,7 +17,7 @@
                         class="moon-logo"
                         ref="moon"
                         :style="[
-                            this.gameStatus.phase != 'NIGHT_VOTE' ? 'opacity: 0' : 'opacity: 1',
+                            this.gameStatus.phase !== 'NIGHT_VOTE' ? 'opacity: 0' : 'opacity: 1',
                         ]"
                 /></span>
                 <span id="sun-logo-title" class="font-jua">{{ getDate }}</span>
@@ -34,7 +34,7 @@
             <!-- playerNum가 4 이상 됐을 때 활성화 되기 -->
             <button
                 v-if="
-                    (this.currentPlayerNum < 4 || !this.isHost) && this.gameStatus.phase == 'READY'
+                    (this.currentPlayerNum < 1 || !this.isHost) && this.gameStatus.phase == 'READY'
                 "
                 class="font-jua"
                 id="start-button-inactive"
@@ -148,6 +148,12 @@ export default {
                 } else if (this.gameStatus.phase == "END") {
                     this.$refs.confirm.classList.add("unhover");
                     this.$refs.confirm.classList.remove("confirm-button-active");
+                    if (this.$refs.moon.classList.contains("moon-logo-active")) {
+                        this.$refs.moon.classList.remove("moon-logo-active");
+                    }
+                    if (this.$refs.sun.classList.contains("sun-logo-deactive")) {
+                        this.$refs.sun.classList.remove("sun-logo-deactive");
+                    }
                     this.startCountDown();
                 }
             },
@@ -171,12 +177,14 @@ export default {
         getDate() {
             if (this.gameStatus.phase == "READY") {
                 return "READY";
+            } else if (this.gameStatus.phase == "START") {
+                return "START";
+            } else if (this.gameStatus.phase == "NIGHT_VOTE") {
+                return "NIGHT " + this.gameStatus.day;
+            } else if (this.gameStatus.phase == "END") {
+                return "END";
             } else {
-                if (this.gameStatus.phase !== "NIGHT_VOTE") {
-                    return "DAY " + this.gameStatus.day;
-                } else {
-                    return "NIGHT " + this.gameStatus.day;
-                }
+                return "DAY " + this.gameStatus.day;
             }
         },
         getAlive() {
