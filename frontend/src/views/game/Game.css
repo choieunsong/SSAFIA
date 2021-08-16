@@ -20,11 +20,33 @@
     z-index: 1;
 }
 
+.info-text-wrap {
+    display: table-row;
+    width: 100%;
+    vertical-align: middle;
+}
+
 .info-text {
     display: table-cell;
-    width: 100%;
+    vertical-align: middle;
     line-height: 1.5em;
-    font-size: 20px;
+    font-size: 1.1em;
+    padding-top: 50px;
+}
+
+.police-text-wrap {
+    display: table-row;
+    width: 100%;
+    height: 50%;
+}
+
+.police-text {
+    display: table-cell;
+    width: 100%;
+    height: 100%;
+    color: orange;
+    font-size: 1.1em;
+    text-align: center;
 }
 
 @keyframes cursor {
@@ -54,7 +76,9 @@
 .url-copy-box {
     position: absolute;
     text-align: center;
-    top: 50%;
+    top: 80%;
+    left: 50%;
+    transform: translateY(-80%);
     width: 100%;
     left: 0;
 }
@@ -62,26 +86,28 @@
 .url-title {
     display: block;
     color: salmon;
-    font-size: 1.5em;
+    font-size: 1.4em;
     text-shadow: 2px 1px 1px rgb(153, 65, 65);
     line-height: 2em;
     animation: float 1s ease-in infinite;
 }
 
+.url-copy-wrap {
+    width: 100%;
+}
+
 .url-copy-text {
-    margin-left: 10%;
-    margin-right: auto;
-    font-size: 1em;
+    /* flex: auto; */
+    font-size: 0.9em;
     text-shadow: 2px 1px 1px rgb(153, 65, 65);
-    display: inline-block;
+    /* width: 80%; */
 }
 
 #url-copy-btn {
-    display: inline-block;
-    margin-left: 20px;
+    /* width: 20%; */
+    margin-left: 10px;
     color: white;
     cursor: pointer;
-
     transition: transform 0.2s ease-out;
     transition: color 0.2s ease-out;
 }

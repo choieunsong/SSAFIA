@@ -8,7 +8,7 @@
                         class="sun-logo"
                         ref="sun"
                         :style="[
-                            this.gameStatus.phase != 'NIGHT_VOTE' ? 'opacity: 1' : 'opacity: 0',
+                            this.gameStatus.phase !== 'NIGHT_VOTE' ? 'opacity: 1' : 'opacity: 0',
                         ]"
                 /></span>
                 <span class="logo"
@@ -17,7 +17,7 @@
                         class="moon-logo"
                         ref="moon"
                         :style="[
-                            this.gameStatus.phase != 'NIGHT_VOTE' ? 'opacity: 0' : 'opacity: 1',
+                            this.gameStatus.phase !== 'NIGHT_VOTE' ? 'opacity: 0' : 'opacity: 1',
                         ]"
                 /></span>
                 <span id="sun-logo-title" class="font-jua">{{ getDate }}</span>
@@ -34,7 +34,7 @@
             <!-- playerNum가 4 이상 됐을 때 활성화 되기 -->
             <button
                 v-if="
-                    (this.currentPlayerNum < 4 || !this.isHost) && this.gameStatus.phase == 'READY'
+                    (this.currentPlayerNum < 1 || !this.isHost) && this.gameStatus.phase == 'READY'
                 "
                 class="font-jua"
                 id="start-button-inactive"
@@ -110,11 +110,7 @@ export default {
         gameStatus: {
             deep: true,
             handler() {
-                console.log("watch change", this.gameStatus.phase);
-                if (this.gameStatus.phase == "READY") {
-                    console.log("watch ready");
-                } else if (this.gameStatus.phase == "START") {
-                    console.log("watch start");
+                if (this.gameStatus.phase == "START") {
                     this.startCountDown();
                 } else if (this.getAlive && this.gameStatus.phase == "DAY_DISCUSSION") {
                     this.$refs.confirm.classList.remove("unhover");
@@ -152,6 +148,12 @@ export default {
                 } else if (this.gameStatus.phase == "END") {
                     this.$refs.confirm.classList.add("unhover");
                     this.$refs.confirm.classList.remove("confirm-button-active");
+                    if (this.$refs.moon.classList.contains("moon-logo-active")) {
+                        this.$refs.moon.classList.remove("moon-logo-active");
+                    }
+                    if (this.$refs.sun.classList.contains("sun-logo-deactive")) {
+                        this.$refs.sun.classList.remove("sun-logo-deactive");
+                    }
                     this.startCountDown();
                 }
             },
@@ -175,12 +177,14 @@ export default {
         getDate() {
             if (this.gameStatus.phase == "READY") {
                 return "READY";
+            } else if (this.gameStatus.phase == "START") {
+                return "START";
+            } else if (this.gameStatus.phase == "NIGHT_VOTE") {
+                return "NIGHT " + this.gameStatus.day;
+            } else if (this.gameStatus.phase == "END") {
+                return "END";
             } else {
-                if (this.gameStatus.phase !== "NIGHT_VOTE") {
-                    return "DAY " + this.gameStatus.day;
-                } else {
-                    return "NIGHT " + this.gameStatus.day;
-                }
+                return "DAY " + this.gameStatus.day;
             }
         },
         getAlive() {
@@ -190,7 +194,6 @@ export default {
     methods: {
         gameStart() {
             //Game.vue에 게임 시작 전송
-            console.log("start");
 
             //hover class 떼기
             this.$refs.start.classList.add("unhover");
@@ -205,11 +208,6 @@ export default {
             this.multiplier = 100 / this.gameStatus.timer; //곱해줄 값 구하기
             this.time = this.gameStatus.timer; // 시간 구하기
             this.leftTime = 0;
-
-            console.log("multiplier", this.multiplier);
-            console.log("time", this.time);
-            console.log("leftTime", this.leftTime);
-            console.log("maxTime", this.gameStatus.timer);
 
             setTimeout(() => {
                 this.countDownTimer();

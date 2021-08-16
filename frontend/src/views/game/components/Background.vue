@@ -170,28 +170,36 @@ export default {
             handler() {
                 if (this.phase == "READY") {
                     this.$refs.background.classList.add("animation-day");
-                    this.$refs.background.classList.remove("animation-day-elimination");
-                    this.$refs.background.classList.remove("animation-night-vote");
-                }
-                if (this.phase == "START") {
-                    // this.$refs.sun.classList.add("sun-rise");
-                    // this.$refs.c1.classList.add("move-cloud");
-                    // this.$refs.c2.classList.add("move-cloud");
-                    // this.$refs.c3.classList.add("move-cloud");
-                    // this.$refs.c4.classList.add("move-cloud");
-                    // this.$refs.c5.classList.add("move-cloud");
+                    if (this.$refs.background.classList.contains("animation-day-elimination")) {
+                        this.$refs.background.classList.remove("animation-day-elimination");
+                    }
+                    if (this.$refs.background.classList.contains("animation-night-vote")) {
+                        this.$refs.background.classList.remove("animation-night-vote");
+                    }
                 } else if (this.phase == "DAY_ELIMINATION") {
                     console.log("day elimination");
                     this.$refs.background.classList.remove("animation-day");
                     this.$refs.background.classList.add("animation-day-elimination");
                 } else if (this.phase == "NIGHT_VOTE") {
-                    this.$refs.background.classList.remove("animation-day");
-                    this.$refs.background.classList.remove("animation-day-elimination");
-
+                    if (this.$refs.background.classList.contains("animation-day")) {
+                        this.$refs.background.classList.remove("animation-day");
+                    }
+                    if (this.$refs.background.classList.contains("animation-day-elimination")) {
+                        this.$refs.background.classList.remove("animation-day-elimination");
+                    }
                     this.$refs.background.classList.add("animation-night-vote");
                 } else if (this.phase == "NIGHT_TO_DAY") {
                     this.$refs.background.classList.add("animation-day");
                     this.$refs.background.classList.remove("animation-night-vote");
+                } else if (this.phase == "END") {
+                    if (this.$refs.background.classList.contains("animation-day-elimination")) {
+                        this.$refs.background.classList.remove("animation-day-elimination");
+                    }
+                    if (this.$refs.background.classList.contains("animation-night-vote")) {
+                        this.$refs.background.classList.remove("animation-night-vote");
+                    }
+                    console.log("PHASE END");
+                    this.$refs.background.classList.add("animation-day");
                 }
             },
         },
@@ -217,14 +225,5 @@ export default {
 
 .animation-running {
     animation-play-state: running;
-}
-
-.temp {
-    z-index: 1000;
-    background-color: red;
-    width: 100px;
-    height: 100px;
-    position: absolute;
-    left: 0px;
 }
 </style>

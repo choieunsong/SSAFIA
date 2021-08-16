@@ -14,6 +14,7 @@ import s05.p12a104.mafia.common.exception.OpenViduSessionNotFoundException;
 import s05.p12a104.mafia.common.exception.OverMaxIndividualRoomCountException;
 import s05.p12a104.mafia.common.exception.OverMaxPlayerCountException;
 import s05.p12a104.mafia.common.exception.OverMaxTotalRoomCountException;
+import s05.p12a104.mafia.common.exception.PlayerNotLeftException;
 import s05.p12a104.mafia.common.reponse.ApiResponseDto;
 
 @RestControllerAdvice
@@ -67,6 +68,11 @@ public class GameSessionControllerAdvice {
 
   @ExceptionHandler(OverMaxPlayerCountException.class)
   public ApiResponseDto<?> overMaxPlayerCountExceptionHandler(OverMaxPlayerCountException e) {
+    return new ApiResponseDto<>(FAIL, e.getMessage());
+  }
+
+  @ExceptionHandler(PlayerNotLeftException.class)
+  public ApiResponseDto<?> playerNotLeftExceptionHandler(PlayerNotLeftException e) {
     return new ApiResponseDto<>(FAIL, e.getMessage());
   }
 }

@@ -11,6 +11,7 @@ const TOKEN = {
 
 const INGAME = {
     SET_PHASE: 'SET_PHASE',
+    SET_ISREJOIN: 'SET_ISREJOIN',
 }
 
 export {
