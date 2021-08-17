@@ -17,7 +17,7 @@ public interface GameSessionService {
 
   GameSessionJoinRes getPlayerJoinableState(String roomId, String playerId);
 
-  void removeGameSession(GameSession gameSession);
+  void deleteByRoomId(String roomId);
 
   GameSession findById(String id);
 
