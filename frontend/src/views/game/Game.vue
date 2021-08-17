@@ -1355,11 +1355,9 @@ export default {
     },
     watch: {
         $route(to, from) {
-            if (confirm("정말 나가시겠습니까?")) {
-                this.leave();
-            }
-        },
-    },
+            this.leave();
+        }
+    }    
 };
 </script>
 

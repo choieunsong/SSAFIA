@@ -67,11 +67,7 @@ router.beforeEach((to, from, next) => {
           next({ name: "Nickname", params:{ roomId: to.params.roomId }})
         }
       } else if (from.name === "Game") {
-        if (from.params.roomId === to.params.roomId) {
-          next()
-        } else {
           next({ name: "Nickname", params:{ roomId: to.params.roomId }})
-        }
       } else {
         next({ name: "Nickname", params:{ roomId: to.params.roomId }})
       }
