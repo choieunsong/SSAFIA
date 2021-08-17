@@ -33,8 +33,8 @@ public class VoteRepository {
   }
 
   public boolean isEnd(String roomId, int phaseCount) {
-    if (!voteInfosMap.containsKey(roomId)
-        || voteInfosMap.get(roomId).getPhaseCount() != phaseCount) {
+    VoteInfo voteInfo = voteInfosMap.get(roomId);
+    if (voteInfo == null || voteInfo.getPhaseCount() != phaseCount) {
       return true;
     }
     return false;
