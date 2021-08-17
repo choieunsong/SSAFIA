@@ -51,7 +51,11 @@ public class VoteController {
     }
 
     // 투표 확정 인원 확인
-    if (gameSessionVoteService.confirmVote(roomId, playerId, req) == gameSession.getAlivePlayer()) {
+    int confirmCnt = gameSessionVoteService.confirmVote(roomId, playerId, req);
+    int notCivilainCnt = gameSession.getAliveNotCivilian();
+    log.info("Room {} Phase {} Confirm {} : Needed {}", roomId, req.getPhase(), confirmCnt,
+        notCivilainCnt);
+    if (confirmCnt == notCivilainCnt) {
       gameSessionVoteService.endVote(roomId, req.getPhase());
     }
   }
@@ -96,8 +100,11 @@ public class VoteController {
     }
 
     // 투표 확정 인원 확인
-    if (gameSessionVoteService.confirmVote(roomId, playerId, req) == gameSession
-        .getAliveNotCivilian()) {
+    int confirmCnt = gameSessionVoteService.confirmVote(roomId, playerId, req);
+    int notCivilainCnt = gameSession.getAliveNotCivilian();
+    log.info("Room {} Phase {} Confirm {} : Needed {}", roomId, req.getPhase(), confirmCnt,
+        notCivilainCnt);
+    if (confirmCnt == notCivilainCnt) {
       gameSessionVoteService.endVote(roomId, req.getPhase());
     }
   }
