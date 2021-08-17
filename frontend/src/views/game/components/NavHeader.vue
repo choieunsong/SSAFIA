@@ -59,7 +59,7 @@
                 id="confirm-button"
                 ref="confirm"
             >
-                투표 확정
+                <span>{{ getConfirmTitle }}</span>
             </button>
 
             <span id="timer" class="font-jua">{{ this.time }}</span>
@@ -105,6 +105,7 @@ export default {
         finishStartAnimation: Boolean,
         playerMe: Object,
         role: String,
+        vote: String,
     },
     watch: {
         gameStatus: {
@@ -193,6 +194,23 @@ export default {
         },
         getAlive() {
             return this.playerMe.alive;
+        },
+        getConfirmTitle() {
+            if (
+                this.gameStatus.phase == "DAY_DISCUSSION" ||
+                this.gameStatus.phase == "NIGHT_VOTE"
+            ) {
+                if (this.vote == null) {
+                    return "무효표 확정";
+                }
+            } else if (this.gameStatus.phase == "DAY_ELIMINATION") {
+                if (this.vote == null) {
+                    return "SAVE 확정";
+                } else {
+                    return "KILL 확정";
+                }
+            }
+            return "투표 확정";
         },
     },
     methods: {

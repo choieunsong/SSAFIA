@@ -145,3 +145,14 @@
         transform: scale(1);
     }
 }
+
+.confirm {
+    position: absolute;
+    background-color: rgba(50, 33, 126, 1);
+    top: -5px;
+    right: -15px;
+    width: 85px;
+    z-index: 1;
+    border-radius: 7px;
+    border: 3px solid black;
+}
