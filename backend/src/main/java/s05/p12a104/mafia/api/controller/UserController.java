@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.common.exception.ResourceNotFoundException;
 import s05.p12a104.mafia.common.reponse.ApiResponseDto;
 import s05.p12a104.mafia.domain.entity.User;
@@ -16,6 +17,7 @@ import s05.p12a104.mafia.security.CurrentUser;
 import s05.p12a104.mafia.security.UserPrincipal;
 import springfox.documentation.annotations.ApiIgnore;
 
+@Slf4j
 @RequestMapping("/api/user")
 @RestController
 @RequiredArgsConstructor
@@ -32,6 +34,9 @@ public class UserController {
   public ApiResponseDto<User> getCurrentUser(@ApiIgnore @CurrentUser UserPrincipal userPrincipal) {
     User user = userRepository.findById(userPrincipal.getId())
         .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
+    
+    log.info("Get user profile: the User Email - {}",  user.getEmail());
+    
     return ApiResponseDto.success(user);
   }
 }

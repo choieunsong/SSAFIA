@@ -79,6 +79,9 @@ public class NightVoteFinSubscriber {
           return;
         }
 
+        log.info("Room {} start Day {} {} ", gameSession.getRoomId(), gameSession.getDay(),
+            gameSession.getPhase());
+
         // 밤투표 결과
         template.convertAndSend("/sub/" + roomId, GameStatusKillRes.of(gameSession, deadPlayer));
 

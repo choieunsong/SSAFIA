@@ -73,6 +73,9 @@ public class DayDiscussionFinSubscriber {
           return;
         }
 
+        log.info("Room {} start Day {} {} ", gameSession.getRoomId(), gameSession.getDay(),
+            gameSession.getPhase());
+
         template.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));
 
         gameSession.getPlayerMap().forEach((playerId, player) -> {

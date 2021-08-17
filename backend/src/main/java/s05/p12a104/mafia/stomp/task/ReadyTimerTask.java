@@ -37,12 +37,11 @@ public class ReadyTimerTask extends TimerTask {
     }
 
     try {
-      log.info("send ready message");
       GameSession gameSession = gameSessionService.findById(roomId);
       gameSessionService.endGame(gameSession);
 
-      log.info("hostId : " + gameSession.getHostId());
-
+      log.info("Send ready message to frontend: the room id - {}", gameSession.getRoomId());
+      
       template.convertAndSend("/sub/" + roomId, GameSessionReadyRes.of(gameSession));
 
     } finally {

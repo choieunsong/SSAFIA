@@ -4,8 +4,10 @@ import java.util.TimerTask;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.redispubsub.RedisPublisher;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class StartFinTimerTask extends TimerTask {
