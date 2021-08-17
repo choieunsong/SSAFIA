@@ -46,7 +46,11 @@ public class VoteController {
     GameSession gameSession = gameSessionService.findById(roomId);
 
     // 투표 확정 인원 확인
-    if (gameSessionVoteService.confirmVote(roomId, playerId, req) == gameSession.getAlivePlayer()) {
+    int confirmCnt = gameSessionVoteService.confirmVote(roomId, playerId, req);
+    int notCivilainCnt = gameSession.getAliveNotCivilian();
+    log.info("Room {} Phase {} Confirm {} : Needed {}", roomId, req.getPhase(), confirmCnt,
+        notCivilainCnt);
+    if (confirmCnt == notCivilainCnt) {
       gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), req.getPhase());
     }
   }
@@ -86,8 +90,11 @@ public class VoteController {
     req.setPhase(GamePhase.NIGHT_VOTE);
 
     // 투표 확정 인원 확인
-    if (gameSessionVoteService.confirmVote(roomId, playerId, req) == gameSession
-        .getAliveNotCivilian()) {
+    int confirmCnt = gameSessionVoteService.confirmVote(roomId, playerId, req);
+    int notCivilainCnt = gameSession.getAliveNotCivilian();
+    log.info("Room {} Phase {} Confirm {} : Needed {}", roomId, req.getPhase(), confirmCnt,
+        notCivilainCnt);
+    if (confirmCnt == notCivilainCnt) {
       gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), req.getPhase());
     }
   }

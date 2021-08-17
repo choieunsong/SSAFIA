@@ -50,6 +50,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     task.setPhaseCount(phaseCount);
     task.setPhase(phase);
     timer.schedule(task, TimeUtils.convertToDate(time));
+    log.info("Room {} start Vote for {}", roomId, phase);
   }
 
 
