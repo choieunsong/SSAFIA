@@ -121,6 +121,7 @@ public class NightVoteFinSubscriber {
       gameSession.eliminatePlayer(deadPlayerId);
       victims.add(gameSession.getPlayerMap().get(deadPlayerId).getNickname());
     }
+    log.info("Room {} ElimainationVote deadPlayer: {}", gameSession.getRoomId(), deadPlayerId);
 
     gameSessionService.update(gameSession);
 

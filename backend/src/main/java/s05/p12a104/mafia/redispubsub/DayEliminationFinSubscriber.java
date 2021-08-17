@@ -89,7 +89,6 @@ public class DayEliminationFinSubscriber {
   }
 
   private List<String> setDayToNight(GameSession gameSession, String deadPlayerId) {
-    log.info("Room {} ElimainationVote deadPlayer: {}", gameSession.getRoomId(), deadPlayerId);
 
     // 나간 사람 체크 및 기본 세팅
     List<String> victims = gameSession.changePhase(GamePhase.DAY_TO_NIGHT, 15);
@@ -102,6 +101,7 @@ public class DayEliminationFinSubscriber {
       gameSession.eliminatePlayer(deadPlayerId);
       victims.add(gameSession.getPlayerMap().get(deadPlayerId).getNickname());
     }
+    log.info("Room {} ElimainationVote deadPlayer: {}", gameSession.getRoomId(), deadPlayerId);
 
     gameSessionService.update(gameSession);
 
