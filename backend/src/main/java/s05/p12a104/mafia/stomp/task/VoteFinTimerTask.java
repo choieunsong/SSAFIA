@@ -15,10 +15,11 @@ public class VoteFinTimerTask extends TimerTask {
   private final GameSessionVoteService gameSessionVoteService;
   private String roomId;
   private GamePhase phase;
+  private int phaseCount;
 
   @Override
   public void run() {
-    gameSessionVoteService.endVote(roomId, phase);
+    gameSessionVoteService.endVote(roomId, phaseCount, phase);
   }
 
 }

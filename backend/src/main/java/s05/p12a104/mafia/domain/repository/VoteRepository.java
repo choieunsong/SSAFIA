@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.stereotype.Repository;
 import lombok.RequiredArgsConstructor;
 import s05.p12a104.mafia.domain.entity.Vote;
+import s05.p12a104.mafia.domain.entity.VoteInfo;
 import s05.p12a104.mafia.domain.enums.GamePhase;
 import s05.p12a104.mafia.domain.enums.GameRole;
 
@@ -17,16 +18,26 @@ import s05.p12a104.mafia.domain.enums.GameRole;
 public class VoteRepository {
 
   private final VoteRedisRepository voteRedisRepository;
-  private ConcurrentHashMap <String, Map<String, GameRole>> votersMap;
+  private ConcurrentHashMap<String, VoteInfo> voteInfosMap;
 
   @PostConstruct
   private void init() {
-    votersMap = new ConcurrentHashMap();
+    voteInfosMap = new ConcurrentHashMap();
   }
 
-  public void startVote(String roomId, GamePhase phase, Map<String, GameRole> players) {
-    votersMap.put(roomId, players);
+  public void startVote(String roomId, int phaseCount, GamePhase phase,
+      Map<String, GameRole> players) {
+    VoteInfo voteInfo = VoteInfo.builder(phaseCount, players);
+    voteInfosMap.put(roomId, voteInfo);
     voteRedisRepository.startVote(getVoters(roomId), phase);
+  }
+
+  public boolean isEnd(String roomId, int phaseCount) {
+    VoteInfo voteInfo = voteInfosMap.get(roomId);
+    if (voteInfo == null || voteInfo.getPhaseCount() != phaseCount) {
+      return true;
+    }
+    return false;
   }
 
   public boolean isValid(String playerId, GamePhase phase) {
@@ -63,14 +74,15 @@ public class VoteRepository {
 
   public void endVote(String roomId, GamePhase phase) {
     voteRedisRepository.endVote(getVoters(roomId), phase);
+    voteInfosMap.remove(roomId);
   }
 
   private List<String> getVoters(String roomId) {
-    return votersMap.get(roomId).keySet().stream().collect(Collectors.toList());
+    return voteInfosMap.get(roomId).getVotersMap().keySet().stream().collect(Collectors.toList());
   }
 
   private List<String> getNightVoters(String roomId, GameRole roleName) {
-    Map<String, GameRole> voters = votersMap.get(roomId);
+    Map<String, GameRole> voters = voteInfosMap.get(roomId).getVotersMap();
     return voters.keySet().stream().collect(Collectors.toList()).stream()
         .filter(key -> voters.get(key) == roleName).collect(Collectors.toList());
   }

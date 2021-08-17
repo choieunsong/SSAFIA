@@ -72,9 +72,8 @@ public class StartFinSubscriber {
           }
         });
 
-        gameSessionVoteService.startVote(roomId, gameSession.getPhase(), gameSession.getTimer(),
-            players);
-        log.info("DAY_DISCUSSION 투표 생성!", roomId);
+        gameSessionVoteService.startVote(roomId, gameSession.getPhaseCount(),
+            gameSession.getPhase(), gameSession.getTimer(), players);
 
       } finally {
         lock.unlock();
