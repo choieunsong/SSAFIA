@@ -55,9 +55,9 @@ public class VoteController {
       // 투표 확정 인원 확인
       int confirmCnt = confirmResult.entrySet().stream().filter(e -> e.getValue() == true)
           .collect(Collectors.toList()).size();
-      int notCivilainCnt = gameSession.getAliveNotCivilian();
+      int notCivilainCnt = gameSession.getAlivePlayer();
       log.info("Room {} Phase {} Confirm {} : Needed {}", roomId, req.getPhase(), confirmCnt,
-          notCivilainCnt);;
+          notCivilainCnt);
 
       if (confirmCnt == notCivilainCnt) {
         gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), req.getPhase());
