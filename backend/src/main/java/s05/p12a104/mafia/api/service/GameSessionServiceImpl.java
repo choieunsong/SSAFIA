@@ -250,7 +250,7 @@ public class GameSessionServiceImpl implements GameSessionService {
    * @param player : 나간 player
    */
   private void removePlayer(GameSession gameSession, Player player) {
-    if (player.isLeft() || !player.isAlive()) {
+    if (player.isLeft()) { 
       return;
     }
 
