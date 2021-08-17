@@ -48,6 +48,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     task.setRoomId(roomId);
     task.setPhase(phase);
     timer.schedule(task, TimeUtils.convertToDate(time));
+    log.info("Room {} start Vote for {}", roomId, phase);
   }
 
 
@@ -57,6 +58,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     if (vote == null) {
       return;
     } else {
+      log.info("Room {} end Vote for {}", roomId, phase);
       publishRedis(roomId, vote);
       voteRepository.endVote(roomId, phase);
     }

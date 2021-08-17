@@ -78,7 +78,6 @@ public class DayToNightFinSubscriber {
 
       gameSessionVoteService.startVote(roomId, gameSession.getPhase(), gameSession.getTimer(),
           players);
-      log.info("NIGHT_VOTE 투표 생성!", roomId);
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }

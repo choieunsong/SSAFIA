@@ -74,7 +74,6 @@ public class StartFinSubscriber {
 
         gameSessionVoteService.startVote(roomId, gameSession.getPhase(), gameSession.getTimer(),
             players);
-        log.info("DAY_DISCUSSION 투표 생성!", roomId);
 
       } finally {
         lock.unlock();

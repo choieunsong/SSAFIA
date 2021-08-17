@@ -86,7 +86,6 @@ public class DayDiscussionFinSubscriber {
 
       gameSessionVoteService.startVote(roomId, gameSession.getPhase(), gameSession.getTimer(),
           players);
-      log.info("DAY_ELIMINATION 투표 생성!", roomId);
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }
