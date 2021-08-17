@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.api.service.GameSessionService;
+import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.enums.GamePhase;
 import s05.p12a104.mafia.redispubsub.message.EndMessgae;
 import s05.p12a104.mafia.stomp.response.GameResult;
@@ -40,8 +41,6 @@ public class EndSubscriber {
 
       log.info("Game is done: " + gameResult);
       template.convertAndSend("/sub/" + roomId, GameResultRes.of(gameResult));
-
-      gameSessionVoteService.endVote(roomId, gameSessionService.findById(roomId).getPhase());
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }
