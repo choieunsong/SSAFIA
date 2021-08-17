@@ -41,7 +41,7 @@ public class EndSubscriber {
       log.info("Game is done: " + gameResult);
       template.convertAndSend("/sub/" + roomId, GameResultRes.of(gameResult));
 
-      gameSessionVoteService.endVote(roomId, GamePhase.END);
+      gameSessionVoteService.endVote(roomId, gameSessionService.findById(roomId).getPhase());
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }
