@@ -284,22 +284,9 @@ export default {
                     //stomp에서 color 값이 먼저 들어왔으면 tempPlayerMap에서 갱신
                     state.newSubscriberOn = true;
                     if (state.tempPlayerMap !== null) {
-                        // let idx = state.playersGameInfo.length;
-                        // let playerId = state.playersGameInfo[idx - 1].playerId;
-                        // state.playersGameInfo[idx - 1].color = state.tempPlayerMap[playerId].color;
-                        // state.tempPlayerMap = null;
-                        // state.newSubscriberOn = false;
-                        console.log("TEMP PLAYER MAP", state.tempPlayerMap);
                         for (let i = 0; i < state.playersGameInfo.length; i++) {
                             let id = state.playersGameInfo[i].playerId;
                             state.playersGameInfo[i]["color"] = state.tempPlayerMap[id]["color"];
-                            console.log(
-                                "playerId",
-                                id,
-                                " nickname",
-                                state.playersGameInfo[i].nickname
-                            );
-                            console.log("color", state.tempPlayerMap[id]["color"]);
                         }
 
                         state.tempPlayerMap = null;
