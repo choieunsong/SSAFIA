@@ -66,6 +66,9 @@ public class DayEliminationFinSubscriber {
           return;
         }
 
+        log.info("Room {} start Day {} {} ", gameSession.getRoomId(), gameSession.getDay(),
+            gameSession.getPhase());
+
         // 밤투표 결과
         template.convertAndSend("/sub/" + roomId, GameStatusKillRes.of(gameSession, deadPlayer));
 
@@ -92,7 +95,7 @@ public class DayEliminationFinSubscriber {
     log.info("deadPlayer: " + deadPlayerId);
     // 나간 사람 체크 및 기본 세팅
     List<String> victims = gameSession.changePhase(GamePhase.DAY_TO_NIGHT, 15);
-    
+
     // suspicious 초기화
     gameSession.getPlayerMap().forEach((playerId, player) -> player.setSuspicious(false));
 

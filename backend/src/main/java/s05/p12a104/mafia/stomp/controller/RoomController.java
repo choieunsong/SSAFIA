@@ -88,8 +88,12 @@ public class RoomController {
     task.setRoomId(roomId);
     timer.schedule(task, TimeUtils.convertToDate(gameSession.getTimer()));
 
+
+    log.info("Room {} start game", gameSession.getRoomId());
+
     // 전체 전송
     simpMessagingTemplate.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));
+    
     // 개인 전송
     gameSession.getPlayerMap().forEach((id, player) -> {
       if (player.getRole() == GameRole.MAFIA) {
