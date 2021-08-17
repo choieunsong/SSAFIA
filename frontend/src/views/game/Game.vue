@@ -987,7 +987,7 @@ export default {
                 state.role = message.role;
                 state.mafias = message.mafias;
                 if (state.role === "OBSERVER") {
-                    state.message = `당신은 <span style="font-size: 25px; color:${state.observerColor}>관전자</span>입니다. <br/>게임에 개입할 수는 없지만, 일어나고 있는 일들에 대한 모든 정보를 볼 수 있습니다.`;
+                    state.message = `당신은 <span style="font-size: 25px; color:${state.observerColor}">관전자</span>입니다. <br/>게임에 개입할 수는 없지만, 일어나고 있는 일들에 대한 모든 정보를 볼 수 있습니다.`;
                     state.publisher.publishAudio(false);
                     state.publisher.publishVideo(false);
                     for (let i = 0; i < state.subscribers.length; i++) {

@@ -1,11 +1,11 @@
 <template>
-    <div id="animtaion-wrap" ref="background">
+    <div id="animtaion-wrap" class="js-container" ref="background">
         <div
             v-if="this.phase != 'NIGHT_VOTE'"
             class="sun"
             ref="sun"
             :style="[
-                this.phase == 'READY'
+                this.phase == 'READY' || this.phase == 'END'
                     ? 'animation-play-state: paused;'
                     : 'animation-play-state: running;',
             ]"
@@ -19,7 +19,7 @@
             class="x1"
             ref="c1"
             :style="[
-                this.phase == 'READY'
+                this.phase == 'READY' || this.phase == 'END'
                     ? 'animation-play-state: paused;'
                     : 'animation-play-state: running;',
             ]"
@@ -31,7 +31,7 @@
             class="x2"
             ref="c2"
             :style="[
-                this.phase == 'READY'
+                this.phase == 'READY' || this.phase == 'END'
                     ? 'animation-play-state: paused;'
                     : 'animation-play-state: running;',
             ]"
@@ -43,7 +43,7 @@
             class="x3"
             ref="c3"
             :style="[
-                this.phase == 'READY'
+                this.phase == 'READY' || this.phase == 'END'
                     ? 'animation-play-state: paused;'
                     : 'animation-play-state: running;',
             ]"
@@ -55,7 +55,7 @@
             class="x4"
             ref="c4"
             :style="[
-                this.phase == 'READY'
+                this.phase == 'READY' || this.phase == 'END'
                     ? 'animation-play-state: paused;'
                     : 'animation-play-state: running;',
             ]"
@@ -150,6 +150,7 @@ export default {
         return {
             p: true,
             firstNight: true,
+            confettiInterval: null,
         };
     },
     methods: {
@@ -200,6 +201,67 @@ export default {
                     }
                     console.log("PHASE END");
                     this.$refs.background.classList.add("animation-day");
+
+                    const Confettiful = function(el) {
+                        this.el = el;
+                        this.containerEl = null;
+
+                        this.confettiFrequency = 3;
+                        this.confettiColors = ["#fce18a", "#ff726d", "#b48def", "#f4306d"];
+                        this.confettiAnimations = ["slow", "medium", "fast"];
+
+                        this._setupElements();
+                        this._renderConfetti();
+                    };
+
+                    Confettiful.prototype._setupElements = function() {
+                        const containerEl = document.createElement("div");
+                        const elPosition = this.el.style.position;
+
+                        containerEl.classList.add("confetti-container");
+
+                        this.el.appendChild(containerEl);
+
+                        this.containerEl = containerEl;
+                    };
+
+                    Confettiful.prototype._renderConfetti = function() {
+                        this.confettiInterval = setInterval(() => {
+                            const confettiEl = document.createElement("div");
+                            const confettiSize = Math.floor(Math.random() * 3) + 10 + "px";
+                            const confettiBackground = this.confettiColors[
+                                Math.floor(Math.random() * this.confettiColors.length)
+                            ];
+                            const confettiLeft =
+                                Math.floor(Math.random() * this.el.offsetWidth) + "px";
+                            const confettiAnimation = this.confettiAnimations[
+                                Math.floor(Math.random() * this.confettiAnimations.length)
+                            ];
+
+                            confettiEl.classList.add(
+                                "confetti",
+                                "confetti--animation-" + confettiAnimation
+                            );
+                            confettiEl.style.left = confettiLeft;
+                            confettiEl.style.width = confettiSize;
+                            confettiEl.style.height = confettiSize;
+                            confettiEl.style.backgroundColor = confettiBackground;
+
+                            confettiEl.removeTimeout = setTimeout(function() {
+                                confettiEl.parentNode.removeChild(confettiEl);
+                            }, 4000);
+
+                            this.containerEl.appendChild(confettiEl);
+                        }, 25);
+                    };
+
+                    window.confettiful = new Confettiful(document.querySelector(".js-container"));
+                    console.log(window.confettiful);
+                    setTimeout(() => {
+                        console.log("remove confetti");
+                        var elem = document.querySelector(".confetti-container");
+                        elem.parentNode.removeChild(elem);
+                    }, 15000);
                 }
             },
         },

@@ -24,7 +24,7 @@
             </div>
             <div style="margin-left: 120px">
                 <img
-                    src="https://www.clipartmax.com/png/full/110-1108103_home-expansion-syndicate-mafia-logo.png"
+                    src="../../../assets/image/alive.png"
                     alt=""
                     style="width: 50px; margin-right: 2% display: inline-block"
                 />
@@ -112,18 +112,22 @@ export default {
             handler() {
                 if (this.gameStatus.phase == "START") {
                     this.startCountDown();
-                } else if (this.getAlive && this.gameStatus.phase == "DAY_DISCUSSION") {
-                    this.$refs.confirm.classList.remove("unhover");
-                    this.$refs.confirm.classList.add("confirm-button-active");
+                } else if (this.gameStatus.phase == "DAY_DISCUSSION") {
+                    if (this.getAlive) {
+                        this.$refs.confirm.classList.remove("unhover");
+                        this.$refs.confirm.classList.add("confirm-button-active");
+                    }
                     this.startCountDown();
-                } else if (this.getAlive && this.gameStatus.phase == "DAY_ELIMINATION") {
-                    clearInterval(this.interval);
-                    this.$refs.confirm.classList.remove("unhover");
-                    this.$refs.confirm.classList.add("confirm-button-active");
+                } else if (this.gameStatus.phase == "DAY_ELIMINATION") {
+                    if (this.getAlive) {
+                        this.$refs.confirm.classList.remove("unhover");
+                        this.$refs.confirm.classList.add("confirm-button-active");
+                    }
                     this.startCountDown();
                 } else if (this.gameStatus.phase == "DAY_TO_NIGHT") {
                     this.$refs.confirm.classList.add("unhover");
                     this.$refs.confirm.classList.remove("confirm-button-active");
+
                     this.startCountDown();
                 } else if (this.gameStatus.phase == "NIGHT_VOTE") {
                     this.$refs.sun.classList.add("sun-logo-deactive");
