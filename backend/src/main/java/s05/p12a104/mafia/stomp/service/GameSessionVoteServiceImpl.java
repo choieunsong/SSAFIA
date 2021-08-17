@@ -41,22 +41,26 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   private final ChannelTopic topicNightVoteFin;
 
   @Override
-  public void startVote(String roomId, GamePhase phase, LocalDateTime time, Map players) {
-    voteRepository.startVote(roomId, phase, players);
+  public void startVote(String roomId, int phaseCount, GamePhase phase, LocalDateTime time,
+      Map players) {
+    voteRepository.startVote(roomId, phaseCount, phase, players);
     Timer timer = new Timer();
     VoteFinTimerTask task = new VoteFinTimerTask(this);
     task.setRoomId(roomId);
+    task.setPhaseCount(phaseCount);
     task.setPhase(phase);
     timer.schedule(task, TimeUtils.convertToDate(time));
+    log.info("Room {} start Vote for {}", roomId, phase);
   }
 
 
   @Override
-  public void endVote(String roomId, GamePhase phase) {
-    Map<String, String> vote = voteRepository.getVoteResult(roomId);
-    if (vote == null) {
+  public void endVote(String roomId, int phaseCount, GamePhase phase) {
+    if (voteRepository.isEnd(roomId, phaseCount)) {
       return;
     } else {
+      Map<String, String> vote = voteRepository.getVoteResult(roomId);
+      log.info("Room {} end Vote for {}", roomId, phase);
       publishRedis(roomId, vote);
       voteRepository.endVote(roomId, phase);
     }
@@ -84,19 +88,24 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   }
 
   @Override
-  public Map<String, String> getVote(String roomId, GameSessionVoteReq req) {
-    return voteRepository.getVoteResult(roomId);
-  }
+  public Map<String, Boolean> confirmVote(String roomId, String playerId, GameSessionVoteReq req) {
 
-  @Override
-  public int confirmVote(String roomId, String playerId, GameSessionVoteReq req) {
+    if (!voteRepository.isValid(playerId, req.getPhase())) {
+      return null;
+    }
 
     return voteRepository.confirmVote(roomId, playerId);
   }
 
   @Override
-  public void finishVote(String roomId, GameSessionVoteReq req) {
-    voteRepository.endVote(roomId, req.getPhase());
+  public Map<String, Boolean> getNightConfirm(String roomId, String playerId,
+      GameSessionVoteReq req, GameRole roleName) {
+
+    if (!voteRepository.isValid(playerId, req.getPhase())) {
+      return null;
+    }
+
+    return voteRepository.confirmVote(roomId, playerId);
   }
 
   private void publishRedis(String roomId, Map<String, String> vote) {
@@ -115,6 +124,11 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
           new NightVoteMessage(roomId, getNightVoteResult(gameSession, vote));
       redisPublisher.publish(topicNightVoteFin, nightVoteMessage);
     }
+  }
+
+  @Override
+  public Map<String, String> getVoteResult(String roomId, GameSessionVoteReq req) {
+    return voteRepository.getVoteResult(roomId);
   }
 
   private List<String> getSuspiciousList(GameSession gameSession, Map<String, String> voteResult) {

@@ -60,6 +60,10 @@ public class NightVoteFinSubscriber {
       String protectedPlayerId = roleVote.get(GameRole.DOCTOR);
       String suspectPlayerId = roleVote.get(GameRole.POLICE);
 
+      log.info("Room {} NightVote deadPlayer: {}", roomId, deadPlayerId);
+      log.info("Room {} NightVote protectedPlayer: {}", roomId, protectedPlayerId);
+      log.info("Room {} NightVote suspectPlayer: {}", roomId, suspectPlayerId);
+
       // 의사가 살렸을 경우 부활
       if (deadPlayerId != null && deadPlayerId.equals(protectedPlayerId)) {
         deadPlayerId = null;
@@ -98,10 +102,6 @@ public class NightVoteFinSubscriber {
         lock.unlock();
       }
 
-      log.info("deadPlayerId: " + deadPlayerId);
-      log.info("protectedPlayerId: " + protectedPlayerId);
-      log.info("suspectPlayerId: " + suspectPlayerId);
-
       // Timer를 돌릴 마땅한 위치가 없어서 추후에 통합 예정
       Timer timer = new Timer();
       StartFinTimerTask task = new StartFinTimerTask(redisPublisher, topicStartFin);
@@ -121,6 +121,7 @@ public class NightVoteFinSubscriber {
       gameSession.eliminatePlayer(deadPlayerId);
       victims.add(gameSession.getPlayerMap().get(deadPlayerId).getNickname());
     }
+    log.info("Room {} ElimainationVote deadPlayer: {}", gameSession.getRoomId(), deadPlayerId);
 
     gameSessionService.update(gameSession);
 

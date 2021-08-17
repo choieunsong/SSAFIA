@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.stereotype.Repository;
 import lombok.RequiredArgsConstructor;
 import s05.p12a104.mafia.domain.entity.Vote;
+import s05.p12a104.mafia.domain.entity.VoteInfo;
 import s05.p12a104.mafia.domain.enums.GamePhase;
 import s05.p12a104.mafia.domain.enums.GameRole;
 
@@ -17,16 +18,26 @@ import s05.p12a104.mafia.domain.enums.GameRole;
 public class VoteRepository {
 
   private final VoteRedisRepository voteRedisRepository;
-  private ConcurrentHashMap <String, Map<String, GameRole>> votersMap;
+  private ConcurrentHashMap<String, VoteInfo> voteInfosMap;
 
   @PostConstruct
   private void init() {
-    votersMap = new ConcurrentHashMap();
+    voteInfosMap = new ConcurrentHashMap();
   }
 
-  public void startVote(String roomId, GamePhase phase, Map<String, GameRole> players) {
-    votersMap.put(roomId, players);
+  public void startVote(String roomId, int phaseCount, GamePhase phase,
+      Map<String, GameRole> players) {
+    VoteInfo voteInfo = VoteInfo.builder(phaseCount, players);
+    voteInfosMap.put(roomId, voteInfo);
     voteRedisRepository.startVote(getVoters(roomId), phase);
+  }
+
+  public boolean isEnd(String roomId, int phaseCount) {
+    VoteInfo voteInfo = voteInfosMap.get(roomId);
+    if (voteInfo == null || voteInfo.getPhaseCount() != phaseCount) {
+      return true;
+    }
+    return false;
   }
 
   public boolean isValid(String playerId, GamePhase phase) {
@@ -36,41 +47,43 @@ public class VoteRepository {
   }
 
   public Map<String, String> getVoteResult(String roomId) {
-    return voteResultConvert(getVoteResult(getVoters(roomId)));
+    return voteResultConvert(getRedisVoteResult(getVoters(roomId)));
   }
 
   public Map<String, String> vote(String roomId, GamePhase phase, String playerId, String player) {
     voteRedisRepository.vote(playerId, player);
 
-    return voteResultConvert(getVoteResult(getVoters(roomId)));
+    return voteResultConvert(getRedisVoteResult(getVoters(roomId)));
   }
 
   public Map<String, String> nightVote(String roomId, GamePhase phase, String playerId,
       String player, GameRole roleName) {
     voteRedisRepository.vote(playerId, player);
 
-    return voteResultConvert(getVoteResult(getNightVoters(roomId, roleName)));
+    return voteResultConvert(getRedisVoteResult(getNightVoters(roomId, roleName)));
   }
 
-  public int confirmVote(String roomId, String playerId) {
+  public Map<String, Boolean> confirmVote(String roomId, String playerId) {
     voteRedisRepository.confirmVote(playerId);
-    Map<String, Vote> voteResult = getVoteResult(getVoters(roomId));
 
-    int confirmCnt = voteResult.entrySet().stream().filter(e -> e.getValue().isConfirm() == true)
-        .collect(Collectors.toList()).size();
-    return confirmCnt;
+    return confirmResultConvert(getRedisVoteResult(getVoters(roomId)));
+  }
+
+  public Map<String, Boolean> getNightConfirm(String roomId, String playerId, GameRole roleName) {
+    return confirmResultConvert(getRedisVoteResult(getNightVoters(roomId, roleName)));
   }
 
   public void endVote(String roomId, GamePhase phase) {
     voteRedisRepository.endVote(getVoters(roomId), phase);
+    voteInfosMap.remove(roomId);
   }
 
   private List<String> getVoters(String roomId) {
-    return votersMap.get(roomId).keySet().stream().collect(Collectors.toList());
+    return voteInfosMap.get(roomId).getVotersMap().keySet().stream().collect(Collectors.toList());
   }
 
   private List<String> getNightVoters(String roomId, GameRole roleName) {
-    Map<String, GameRole> voters = votersMap.get(roomId);
+    Map<String, GameRole> voters = voteInfosMap.get(roomId).getVotersMap();
     return voters.keySet().stream().collect(Collectors.toList()).stream()
         .filter(key -> voters.get(key) == roleName).collect(Collectors.toList());
   }
@@ -83,7 +96,15 @@ public class VoteRepository {
     return result;
   }
 
-  private Map<String, Vote> getVoteResult(List<String> voters) {
+  private Map<String, Boolean> confirmResultConvert(Map<String, Vote> voteResult) {
+    Map<String, Boolean> confirmResult = new HashMap();
+    voteResult.forEach((playerId, vote) -> {
+      confirmResult.put(playerId, vote.isConfirm());
+    });
+    return confirmResult;
+  }
+
+  private Map<String, Vote> getRedisVoteResult(List<String> voters) {
     return voteRedisRepository.getVoteResult(voters);
   }
 }

@@ -84,9 +84,8 @@ public class DayDiscussionFinSubscriber {
         lock.unlock();
       }
 
-      gameSessionVoteService.startVote(roomId, gameSession.getPhase(), gameSession.getTimer(),
-          players);
-      log.info("DAY_ELIMINATION 투표 생성!", roomId);
+      gameSessionVoteService.startVote(roomId, gameSession.getPhaseCount(), gameSession.getPhase(),
+          gameSession.getTimer(), players);
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }
