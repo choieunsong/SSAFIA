@@ -14,12 +14,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.api.service.GameSessionService;
-import s05.p12a104.mafia.api.service.GameSessionVoteService;
 import s05.p12a104.mafia.common.exception.RedissonLockNotAcquiredException;
 import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.enums.GamePhase;
 import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.stomp.response.GameStatusRes;
+import s05.p12a104.mafia.stomp.service.GameSessionVoteService;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -49,7 +49,7 @@ public class DayToNightFinSubscriber {
       }
 
       GameSession gameSession = null;
-      Map<String, String> players = new HashMap();
+      Map<String, GameRole> players = new HashMap();
       try {
         gameSession = gameSessionService.findById(roomId);
         // 나간 사람 체크 및 기본 세팅
@@ -68,7 +68,7 @@ public class DayToNightFinSubscriber {
 
         gameSession.getPlayerMap().forEach((playerId, player) -> {
           if (player.isAlive() && player.getRole() != GameRole.CIVILIAN) {
-            players.put(playerId, null);
+            players.put(playerId, player.getRole());
           }
         });
 

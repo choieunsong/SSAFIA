@@ -1,4 +1,4 @@
-package s05.p12a104.mafia.api.service;
+package s05.p12a104.mafia.stomp.service;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -13,11 +13,11 @@ public interface GameSessionVoteService {
 
   void endVote(String voteId, GamePhase phase);
 
-  Vote vote(String roomId, String playerId, GameSessionVoteReq req);
+  Map<String, String> vote(String roomId, String playerId, GameSessionVoteReq req);
 
-  Vote nightVote(String roomId, String playerId, GameSessionVoteReq req, GameRole roleName);
+  Map<String, String> nightVote(String roomId, String playerId, GameSessionVoteReq req, GameRole roleName);
 
-  Vote getVote(String roomId, GameSessionVoteReq req);
+  Map<String, String> getVote(String roomId, GameSessionVoteReq req);
 
   int confirmVote(String roomId, String playerId, GameSessionVoteReq req);
 

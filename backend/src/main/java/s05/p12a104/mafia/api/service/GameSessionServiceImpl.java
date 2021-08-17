@@ -1,12 +1,5 @@
 package s05.p12a104.mafia.api.service;
 
-import io.openvidu.java.client.ConnectionProperties;
-import io.openvidu.java.client.ConnectionType;
-import io.openvidu.java.client.OpenVidu;
-import io.openvidu.java.client.OpenViduHttpException;
-import io.openvidu.java.client.OpenViduJavaClientException;
-import io.openvidu.java.client.OpenViduRole;
-import io.openvidu.java.client.Session;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,13 +10,20 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.RedisKeyValueTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
+import io.openvidu.java.client.ConnectionProperties;
+import io.openvidu.java.client.ConnectionType;
+import io.openvidu.java.client.OpenVidu;
+import io.openvidu.java.client.OpenViduHttpException;
+import io.openvidu.java.client.OpenViduJavaClientException;
+import io.openvidu.java.client.OpenViduRole;
+import io.openvidu.java.client.Session;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.api.requset.GameSessionPostReq;
 import s05.p12a104.mafia.api.response.GameSessionJoinRes;
 import s05.p12a104.mafia.api.response.PlayerJoinRoomState;
@@ -50,6 +50,7 @@ import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.domain.enums.GameState;
 import s05.p12a104.mafia.domain.mapper.GameSessionDaoMapper;
 import s05.p12a104.mafia.domain.repository.GameSessionRedisRepository;
+import s05.p12a104.mafia.domain.repository.VoteRedisRepository;
 import s05.p12a104.mafia.redispubsub.RedisPublisher;
 import s05.p12a104.mafia.redispubsub.message.EndMessgae;
 import s05.p12a104.mafia.stomp.response.GameResult;
@@ -60,6 +61,7 @@ import s05.p12a104.mafia.stomp.response.GameResult;
 public class GameSessionServiceImpl implements GameSessionService {
 
   private final GameSessionRedisRepository gameSessionRedisRepository;
+  private final VoteRedisRepository voteRedisRepository;
 
   private final RedisKeyValueTemplate redisKVTemplate;
 
@@ -224,6 +226,7 @@ public class GameSessionServiceImpl implements GameSessionService {
         log.info("Problems in the app server: the SESSION does not exist");
         throw new OpenViduSessionNotFoundException();
       }
+      voteRedisRepository.removeVote(playerId);
 
       Player player = playerMap.get(playerId);
       if (player != null) {
@@ -305,7 +308,7 @@ public class GameSessionServiceImpl implements GameSessionService {
    * 아직 게임이 시작하지 않은 방에서 나간 Player 제거.
    *
    * @param gameSession : Player가 나간 Game Session
-   * @param player      : 나간 player
+   * @param player : 나간 player
    */
   private void removeReadyUser(GameSession gameSession, Player player) {
     Map<String, Player> playerMap = gameSession.getPlayerMap();
