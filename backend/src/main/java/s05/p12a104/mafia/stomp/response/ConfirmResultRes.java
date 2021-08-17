@@ -11,7 +11,7 @@ public class ConfirmResultRes {
 
   public static ConfirmResultRes of(Map<String, Boolean> confirmResult) {
     ConfirmResultRes confirmResultRes = new ConfirmResultRes();
-    confirmResultRes.type = StompMessageType.UPDATE;
+    confirmResultRes.type = StompMessageType.CONFIRM;
     confirmResultRes.playerMap = confirmResult;
 
     return confirmResultRes;

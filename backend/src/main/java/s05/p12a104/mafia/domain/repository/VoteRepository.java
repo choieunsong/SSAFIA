@@ -47,30 +47,30 @@ public class VoteRepository {
   }
 
   public Map<String, String> getVoteResult(String roomId) {
-    return voteResultConvert(getVoteResult(getVoters(roomId)));
+    return voteResultConvert(getRedisVoteResult(getVoters(roomId)));
   }
 
   public Map<String, String> vote(String roomId, GamePhase phase, String playerId, String player) {
     voteRedisRepository.vote(playerId, player);
 
-    return voteResultConvert(getVoteResult(getVoters(roomId)));
+    return voteResultConvert(getRedisVoteResult(getVoters(roomId)));
   }
 
   public Map<String, String> nightVote(String roomId, GamePhase phase, String playerId,
       String player, GameRole roleName) {
     voteRedisRepository.vote(playerId, player);
 
-    return voteResultConvert(getVoteResult(getNightVoters(roomId, roleName)));
+    return voteResultConvert(getRedisVoteResult(getNightVoters(roomId, roleName)));
   }
 
   public Map<String, Boolean> confirmVote(String roomId, String playerId) {
     voteRedisRepository.confirmVote(playerId);
 
-    return confirmResultConvert(getVoteResult(getVoters(roomId)));
+    return confirmResultConvert(getRedisVoteResult(getVoters(roomId)));
   }
 
   public Map<String, Boolean> getNightConfirm(String roomId, String playerId, GameRole roleName) {
-    return confirmResultConvert(getVoteResult(getNightVoters(roomId, roleName)));
+    return confirmResultConvert(getRedisVoteResult(getNightVoters(roomId, roleName)));
   }
 
   public void endVote(String roomId, GamePhase phase) {
@@ -104,7 +104,7 @@ public class VoteRepository {
     return confirmResult;
   }
 
-  private Map<String, Vote> getVoteResult(List<String> voters) {
+  private Map<String, Vote> getRedisVoteResult(List<String> voters) {
     return voteRedisRepository.getVoteResult(voters);
   }
 }
