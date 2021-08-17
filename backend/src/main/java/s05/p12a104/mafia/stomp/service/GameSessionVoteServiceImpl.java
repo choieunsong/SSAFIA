@@ -88,10 +88,21 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   }
 
   @Override
-  public int confirmVote(String roomId, String playerId, GameSessionVoteReq req) {
+  public Map<String, Boolean> confirmVote(String roomId, String playerId, GameSessionVoteReq req) {
 
     if (!voteRepository.isValid(playerId, req.getPhase())) {
-      return 0;
+      return null;
+    }
+
+    return voteRepository.confirmVote(roomId, playerId);
+  }
+
+  @Override
+  public Map<String, Boolean> getNightConfirm(String roomId, String playerId,
+      GameSessionVoteReq req, GameRole roleName) {
+
+    if (!voteRepository.isValid(playerId, req.getPhase())) {
+      return null;
     }
 
     return voteRepository.confirmVote(roomId, playerId);

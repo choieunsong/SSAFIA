@@ -18,7 +18,10 @@ public interface GameSessionVoteService {
   Map<String, String> nightVote(String roomId, String playerId, GameSessionVoteReq req,
       GameRole roleName);
 
-  int confirmVote(String roomId, String playerId, GameSessionVoteReq req);
+  Map<String, Boolean> confirmVote(String roomId, String playerId, GameSessionVoteReq req);
+
+  Map<String, Boolean> getNightConfirm(String roomId, String playerId, GameSessionVoteReq req,
+      GameRole roleName);
 
   Map<String, String> getVoteResult(String roomId, GameSessionVoteReq req);
 }

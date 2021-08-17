@@ -63,13 +63,14 @@ public class VoteRepository {
     return voteResultConvert(getVoteResult(getNightVoters(roomId, roleName)));
   }
 
-  public int confirmVote(String roomId, String playerId) {
+  public Map<String, Boolean> confirmVote(String roomId, String playerId) {
     voteRedisRepository.confirmVote(playerId);
-    Map<String, Vote> voteResult = getVoteResult(getVoters(roomId));
 
-    int confirmCnt = voteResult.entrySet().stream().filter(e -> e.getValue().isConfirm() == true)
-        .collect(Collectors.toList()).size();
-    return confirmCnt;
+    return confirmResultConvert(getVoteResult(getVoters(roomId)));
+  }
+
+  public Map<String, Boolean> getNightConfirm(String roomId, String playerId, GameRole roleName) {
+    return confirmResultConvert(getVoteResult(getNightVoters(roomId, roleName)));
   }
 
   public void endVote(String roomId, GamePhase phase) {
@@ -93,6 +94,14 @@ public class VoteRepository {
       result.put(playerId, vote.getVote());
     });
     return result;
+  }
+
+  private Map<String, Boolean> confirmResultConvert(Map<String, Vote> voteResult) {
+    Map<String, Boolean> confirmResult = new HashMap();
+    voteResult.forEach((playerId, vote) -> {
+      confirmResult.put(playerId, vote.isConfirm());
+    });
+    return confirmResult;
   }
 
   private Map<String, Vote> getVoteResult(List<String> voters) {

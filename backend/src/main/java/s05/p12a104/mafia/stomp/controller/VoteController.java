@@ -1,6 +1,7 @@
 package s05.p12a104.mafia.stomp.controller;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -11,10 +12,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.api.service.GameSessionService;
 import s05.p12a104.mafia.domain.entity.GameSession;
-import s05.p12a104.mafia.domain.entity.Vote;
 import s05.p12a104.mafia.domain.enums.GamePhase;
 import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.stomp.request.GameSessionVoteReq;
+import s05.p12a104.mafia.stomp.response.ConfirmResultRes;
 import s05.p12a104.mafia.stomp.response.VoteResultRes;
 import s05.p12a104.mafia.stomp.service.GameSessionVoteService;
 
@@ -45,13 +46,22 @@ public class VoteController {
 
     GameSession gameSession = gameSessionService.findById(roomId);
 
-    // 투표 확정 인원 확인
-    int confirmCnt = gameSessionVoteService.confirmVote(roomId, playerId, req);
-    int notCivilainCnt = gameSession.getAliveNotCivilian();
-    log.info("Room {} Phase {} Confirm {} : Needed {}", roomId, req.getPhase(), confirmCnt,
-        notCivilainCnt);
-    if (confirmCnt == notCivilainCnt) {
-      gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), req.getPhase());
+
+    Map<String, Boolean> confirmResult = gameSessionVoteService.confirmVote(roomId, playerId, req);
+
+    if (confirmResult != null) {
+      simpMessagingTemplate.convertAndSend("/sub/" + roomId, ConfirmResultRes.of(confirmResult));
+
+      // 투표 확정 인원 확인
+      int confirmCnt = confirmResult.entrySet().stream().filter(e -> e.getValue() == true)
+          .collect(Collectors.toList()).size();
+      int notCivilainCnt = gameSession.getAliveNotCivilian();
+      log.info("Room {} Phase {} Confirm {} : Needed {}", roomId, req.getPhase(), confirmCnt,
+          notCivilainCnt);;
+
+      if (confirmCnt == notCivilainCnt) {
+        gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), req.getPhase());
+      }
     }
   }
 
@@ -89,14 +99,28 @@ public class VoteController {
     GameSessionVoteReq req = new GameSessionVoteReq();
     req.setPhase(GamePhase.NIGHT_VOTE);
 
-    // 투표 확정 인원 확인
-    int confirmCnt = gameSessionVoteService.confirmVote(roomId, playerId, req);
-    int notCivilainCnt = gameSession.getAliveNotCivilian();
-    log.info("Room {} Phase {} Confirm {} : Needed {}", roomId, req.getPhase(), confirmCnt,
-        notCivilainCnt);
-    if (confirmCnt == notCivilainCnt) {
-      gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), req.getPhase());
+    Map<String, Boolean> forObserver = gameSessionVoteService.confirmVote(roomId, playerId, req);
+    Map<String, Boolean> confirmResult =
+        gameSessionVoteService.getNightConfirm(roomId, playerId, req, roleName);
+
+    if (confirmResult != null) {
+      simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + roleName,
+          ConfirmResultRes.of(confirmResult));
+      simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + GameRole.OBSERVER,
+          ConfirmResultRes.of(forObserver));
+
+      // 투표 확정 인원 확인
+      int confirmCnt = confirmResult.entrySet().stream().filter(e -> e.getValue() == true)
+          .collect(Collectors.toList()).size();
+      int notCivilainCnt = gameSession.getAliveNotCivilian();
+      log.info("Room {} Phase {} Confirm {} : Needed {}", roomId, req.getPhase(), confirmCnt,
+          notCivilainCnt);;
+
+      if (confirmCnt == notCivilainCnt) {
+        gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), req.getPhase());
+      }
     }
+
   }
 
 }
