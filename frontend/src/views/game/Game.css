@@ -97,16 +97,13 @@
 }
 
 .url-copy-text {
-    /* flex: auto; */
     font-size: 0.9em;
     text-shadow: 2px 1px 1px rgb(153, 65, 65);
-    /* width: 80%; */
 }
 
 #url-copy-btn {
-    /* width: 20%; */
     margin-left: 10px;
-    color: white;
+    color: salmon;
     cursor: pointer;
     transition: transform 0.2s ease-out;
     transition: color 0.2s ease-out;
