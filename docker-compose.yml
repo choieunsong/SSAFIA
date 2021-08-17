@@ -47,6 +47,8 @@ services:
       dockerfile: Dockerfile
       context: ./backend
       target: prod
+    volumes:
+      - ./log:/log
     env_file: prod.env
     environment:
       TZ: "Asia/Seoul"
