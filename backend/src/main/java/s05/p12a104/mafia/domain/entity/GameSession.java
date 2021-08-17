@@ -135,6 +135,13 @@ public class GameSession {
     this.day++;
   }
 
+  public boolean isAllLeft() {
+    for (Player player : this.playerMap.values()) {
+      if (!player.isLeft()) return false;
+    }
+    return true;
+  }
+
   public static GameSession of(GameSessionDao dao, OpenVidu openVidu) {
     Session entitySession = null;
     for (Session session : openVidu.getActiveSessions()) {

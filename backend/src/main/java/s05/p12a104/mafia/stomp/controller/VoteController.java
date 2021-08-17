@@ -45,18 +45,13 @@ public class VoteController {
 
     GameSession gameSession = gameSessionService.findById(roomId);
 
-    // 투표 존재여부 확인
-    if (gameSessionVoteService.getVote(roomId, req) == null) {
-      return;
-    }
-
     // 투표 확정 인원 확인
     int confirmCnt = gameSessionVoteService.confirmVote(roomId, playerId, req);
     int notCivilainCnt = gameSession.getAliveNotCivilian();
     log.info("Room {} Phase {} Confirm {} : Needed {}", roomId, req.getPhase(), confirmCnt,
         notCivilainCnt);
     if (confirmCnt == notCivilainCnt) {
-      gameSessionVoteService.endVote(roomId, req.getPhase());
+      gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), req.getPhase());
     }
   }
 
@@ -73,7 +68,7 @@ public class VoteController {
 
     Map<String, String> voteResult =
         gameSessionVoteService.nightVote(roomId, playerId, req, roleName);
-    Map<String, String> forObserver = gameSessionVoteService.getVote(roomId, req);
+    Map<String, String> forObserver = gameSessionVoteService.getVoteResult(roomId, req);
 
     if (voteResult != null) {
       simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + roleName,
@@ -94,18 +89,19 @@ public class VoteController {
     GameSessionVoteReq req = new GameSessionVoteReq();
     req.setPhase(GamePhase.NIGHT_VOTE);
 
-    // 투표 존재여부 확인
-    if (gameSessionVoteService.getVote(roomId, req) == null) {
-      return;
-    }
-
     // 투표 확정 인원 확인
+<<<<<<< HEAD
     int confirmCnt = gameSessionVoteService.confirmVote(roomId, playerId, req);
     int notCivilainCnt = gameSession.getAliveNotCivilian();
     log.info("Room {} Phase {} Confirm {} : Needed {}", roomId, req.getPhase(), confirmCnt,
         notCivilainCnt);
     if (confirmCnt == notCivilainCnt) {
       gameSessionVoteService.endVote(roomId, req.getPhase());
+=======
+    if (gameSessionVoteService.confirmVote(roomId, playerId, req) == gameSession
+        .getAliveNotCivilian()) {
+      gameSessionVoteService.endVote(roomId, gameSession.getPhaseCount(), req.getPhase());
+>>>>>>> develop
     }
   }
 

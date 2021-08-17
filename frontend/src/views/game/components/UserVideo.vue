@@ -67,7 +67,7 @@ import "./uservideo.css";
 
 var colorCode = {
     RED: "#DC143C",
-    YELLOW: "#FFFF00",
+    YELLOW: "#fbec5d",
     GREEN: "#228B22",
     PURPLE: "#9400D3",
     ORANGE: "#FF8C00",
