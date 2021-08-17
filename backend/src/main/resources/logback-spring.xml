@@ -11,7 +11,7 @@
 	<property name="LOG_BACKUP" value="../log/backup" />
 	<property name="MAX_HISTORY" value="30" />
 	<property name="LOG_PATTERN"
-		value="%d{yyyy-MM-dd HH:mm:ss}.%-5relative [%thread] %highlight(%-5level) %green([%C.%M:%line]) - %msg%n" />
+		value="%d{yyyy-MM-dd HH:mm:ss}.%-5relative [%thread] %highlight(%-5level) %green([%-40logger{36}:%line]) - %msg%n" />
 
 	<!--콘솔에 로그 -->
 	<springProfile name="!prod">
