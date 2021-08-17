@@ -3,6 +3,7 @@ package s05.p12a104.mafia.domain.repository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import org.springframework.stereotype.Repository;
@@ -16,11 +17,11 @@ import s05.p12a104.mafia.domain.enums.GameRole;
 public class VoteRepository {
 
   private final VoteRedisRepository voteRedisRepository;
-  private Map<String, Map<String, GameRole>> votersMap;
+  private ConcurrentHashMap <String, Map<String, GameRole>> votersMap;
 
   @PostConstruct
   private void init() {
-    votersMap = new HashMap();
+    votersMap = new ConcurrentHashMap();
   }
 
   public void startVote(String roomId, GamePhase phase, Map<String, GameRole> players) {
