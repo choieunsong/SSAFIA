@@ -1346,6 +1346,11 @@ export default {
             leave,
         };
     },
+    watch: {
+        $route(to, from) {
+            this.leave();
+        }
+    }    
 };
 </script>
 
