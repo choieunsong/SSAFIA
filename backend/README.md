@@ -56,3 +56,19 @@ local에서는 mysql 또는 mariadb를 사용하면 되고, schema는 `mafia` �
 - 설정되어 있는 subscribe destination('/sub')에 맞게 subscribe를 한다
 - 설정되어 있는 send destination('/pub')에 맞게 Send를 한다
 
+## known error
+### 방에 입장했을 때 openvidu session 연결이 안 되는 경우
+openvidu 서버가 self signed 인증으로 되어 있기 때문에 broswer 입장에서 openvidu 서버의 주소가 안전하지 않다고 판단하여 접근을 막는다.  
+따라서, openvidu 서버의 주소인 https://localhost:4443/dashboard에 browser로 접속하여 다음과 같은 경고가 뜨더라도 계속 진행한다.
+
+![](../img/your-connection-is-not-private.png)
+
+다음과 같이 'Test' 버튼을 클릭한다.
+
+![](../img/test-the-connection.png)
+
+
+Openvidu의 secret key를 입력한다(default값은 보통 `MY_SECRET` 이다).
+
+![](../img/insert-your-secret.png)
+
