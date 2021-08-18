@@ -1,15 +1,14 @@
 version: "3.4"
 services:
   jenkins:
-    image: jenkins/jenkins
     container_name: jenkins
+    build:
+      dockerfile: Dockerfile
+      context: ./
     user: root
     ports: 
       - "9090:8080"
     volumes:
-      - /var/jenkins_home:/var/jenkins_home
+      - ./jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
-      - /usr/bin/docker:/usr/bin/docker
-      - /usr/bin/docker-compose:/usr/bin/docker-compose
-
 
