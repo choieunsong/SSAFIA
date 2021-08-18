@@ -160,7 +160,7 @@ sudo apt-get update && sudo apt-get install --no-install-recommends --yes coturn
 TURNSERVER_ENABLED=1
 ```
 
-`/etc/turnserver.conX`의 내용을 다음과 같이 수정합니다.
+`/etc/turnserver.conf`의 내용을 다음과 같이 수정합니다.
 ```sh
 listening-port=3478
 tls-listening-port=5349
@@ -190,3 +190,37 @@ sudo systemctl status coturn
 ```sh
 docker-compose up -d
 ```
+
+단, docker-compose를 실행하기 위해서는 `prod.env` 파일이 필요합니다. `prod.env`는 다음과 같습니다.
+```env
+# backend
+GOOGLE_CLIENT_ID=1q2w3e4r-1q2w3e4r.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=4r3e2w1q4r3e2w1q
+SPRING_DATASOURCE_USERNAME=a104
+SPRING_DATASOURCE_PASSWORD=a1041234
+JWT_SECRET=1q2w3e4r
+#OPENVIDU_URL=https://<service domain name>:3333/
+OPENVIDU_URL=https://openvidu:3333/
+APP_BASE_URL=https://<service domain name>
+
+# openvidu
+KMS_STUN_IP=<coturn server ip>
+KMS_STUN_PORT=3478
+KMS_TURN_URL=myuser:mypassword@<coturn server ip>:3478?transport=udp
+DOMAIN_OR_PUBLIC_IP=<service domain name>
+
+# backend & openvidu
+OPENVIDU_SECRET=MY_SECRET
+
+# mysql
+MYSQL_USER=a104
+MYSQL_PASSWORD=a1041234
+MYSQL_ROOT_PASSWORD=a1041234
+```
+
+### 첫 배포시 주의 사항
+첫 배포시에는 [init-letsencrypt.sh](./init-letsencrypt.sh)을 실행시켜 certbot에 의해 SSL/TLS 인증서를 생성하도록 해야 합니다.
+
+### 배포시 주의 사항
+redis/redis-data와 mysql/mysql-data는 각각 redis container와 mysql(mariadb) container의 데이터 저장 direcotory를 mount하고 있으니 각별히 주의해야 합니다.
+
