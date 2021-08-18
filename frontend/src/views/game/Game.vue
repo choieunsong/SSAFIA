@@ -888,19 +888,6 @@ export default {
                             "https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3"
                         );
                         audio.play();
-                        if (message.gameStatus.turnOver === true) {
-                            state.message = `게임이 종료되었습니다 <br> 15턴이 지나 자동으로 <span style="font-size: 25px; color:${state.civilColor}">시민측 진영</span>이 승리하였습니다. `;
-                        } else {
-                            let victims = message.gameStatus.victims.join(",");
-                            if (message.gameStatus.winner === "MAFIA") {
-                                state.message = `게임이 종료되었습니다. <br> <span style="font-size:25px; color:${state.victimColor}">${victims}</span>가 사망하며 시민 수가 마피아 수 이하가 되었기 때문에 <span style="font-size: 25px; color:${state.mafiaColor}">마피아측 진영</span>의 승리입니다.`;
-                            } else {
-                                state.message = `게임이 종료되었습니다. <br> <span style="font-size:25px; color:${state.victimColor}">${victims}</span>가 사망하며 마피아를 모두 제거하였기 때문에 <span style="font-size: 25px; color:${state.civilColor}">시민측 진영</span>이 승리하였습니다.`;
-                            }
-                        }
-                        break;
-                    }
-                    case "READY": {
                         // 초기화
                         state.role = undefined;
                         state.gameStatus = {
@@ -914,21 +901,14 @@ export default {
                         }
                         state.jobClient = undefined;
                         state.mafias = undefined;
-                        state.message = `최소 <span style='font-size:25px;'>4인</span> 이상부터 플레이가 가능합니다.`;
                         state.submessage = "";
-                        for (let j = state.subscribers.length - 1; j >= 0; j--) {
-                            if (state.removeList.includes(j)) {
-                                state.subscribers.splice(j, 1);
-                                state.playersGameInfo.splice(j, 1);
-                                state.playerNum--;
-                            }
-                        }
-                        state.removeList = [];
                         state.publisher.publishAudio(true);
                         state.publisher.publishVideo(true);
                         for (let i = 0; i < state.subscribers.length; i++) {
-                            state.subscribers[i].subscribeToAudio(true);
-                            state.subscribers[i].subscribeToVideo(true);
+                            if (!state.removeList.includes(i)) {
+                                state.subscribers[i].subscribeToAudio(true);
+                                state.subscribers[i].subscribeToVideo(true);
+                            }
                         }
                         infoUpdater("alive", true);
                         infoUpdater("suspicious", null);
@@ -939,6 +919,28 @@ export default {
                         state.vote = null;
                         state.isConfirm = false;
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
+                        if (message.gameStatus.turnOver === true) {
+                            state.message = `게임이 종료되었습니다 <br> 15턴이 지나 자동으로 <span style="font-size: 25px; color:${state.civilColor}">시민측 진영</span>이 승리하였습니다. `;
+                        } else {
+                            let victims = message.gameStatus.victims.join(",");
+                            if (message.gameStatus.winner === "MAFIA") {
+                                state.message = `게임이 종료되었습니다. <br> <span style="font-size:25px; color:${state.victimColor}">${victims}</span>가 사망하며 시민 수가 마피아 수 이하가 되었기 때문에 <span style="font-size: 25px; color:${state.mafiaColor}">마피아측 진영</span>의 승리입니다.`;
+                            } else {
+                                state.message = `게임이 종료되었습니다. <br> <span style="font-size:25px; color:${state.victimColor}">${victims}</span>가 사망하며 마피아를 모두 제거하였기 때문에 <span style="font-size: 25px; color:${state.civilColor}">시민측 진영</span>이 승리하였습니다.`;
+                            }
+                        }
+                        break;
+                    }
+                    case "READY": {
+                        state.message = `최소 <span style='font-size:25px;'>4인</span> 이상부터 플레이가 가능합니다.`;
+                        for (let j = state.subscribers.length - 1; j >= 0; j--) {
+                            if (state.removeList.includes(j)) {
+                                state.subscribers.splice(j, 1);
+                                state.playersGameInfo.splice(j, 1);
+                                state.playerNum--;
+                            }
+                        }
+                        state.removeList = [];
                         break;
                     }
                 }
