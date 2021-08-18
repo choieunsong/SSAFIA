@@ -48,13 +48,21 @@
                 <span class="font-jua role-title">{{ this.playersGameInfo.role }}</span>
             </div>
 
+            <!-- confirm 표시 -->
+            <img
+                v-if="this.playersGameInfo.confirm"
+                class="confirm"
+                src="../../../assets/image/confirm.png"
+            />
+
             <!-- 투표칸 -->
             <div class="vote-box" v-if="this.playersGameInfo.voters.length != 0">
                 <span
                     v-for="voter in this.playersGameInfo.voters"
                     :key="voter"
                     class="voter-icon-span"
-                    ><i class="fas fa-user-circle fa-2x voter-icon" :style="'color:' + voter"></i
+                    :class="[this.playersGameInfo.voters.length >= 5 ? 'fa-lg' : 'fa-2x']"
+                    ><i class="fas fa-user-circle voter-icon" :style="'color:' + voter"></i
                 ></span>
             </div>
         </div>
