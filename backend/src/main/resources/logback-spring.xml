@@ -1,94 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- 60초마다 설정 파일의 변경을 확인 하여 변경시 갱신 --> 
+<!-- 60초마다 설정 파일의 변경을 확인 하여 변경시 갱신 -->
 <configuration scan="true" scanPeriod="60 seconds">
 
-	<timestamp key="BY_DATE" datePattern="yyyy-MM-dd" />
-	<property name="LOG_PARENT_PATH" value="../log" />
-	<property name="LOG_CHILD_INFO" value="info" />
-	<property name="LOG_CHILD_WARN" value="warn" />
-	<property name="LOG_CHILD_ERROR" value="error" />
-	<property name="LOG_BACKUP" value="../log/backup" />
-	<property name="MAX_HISTORY" value="30" />
-	<property name="LOG_PATTERN"
-		value="%d{yyyy-MM-dd HH:mm:ss}.%-5relative [%thread] %highlight(%-5level) %green([%-40logger{36}:%line]) - %msg%n" />
+  <timestamp key="BY_DATE" datePattern="yyyy-MM-dd"/>
+  <property name="LOG_PARENT_PATH" value="../log"/>
+  <property name="LOG_CHILD_INFO" value="info"/>
+  <property name="LOG_CHILD_WARN" value="warn"/>
+  <property name="LOG_CHILD_ERROR" value="error"/>
+  <property name="LOG_BACKUP" value="../log/backup"/>
+  <property name="MAX_HISTORY" value="30"/>
+  <property name="LOG_PATTERN"
+    value="%d{yyyy-MM-dd HH:mm:ss}.%-5relative [%thread] %highlight(%-5level) %green([%-40logger{36}:%line]) - %msg%n"/>
 
-	<!--콘솔에 로그 -->
-	<springProfile name="!prod">
-       <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-           <encoder>
-               <pattern>${LOG_PATTERN}
-				<charset>UTF-8</charset>
-               </pattern>
-           </encoder>
-       </appender>
+  <springProfile name="!prod">
+    <!--콘솔에 로그 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+      <encoder>
+        <pattern>${LOG_PATTERN}
+          <charset>UTF-8</charset>
+        </pattern>
+      </encoder>
+    </appender>
 
-       <root level="INFO">
-           <appender-ref ref="CONSOLE"/>
-       </root>
-	</springProfile>
-	
-	<springProfile name="prod">
-		<!--파일에 로그 (INFO)-->
-		<appender name="FILE-INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
-	        <file>${LOG_PARENT_PATH}/${LOG_CHILD_INFO}/info-${BY_DATE}.log</file>
-	        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-	            <level>INFO</level>
-	            <onMatch>ACCEPT</onMatch>
-	            <onMismatch>DENY</onMismatch>
-	        </filter>
-	        <encoder>
-	            <pattern>${LOG_PATTERN}</pattern>
-				<charset>UTF-8</charset>
-	        </encoder>
-	        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-	            <fileNamePattern>${LOG_BACKUP}/${LOG_CHILD_INFO}/info-%d{yyyy-MM-dd}.zip</fileNamePattern>
-	            <maxHistory>${MAX_HISTORY}</maxHistory>
-	        </rollingPolicy>
-	    </appender>
-	
-		<!--파일에 로그 (WARN)-->
-	    <appender name="FILE-WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
-	        <file>${LOG_PARENT_PATH}/${LOG_CHILD_WARN}/warn-${BY_DATE}.log</file>
-	        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-	            <level>WARN</level>
-	            <onMatch>ACCEPT</onMatch>
-	            <onMismatch>DENY</onMismatch>
-	        </filter>
-	        <encoder>
-	            <pattern>${LOG_PATTERN}</pattern>
-				<charset>UTF-8</charset>
-	        </encoder>
-	        
-	        <!-- ROLLING 정책 -->
-	        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-	            <fileNamePattern>${LOG_BACKUP}/${LOG_CHILD_WARN}/warn-%d{yyyy-MM-dd}.zip</fileNamePattern>
-	            <maxHistory>${MAX_HISTORY}</maxHistory>
-	        </rollingPolicy>
-	    </appender>
-	
-		<!--파일에 로그 (ERROR)-->
-	    <appender name="FILE-ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
-	        <file>${LOG_PARENT_PATH}/${LOG_CHILD_ERROR}/error-${BY_DATE}.log</file>
-	        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-	            <level>ERROR</level>
-	            <onMatch>ACCEPT</onMatch>
-	            <onMismatch>DENY</onMismatch>
-	        </filter>
-	        <encoder>
-	            <pattern>${LOG_PATTERN}</pattern>
-				<charset>UTF-8</charset>
-	        </encoder>
-	        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-	            <fileNamePattern>${LOG_BACKUP}/${LOG_CHILD_ERROR}/error-%d{yyyy-MM-dd}.zip</fileNamePattern>
-	            <maxHistory>${MAX_HISTORY}</maxHistory>
-	        </rollingPolicy>
-	    </appender>
-	
-	    <root level="INFO">
-	        <appender-ref ref="FILE-INFO"/>
-	        <appender-ref ref="FILE-WARN"/>
-	        <appender-ref ref="FILE-ERROR"/>
-	    </root>
-	</springProfile>
+    <root level="INFO">
+      <appender-ref ref="CONSOLE"/>
+    </root>
+  </springProfile>
+
+  <springProfile name="prod">
+    <!--파일에 로그 (INFO)-->
+    <appender name="FILE-INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <file>${LOG_PARENT_PATH}/${LOG_CHILD_INFO}/info-${BY_DATE}.log</file>
+      <filter class="ch.qos.logback.classic.filter.LevelFilter">
+        <level>INFO</level>
+        <onMatch>ACCEPT</onMatch>
+        <onMismatch>DENY</onMismatch>
+      </filter>
+      <encoder>
+        <pattern>${LOG_PATTERN}</pattern>
+        <charset>UTF-8</charset>
+      </encoder>
+      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <fileNamePattern>${LOG_BACKUP}/${LOG_CHILD_INFO}/info-%d{yyyy-MM-dd}.zip</fileNamePattern>
+        <maxHistory>${MAX_HISTORY}</maxHistory>
+      </rollingPolicy>
+    </appender>
+
+    <!--파일에 로그 (WARN)-->
+    <appender name="FILE-WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <file>${LOG_PARENT_PATH}/${LOG_CHILD_WARN}/warn-${BY_DATE}.log</file>
+      <filter class="ch.qos.logback.classic.filter.LevelFilter">
+        <level>WARN</level>
+        <onMatch>ACCEPT</onMatch>
+        <onMismatch>DENY</onMismatch>
+      </filter>
+      <encoder>
+        <pattern>${LOG_PATTERN}</pattern>
+        <charset>UTF-8</charset>
+      </encoder>
+
+      <!-- ROLLING 정책 -->
+      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <fileNamePattern>${LOG_BACKUP}/${LOG_CHILD_WARN}/warn-%d{yyyy-MM-dd}.zip</fileNamePattern>
+        <maxHistory>${MAX_HISTORY}</maxHistory>
+      </rollingPolicy>
+    </appender>
+
+    <!--파일에 로그 (ERROR)-->
+    <appender name="FILE-ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <file>${LOG_PARENT_PATH}/${LOG_CHILD_ERROR}/error-${BY_DATE}.log</file>
+      <filter class="ch.qos.logback.classic.filter.LevelFilter">
+        <level>ERROR</level>
+        <onMatch>ACCEPT</onMatch>
+        <onMismatch>DENY</onMismatch>
+      </filter>
+      <encoder>
+        <pattern>${LOG_PATTERN}</pattern>
+        <charset>UTF-8</charset>
+      </encoder>
+      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <fileNamePattern>${LOG_BACKUP}/${LOG_CHILD_ERROR}/error-%d{yyyy-MM-dd}.zip</fileNamePattern>
+        <maxHistory>${MAX_HISTORY}</maxHistory>
+      </rollingPolicy>
+    </appender>
+
+    <root level="INFO">
+      <appender-ref ref="FILE-INFO"/>
+      <appender-ref ref="FILE-WARN"/>
+      <appender-ref ref="FILE-ERROR"/>
+    </root>
+  </springProfile>
 </configuration>

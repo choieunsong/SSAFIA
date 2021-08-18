@@ -5,7 +5,7 @@
     position: absolute;
     display: table;
     width: 45%;
-    height: 105%;
+    height: 103%;
 
     left: 30%;
 
@@ -121,15 +121,13 @@
 
 .card-box-parent {
     height: 90vh;
-    /* overflow: hidden; */
-    overflow: scroll;
+    /* overflow: scroll; */
 }
 .card-box {
     position: relative;
     margin-left: 5%;
     margin-right: 5%;
-    margin-top: 20px;
-    /* margin-bottom: 30px; */
+    margin-top: 30px;
     height: 28%;
     min-height: 190px;
 }

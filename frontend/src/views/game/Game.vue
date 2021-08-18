@@ -296,13 +296,17 @@ export default {
                         console.log("TEMP PLAYER MAP");
                         for (let i = 0; i < state.playersGameInfo.length; i++) {
                             let id = state.playersGameInfo[i].playerId;
-                            state.playersGameInfo[i]["color"] = state.tempPlayerMap[id]["color"];
-                            console.log(
-                                "nickname: ",
-                                state.playersGameInfo[i].nickname,
-                                "color",
-                                state.playersGameInfo[i].color
-                            );
+                            if (Object.keys(state.tempPlayerMap).includes(id)) {
+                                state.playersGameInfo[i]["color"] =
+                                    state.tempPlayerMap[id]["color"];
+
+                                console.log(
+                                    "nickname: ",
+                                    state.playersGameInfo[i].nickname,
+                                    "color",
+                                    state.playersGameInfo[i].color
+                                );
+                            }
                         }
 
                         state.tempPlayerMap = null;
@@ -418,7 +422,6 @@ export default {
                     };
 
                     state.newSubscriberOn = true;
-                    connect();
                 })
                 .catch((error) => {
                     console.log(
@@ -596,15 +599,24 @@ export default {
                     console.log("MESSAGE", message);
                     console.log("PLAYERSGAMEINFO", state.playersGameInfo);
                 } else {
-                    state.playerMe[key] = message.playerMap[state.playerMe.playerId][key];
+                    let playerId = state.playerMe.playerId;
+                    console.log("INFOUPDATE", message);
+                    console.log("playerme id", playerId);
+                    console.log("playerMe", state.playerMe);
+                    if (Object.keys(message.playerMap).includes(playerId)) {
+                        state.playerMe[key] = message.playerMap[state.playerMe.playerId][key];
+                    }
                     // 만약 openVidu보다 먼저 stomp 정보 들어오는 경우 temp에 저장
                     if (!state.newSubscriberOn) {
                         state.tempPlayerMap = message.playerMap;
                     } else {
                         // 순서대로 들어왔을 경우 그대로 갱신
                         for (let i = 0; i < state.playersGameInfo.length; i++) {
-                            state.playersGameInfo[i][key] =
-                                message.playerMap[state.playersGameInfo[i].playerId][key];
+                            let playerId = state.playersGameInfo[i].playerId;
+                            if (Object.keys(message.playerMap).includes(playerId)) {
+                                state.playersGameInfo[i][key] =
+                                    message.playerMap[state.playersGameInfo[i].playerId][key];
+                            }
                         }
                         state.newSubscriberOn = false;
                     }
@@ -616,6 +628,7 @@ export default {
         function onMessageReceived(payload) {
             var message = JSON.parse(payload.body);
             if (message.type === "JOIN") {
+                console.log("JOIN");
                 infoUpdater("color", message);
                 infoUpdater("isHost", message);
             } else if (message.type === "LEAVE") {
@@ -888,6 +901,29 @@ export default {
                             "https://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3"
                         );
                         audio.play();
+                        // 초기화
+                        state.role = undefined;
+                        if (state.jobClient) {
+                            state.jobClient.unsubscribe();
+                        }
+                        state.jobClient = undefined;
+                        state.mafias = undefined;
+                        state.submessage = "";
+                        state.publisher.publishAudio(true);
+                        state.publisher.publishVideo(true);
+                        for (let i = 0; i < state.subscribers.length; i++) {
+                            if (!state.removeList.includes(i)) {
+                                state.subscribers[i].subscribeToAudio(true);
+                                state.subscribers[i].subscribeToVideo(true);
+                            }
+                        }
+                        infoUpdater("alive", true);
+                        infoUpdater("suspicious", null);
+                        infoUpdater("voters", null);
+                        infoUpdater("isMafia", null);
+                        infoUpdater("confirm", false);
+                        state.vote = null;
+                        state.isConfirm = false;
                         if (message.gameStatus.turnOver === true) {
                             state.message = `게임이 종료되었습니다 <br> 15턴이 지나 자동으로 <span style="font-size: 25px; color:${state.civilColor}">시민측 진영</span>이 승리하였습니다. `;
                         } else {
@@ -901,21 +937,7 @@ export default {
                         break;
                     }
                     case "READY": {
-                        // 초기화
-                        state.role = undefined;
-                        state.gameStatus = {
-                            date: 0,
-                            phase: "READY",
-                            timer: 0,
-                            aliveMafia: 0,
-                        };
-                        if (state.jobClient) {
-                            state.jobClient.unsubscribe();
-                        }
-                        state.jobClient = undefined;
-                        state.mafias = undefined;
                         state.message = `최소 <span style='font-size:25px;'>4인</span> 이상부터 플레이가 가능합니다.`;
-                        state.submessage = "";
                         for (let j = state.subscribers.length - 1; j >= 0; j--) {
                             if (state.removeList.includes(j)) {
                                 state.subscribers.splice(j, 1);
@@ -924,20 +946,13 @@ export default {
                             }
                         }
                         state.removeList = [];
-                        state.publisher.publishAudio(true);
-                        state.publisher.publishVideo(true);
-                        for (let i = 0; i < state.subscribers.length; i++) {
-                            state.subscribers[i].subscribeToAudio(true);
-                            state.subscribers[i].subscribeToVideo(true);
-                        }
-                        infoUpdater("alive", true);
-                        infoUpdater("suspicious", null);
-                        infoUpdater("voters", null);
-                        infoUpdater("isMafia", null);
+                        state.gameStatus = {
+                            date: 0,
+                            phase: "READY",
+                            timer: 0,
+                            aliveMafia: 0,
+                        };
                         infoUpdater("isHost", message);
-                        infoUpdater("confirm", false);
-                        state.vote = null;
-                        state.isConfirm = false;
                         store.dispatch("ingame/setPhase", state.gameStatus.phase);
                         break;
                     }
@@ -1025,7 +1040,19 @@ export default {
                 infoUpdater("color", message);
                 infoUpdater("nickname", message);
                 infoUpdater("isHost", message);
-                infoUpdater("confirm", false);
+                let playerId = state.playerMe.playerId;
+                if (Object.keys(message.playerMap).includes(playerId)) {
+                    state.playerMe.confirm = message.playerMap[playerId].confirm;
+                    if (state.playerMe.confirm === true) {
+                        state.isConfirm = true
+                    }
+                }
+                for (let i = 0; i < state.playersGameInfo.length; i++) {
+                    let playerId = state.playersGameInfo[i].playerId;
+                    if (Object.keys(message.playerMap).includes(playerId)) {
+                        state.playersGameInfo[i].confirm = message.playerMap[playerId].confirm;
+                    }
+                }
                 state.role = message.role;
                 state.mafias = message.mafias;
                 if (state.role === "OBSERVER") {
@@ -1297,6 +1324,17 @@ export default {
             } else if (message.type === "DEAD") {
                 state.newSubscriberOn = true;
                 infoUpdater("role", message);
+            } else if (message.type === "CONFIRM") {
+                let playerId = state.playerMe.playerId;
+                if (Object.keys(message.playerMap).includes(playerId)) {
+                    state.playerMe.confirm = message.playerMap[playerId].confirm;
+                }
+                for (let i = 0; i < state.playersGameInfo.length; i++) {
+                    let playerId = state.playersGameInfo[i].playerId;
+                    if (Object.keys(message.playerMap).includes(playerId)) {
+                        state.playersGameInfo[i].confirm = message.playerMap[playerId].confirm;
+                    }
+                }
             }
         }
 
@@ -1405,7 +1443,7 @@ export default {
         state.playerId = store.getters["token/getPlayerId"];
         console.log(state.playerId);
         joinSession();
-        // setTimeout(connect, 500);
+        setTimeout(connect, 700);
 
         window.onbeforeunload = function(event) {
             leave();
