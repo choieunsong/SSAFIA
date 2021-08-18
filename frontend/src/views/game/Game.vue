@@ -1040,7 +1040,16 @@ export default {
                 infoUpdater("color", message);
                 infoUpdater("nickname", message);
                 infoUpdater("isHost", message);
-                infoUpdater("confirm", false);
+                let playerId = state.playerMe.playerId;
+                if (Object.keys(message.playerMap).includes(playerId)) {
+                    state.playerMe.confirm = message.playerMap[playerId].confirm;
+                }
+                for (let i = 0; i < state.playersGameInfo.length; i++) {
+                    let playerId = state.playersGameInfo[i].playerId;
+                    if (Object.keys(message.playerMap).includes(playerId)) {
+                        state.playersGameInfo[i].confirm = message.playerMap[playerId].confirm;
+                    }
+                }
                 state.role = message.role;
                 state.mafias = message.mafias;
                 if (state.role === "OBSERVER") {
