@@ -49,7 +49,7 @@ public class VoteController {
 
     Map<String, Boolean> confirmResult = gameSessionVoteService.confirmVote(roomId, playerId, req);
 
-    if (confirmResult != null) {
+    if (confirmResult.size() > 0) {
       simpMessagingTemplate.convertAndSend("/sub/" + roomId, ConfirmResultRes.of(confirmResult));
 
       // 투표 확정 인원 확인
@@ -103,7 +103,7 @@ public class VoteController {
     Map<String, Boolean> confirmResult =
         gameSessionVoteService.getNightConfirm(roomId, playerId, req, roleName);
 
-    if (confirmResult != null) {
+    if (confirmResult.size() > 0) {
       simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + roleName,
           ConfirmResultRes.of(confirmResult));
       simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + GameRole.OBSERVER,

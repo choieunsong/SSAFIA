@@ -91,7 +91,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
   public Map<String, Boolean> confirmVote(String roomId, String playerId, GameSessionVoteReq req) {
 
     if (!voteRepository.isValid(playerId, req.getPhase())) {
-      return null;
+      return new HashMap<String, Boolean>();
     }
 
     return voteRepository.confirmVote(roomId, playerId);
@@ -102,10 +102,10 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
       GameSessionVoteReq req, GameRole roleName) {
 
     if (!voteRepository.isValid(playerId, req.getPhase())) {
-      return null;
+      return new HashMap<String, Boolean>();
     }
 
-    return voteRepository.confirmVote(roomId, playerId);
+    return voteRepository.getNightConfirm(roomId, playerId, roleName);
   }
 
   private void publishRedis(String roomId, Map<String, String> vote) {
