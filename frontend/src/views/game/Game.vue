@@ -296,13 +296,17 @@ export default {
                         console.log("TEMP PLAYER MAP");
                         for (let i = 0; i < state.playersGameInfo.length; i++) {
                             let id = state.playersGameInfo[i].playerId;
-                            state.playersGameInfo[i]["color"] = state.tempPlayerMap[id]["color"];
-                            console.log(
-                                "nickname: ",
-                                state.playersGameInfo[i].nickname,
-                                "color",
-                                state.playersGameInfo[i].color
-                            );
+                            if (Object.keys(state.tempPlayerMap).includes(id)) {
+                                state.playersGameInfo[i]["color"] =
+                                    state.tempPlayerMap[id]["color"];
+
+                                console.log(
+                                    "nickname: ",
+                                    state.playersGameInfo[i].nickname,
+                                    "color",
+                                    state.playersGameInfo[i].color
+                                );
+                            }
                         }
 
                         state.tempPlayerMap = null;
@@ -418,7 +422,6 @@ export default {
                     };
 
                     state.newSubscriberOn = true;
-                    connect();
                 })
                 .catch((error) => {
                     console.log(
@@ -596,15 +599,24 @@ export default {
                     console.log("MESSAGE", message);
                     console.log("PLAYERSGAMEINFO", state.playersGameInfo);
                 } else {
-                    state.playerMe[key] = message.playerMap[state.playerMe.playerId][key];
+                    let playerId = state.playerMe.playerId;
+                    console.log("INFOUPDATE", message);
+                    console.log("playerme id", playerId);
+                    console.log("playerMe", state.playerMe);
+                    if (Object.keys(message.playerMap).includes(playerId)) {
+                        state.playerMe[key] = message.playerMap[state.playerMe.playerId][key];
+                    }
                     // 만약 openVidu보다 먼저 stomp 정보 들어오는 경우 temp에 저장
                     if (!state.newSubscriberOn) {
                         state.tempPlayerMap = message.playerMap;
                     } else {
                         // 순서대로 들어왔을 경우 그대로 갱신
                         for (let i = 0; i < state.playersGameInfo.length; i++) {
-                            state.playersGameInfo[i][key] =
-                                message.playerMap[state.playersGameInfo[i].playerId][key];
+                            let playerId = state.playersGameInfo[i].playerId;
+                            if (Object.keys(message.playerMap).includes(playerId)) {
+                                state.playersGameInfo[i][key] =
+                                    message.playerMap[state.playersGameInfo[i].playerId][key];
+                            }
                         }
                         state.newSubscriberOn = false;
                     }
@@ -616,6 +628,7 @@ export default {
         function onMessageReceived(payload) {
             var message = JSON.parse(payload.body);
             if (message.type === "JOIN") {
+                console.log("JOIN");
                 infoUpdater("color", message);
                 infoUpdater("isHost", message);
             } else if (message.type === "LEAVE") {
@@ -1407,7 +1420,7 @@ export default {
         state.playerId = store.getters["token/getPlayerId"];
         console.log(state.playerId);
         joinSession();
-        // setTimeout(connect, 500);
+        setTimeout(connect, 700);
 
         window.onbeforeunload = function(event) {
             leave();
