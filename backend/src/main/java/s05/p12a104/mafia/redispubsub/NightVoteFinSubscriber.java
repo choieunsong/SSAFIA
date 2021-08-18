@@ -118,7 +118,7 @@ public class NightVoteFinSubscriber {
   private List<String> setNightToDay(GameSession gameSession, String deadPlayerId,
       String protectedPlayerId) {
     // 나간 사람 체크 및 기본 세팅
-    List<String> victims = gameSession.changePhase(GamePhase.NIGHT_TO_DAY, 15);
+    List<String> victims = gameSession.changePhase(GamePhase.NIGHT_TO_DAY, 7);
 
     if (deadPlayerId != null) {
       gameSession.eliminatePlayer(deadPlayerId);
