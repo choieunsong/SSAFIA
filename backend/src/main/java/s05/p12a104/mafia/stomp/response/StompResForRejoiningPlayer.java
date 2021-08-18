@@ -27,7 +27,7 @@ public class StompResForRejoiningPlayer {
 
     gameSession.getPlayerMap()
         .forEach((playerId, player) -> playerMap.put(playerId, StompExistingPlayer.of(player,
-            confirmResult.containsKey(playerId) ? confirmResult.get(playerMap) : false)));
+            confirmResult.containsKey(playerId) ? confirmResult.get(playerId) : false)));
 
     Player rejoiningPlayer = gameSession.getPlayerMap().get(reJoiningplayerId);
     GameStatus gameStatus = GameStatus.of(gameSession);
