@@ -50,7 +50,7 @@
 
             <!-- confirm 표시 -->
             <img
-                v-if="this.playersGameInfo.isConfirm"
+                v-if="this.playersGameInfo.confirm"
                 class="confirm"
                 src="../../../assets/image/confirm.png"
             />

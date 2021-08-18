@@ -418,6 +418,7 @@ export default {
                     };
 
                     state.newSubscriberOn = true;
+                    connect();
                 })
                 .catch((error) => {
                     console.log(
@@ -592,6 +593,8 @@ export default {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
                         state.playersGameInfo[i][key] = message === null ? null : message;
                     }
+                    console.log("MESSAGE", message);
+                    console.log("PLAYERSGAMEINFO", state.playersGameInfo);
                 } else {
                     state.playerMe[key] = message.playerMap[state.playerMe.playerId][key];
                     // 만약 openVidu보다 먼저 stomp 정보 들어오는 경우 temp에 저장
@@ -942,9 +945,16 @@ export default {
             } else if (message.type === "UPDATE") {
                 infoUpdater("voters", message);
             } else if (message.type === "CONFIRM") {
-                console.log("CONFIRM", message);
-                this.newSubscriberOn = true;
-                infoUpdater("confirm", message);
+                let playerId = state.playerMe.playerId;
+                if (Object.keys(message.playerMap).includes(playerId)) {
+                    state.playerMe.confirm = message.playerMap[playerId].confirm;
+                }
+                for (let i = 0; i < state.playersGameInfo.length; i++) {
+                    let playerId = state.playersGameInfo[i].playerId;
+                    if (Object.keys(message.playerMap).includes(playerId)) {
+                        state.playersGameInfo[i].confirm = message.playerMap[playerId].confirm;
+                    }
+                }
             } else {
                 console.log(
                     `sorry, unexpected message type. this is what we'v got ${message.type}`
@@ -1395,7 +1405,7 @@ export default {
         state.playerId = store.getters["token/getPlayerId"];
         console.log(state.playerId);
         joinSession();
-        setTimeout(connect, 500);
+        // setTimeout(connect, 500);
 
         window.onbeforeunload = function(event) {
             leave();

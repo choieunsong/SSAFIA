@@ -149,8 +149,8 @@
 .confirm {
     position: absolute;
     background-color: rgba(50, 33, 126, 1);
-    top: -5px;
-    right: -15px;
+    top: -3px;
+    right: -6px;
     width: 85px;
     z-index: 1;
     border-radius: 7px;
