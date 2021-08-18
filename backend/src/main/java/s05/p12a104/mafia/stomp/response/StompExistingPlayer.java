@@ -13,9 +13,10 @@ public class StompExistingPlayer {
   private final Color color;
   private final boolean alive;
   private final boolean suspicious;
+  private final boolean confirm;
 
-  public static StompExistingPlayer of(Player player) {
+  public static StompExistingPlayer of(Player player, boolean confirm) {
     return new StompExistingPlayer(player.getNickname(), player.getColor(), player.isAlive(),
-        player.isSuspicious());
+        player.isSuspicious(), confirm);
   }
 }

@@ -3,14 +3,14 @@ package s05.p12a104.mafia.stomp.controller;
 
 import java.util.Map;
 import java.util.Timer;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.api.service.GameSessionService;
 import s05.p12a104.mafia.common.util.TimeUtils;
 import s05.p12a104.mafia.domain.entity.GameSession;
@@ -24,6 +24,7 @@ import s05.p12a104.mafia.stomp.response.ObserverJoinRes;
 import s05.p12a104.mafia.stomp.response.PlayerRoleRes;
 import s05.p12a104.mafia.stomp.response.StompRejoinPlayer;
 import s05.p12a104.mafia.stomp.response.StompResForRejoiningPlayer;
+import s05.p12a104.mafia.stomp.service.GameSessionVoteService;
 import s05.p12a104.mafia.stomp.task.StartFinTimerTask;
 
 @Slf4j
@@ -32,6 +33,7 @@ import s05.p12a104.mafia.stomp.task.StartFinTimerTask;
 public class RoomController {
 
   private final GameSessionService gameSessionService;
+  private final GameSessionVoteService gameSessionVoteService;
   private final SimpMessagingTemplate simpMessagingTemplate;
   private final RedisPublisher redisPublisher;
   private final ChannelTopic topicStartFin;
@@ -62,8 +64,10 @@ public class RoomController {
       return;
     }
 
+    Map<String, Boolean> confirmResult = gameSessionVoteService.getConfirm(roomId, playerId);
+    log.info("Room {} rejoin confirmSize {}", gameSession.getRoomId(), confirmResult.size());
     StompResForRejoiningPlayer resForRejoningPlayer =
-        StompResForRejoiningPlayer.of(gameSession, playerId);
+        StompResForRejoiningPlayer.of(gameSession, playerId, confirmResult);
     simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + playerId, resForRejoningPlayer);
 
     StompRejoinPlayer resForExistingPlayer =
@@ -93,7 +97,7 @@ public class RoomController {
 
     // 전체 전송
     simpMessagingTemplate.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));
-    
+
     // 개인 전송
     gameSession.getPlayerMap().forEach((id, player) -> {
       if (player.getRole() == GameRole.MAFIA) {
