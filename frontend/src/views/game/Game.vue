@@ -924,7 +924,6 @@ export default {
                         infoUpdater("confirm", false);
                         state.vote = null;
                         state.isConfirm = false;
-                        store.dispatch("ingame/setPhase", state.gameStatus.phase);
                         if (message.gameStatus.turnOver === true) {
                             state.message = `게임이 종료되었습니다 <br> 15턴이 지나 자동으로 <span style="font-size: 25px; color:${state.civilColor}">시민측 진영</span>이 승리하였습니다. `;
                         } else {
@@ -954,6 +953,7 @@ export default {
                             aliveMafia: 0,
                         };
                         infoUpdater("isHost", message);
+                        store.dispatch("ingame/setPhase", state.gameStatus.phase);
                         break;
                     }
                 }
