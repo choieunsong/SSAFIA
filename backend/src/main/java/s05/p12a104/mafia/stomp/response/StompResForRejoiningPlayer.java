@@ -33,6 +33,7 @@ public class StompResForRejoiningPlayer {
     GameStatus gameStatus = GameStatus.of(gameSession);
 
     return new StompResForRejoiningPlayer(gameSession.getHostId(), gameStatus, playerMap,
-        rejoiningPlayer.getRole(), gameSession.getMafias());
+        rejoiningPlayer.getRole(),
+        rejoiningPlayer.getRole() == GameRole.MAFIA ? gameSession.getMafias() : null);
   }
 }
