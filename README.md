@@ -160,7 +160,7 @@ sudo apt-get update && sudo apt-get install --no-install-recommends --yes coturn
 TURNSERVER_ENABLED=1
 ```
 
-`/etc/turnserver.conX`의 내용을 다음과 같이 수정합니다.
+`/etc/turnserver.conf`의 내용을 다음과 같이 수정합니다.
 ```sh
 listening-port=3478
 tls-listening-port=5349
