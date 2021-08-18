@@ -927,7 +927,6 @@ export default {
                         infoUpdater("suspicious", null);
                         infoUpdater("voters", null);
                         infoUpdater("isMafia", null);
-                        infoUpdater("isHost", message);
                         infoUpdater("confirm", false);
                         state.vote = null;
                         state.isConfirm = false;
@@ -954,6 +953,7 @@ export default {
                             }
                         }
                         state.removeList = [];
+                        infoUpdater("isHost", message);
                         break;
                     }
                 }
@@ -1324,6 +1324,17 @@ export default {
             } else if (message.type === "DEAD") {
                 state.newSubscriberOn = true;
                 infoUpdater("role", message);
+            } else if (message.type === "CONFIRM") {
+                let playerId = state.playerMe.playerId;
+                if (Object.keys(message.playerMap).includes(playerId)) {
+                    state.playerMe.confirm = message.playerMap[playerId].confirm;
+                }
+                for (let i = 0; i < state.playersGameInfo.length; i++) {
+                    let playerId = state.playersGameInfo[i].playerId;
+                    if (Object.keys(message.playerMap).includes(playerId)) {
+                        state.playersGameInfo[i].confirm = message.playerMap[playerId].confirm;
+                    }
+                }
             }
         }
 
