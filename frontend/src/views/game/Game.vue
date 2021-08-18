@@ -1044,7 +1044,7 @@ export default {
                 if (Object.keys(message.playerMap).includes(playerId)) {
                     state.playerMe.confirm = message.playerMap[playerId].confirm;
                     if (state.playerMe.confirm === true) {
-                        state.isConfirm = true
+                        state.isConfirm = true;
                     }
                 }
                 for (let i = 0; i < state.playersGameInfo.length; i++) {
@@ -1405,6 +1405,7 @@ export default {
                 ) {
                     sendMessageConfirm();
                 } else if (state.gameStatus.phase === "NIGHT_VOTE") {
+                    console.log("Night Vote Confirm");
                     sendMessageNightConfirm();
                 }
             }

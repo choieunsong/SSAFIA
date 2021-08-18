@@ -261,7 +261,7 @@ export default {
                         console.log("remove confetti");
                         var elem = document.querySelector(".confetti-container");
                         elem.parentNode.removeChild(elem);
-                    }, 15000);
+                    }, 7000);
                 }
             },
         },
