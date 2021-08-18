@@ -669,6 +669,7 @@ export default {
                                 isHost: false,
                                 isTalking: false,
                                 role: null,
+                                confirm: false,
                             };
                             localSubscribers.push(tmpSubscriber);
                             localPlayersGameInfo.push(tmpPlayerGameInfo);
@@ -1065,7 +1066,7 @@ export default {
                     infoUpdater("isMafia", null);
                 } else {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
-                        if (state.mafia.includes(state.playersGameInfo[i].playerId)) {
+                        if (state.mafias.includes(state.playersGameInfo[i].playerId)) {
                             state.playersGameInfo[i].isMafia = true;
                         } else {
                             state.playersGameInfo[i].isMafia = false;
@@ -1077,7 +1078,6 @@ export default {
                     onJobMessageReceived
                 );
                 if (state.role === "OBSERVER") {
-                    state.message = ``;
                     state.stompClient.send(`/pub/${state.mySessionId}/${state.role}`);
                 }
                 switch (message.gameStatus.phase) {
