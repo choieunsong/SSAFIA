@@ -159,7 +159,6 @@ public class GameSessionServiceImpl implements GameSessionService {
   public void update(GameSession update) {
     GameSessionDao updateDao = GameSessionDaoMapper.INSTANCE.toDao(update);
     redisKVTemplate.update(updateDao);
-    log.info("Room {} updated", update.getRoomId());
   }
 
   @Override

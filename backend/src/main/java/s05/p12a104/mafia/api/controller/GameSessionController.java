@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 @RequestMapping("/api/gamesession")
 @RestController
+@Slf4j
 @RequiredArgsConstructor
 public class GameSessionController {
 
@@ -47,13 +49,18 @@ public class GameSessionController {
       @ApiIgnore @CurrentUser UserPrincipal userPrincipal,
       @RequestBody @ApiParam GameSessionPostReq typeInfo)
       throws OpenViduJavaClientException, OpenViduHttpException {
+    log.info("req POST /api/gamesession - user email : {}, typInfo : {}", userPrincipal.getId(),
+        typeInfo);
 
     GameSession gameSession =
         gameSessionService.makeGame(
             userRepository.findById(userPrincipal.getId()).orElseThrow(
                 () -> new ResourceNotFoundException("User", "id", userPrincipal.getId())),
             typeInfo);
-    return ApiResponseDto.success(GameSessionRes.of(gameSession));
+
+    GameSessionRes gameSessionRes = GameSessionRes.of(gameSession);
+    log.info("res POST /api/gamesession - gameSessionRes : {}", gameSessionRes);
+    return ApiResponseDto.success(gameSessionRes);
   }
 
   @ApiOperation(value = "입장 가능 여부", notes = "플레이어가 방의 입장할 수 있는지 미리 확인합니다.", response = ApiResponseDto.class)
@@ -63,7 +70,9 @@ public class GameSessionController {
   @GetMapping("/{roomId}")
   public ApiResponseDto<?> getGameSessionState(@PathVariable("roomId") String roomId,
       @RequestParam(required = false) String playerId) {
+    log.info("req GET /api/gamesession/{} - playerId : {}", roomId, playerId);
     GameSessionJoinRes res = gameSessionService.getPlayerJoinableState(roomId, playerId);
+    log.info("res GET /api/gamesession/{} - res : {}", roomId, res);
     return ApiResponseDto.success(res);
   }
 
@@ -75,7 +84,9 @@ public class GameSessionController {
   public ApiResponseDto<GameSessionJoinRes> joinGameSession(@PathVariable("roomId") String roomId,
       @RequestBody GameSessionJoinReq req) {
     String nickname = req.getNickname();
+    log.info("req POST /api/gamesession/{} - playerId : {}", roomId, nickname);
     GameSessionJoinRes res = gameSessionService.addUser(roomId, nickname);
+    log.info("res POST /api/gamesession/{} - res : {}", roomId, res);
     return ApiResponseDto.success(res);
   }
 
