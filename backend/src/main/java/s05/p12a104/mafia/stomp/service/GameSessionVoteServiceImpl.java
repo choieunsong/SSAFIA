@@ -105,7 +105,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
       return new HashMap<String, Boolean>();
     }
 
-    return voteRepository.confirmVote(roomId, playerId);
+    return voteRepository.getNightConfirm(roomId, playerId, roleName);
   }
 
   private void publishRedis(String roomId, Map<String, String> vote) {
