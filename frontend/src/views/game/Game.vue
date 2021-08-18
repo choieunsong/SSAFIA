@@ -903,12 +903,6 @@ export default {
                         audio.play();
                         // 초기화
                         state.role = undefined;
-                        state.gameStatus = {
-                            date: 0,
-                            phase: "READY",
-                            timer: 0,
-                            aliveMafia: 0,
-                        };
                         if (state.jobClient) {
                             state.jobClient.unsubscribe();
                         }
@@ -953,6 +947,12 @@ export default {
                             }
                         }
                         state.removeList = [];
+                        state.gameStatus = {
+                            date: 0,
+                            phase: "READY",
+                            timer: 0,
+                            aliveMafia: 0,
+                        };
                         infoUpdater("isHost", message);
                         break;
                     }
