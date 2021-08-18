@@ -51,10 +51,10 @@ public class RoleUtils {
     Random random = new Random();
     roleNum.forEach((role, num) -> {
       while (num-- > 0) {
-        int idx = (int) (random.nextInt(playerList.size() * 100) % playerList.size());
-        while (isRole[idx]) {
-          idx = (int) (random.nextInt(playerList.size() * 100) % playerList.size());
-        }
+        int idx = -1;
+        do{
+           idx = (int) (random.nextInt(playerList.size() * 100) % playerList.size());
+        }while(isRole[idx]);
 
         Player player = players.get(playerList.get(idx));
         isRole[idx] = true;
