@@ -1290,7 +1290,7 @@ export default {
                                 state.message = `게임이 종료되었습니다. <br> <span style="font-size:25px; color:${state.victimColor}">${victims}</span>가 사망하며 마피아를 모두 제거하였기 때문에 <span style="font-size: 25px; color:${state.civilColor}">시민측 진영</span>이 승리하였습니다.`;
                             }
                         }
-                        state.gameStatus = message.gamesTatus;
+                        state.gameStatus = message.gameStatus;
                         break;
                     }
                 }
