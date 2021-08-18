@@ -94,7 +94,7 @@ public class DayEliminationFinSubscriber {
   private List<String> setDayToNight(GameSession gameSession, String deadPlayerId) {
 
     // 나간 사람 체크 및 기본 세팅
-    List<String> victims = gameSession.changePhase(GamePhase.DAY_TO_NIGHT, 15);
+    List<String> victims = gameSession.changePhase(GamePhase.DAY_TO_NIGHT, 5);
 
     // suspicious 초기화
     gameSession.getPlayerMap().forEach((playerId, player) -> player.setSuspicious(false));
