@@ -1043,6 +1043,9 @@ export default {
                 let playerId = state.playerMe.playerId;
                 if (Object.keys(message.playerMap).includes(playerId)) {
                     state.playerMe.confirm = message.playerMap[playerId].confirm;
+                    if (state.playerMe.confirm === true) {
+                        state.isConfirm = true
+                    }
                 }
                 for (let i = 0; i < state.playersGameInfo.length; i++) {
                     let playerId = state.playersGameInfo[i].playerId;
