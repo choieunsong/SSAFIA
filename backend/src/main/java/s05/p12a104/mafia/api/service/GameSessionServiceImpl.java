@@ -463,6 +463,7 @@ public class GameSessionServiceImpl implements GameSessionService {
       gameSession.setDay(0);
       gameSession.setAliveMafia(0);
       gameSession.setFinishedTime(LocalDateTime.now());
+      gameSession.getPlayerMap().forEach((playerId, player)-> player.setRole(GameRole.CIVILIAN));
 
       update(gameSession);
       log.info("Set in the first state: the room id - {}", gameSession.getRoomId());
