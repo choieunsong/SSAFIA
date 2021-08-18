@@ -69,6 +69,10 @@ public class VoteRepository {
     return confirmResultConvert(getRedisVoteResult(getVoters(roomId)));
   }
 
+  public Map<String, Boolean> getConfirm(String roomId, String playerId) {
+    return confirmResultConvert(getRedisVoteResult(getVoters(roomId)));
+  }
+
   public Map<String, Boolean> getNightConfirm(String roomId, String playerId, GameRole roleName) {
     return confirmResultConvert(getRedisVoteResult(getNightVoters(roomId, roleName)));
   }

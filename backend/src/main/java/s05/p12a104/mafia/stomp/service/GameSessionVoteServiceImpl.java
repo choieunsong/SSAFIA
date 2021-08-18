@@ -108,6 +108,27 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     return voteRepository.getNightConfirm(roomId, playerId, roleName);
   }
 
+  @Override
+  public Map<String, Boolean> getConfirm(String roomId, String playerId) {
+    GameSession gameSession = gameSessionService.findById(roomId);
+    Player player = gameSession.getPlayerMap().get(playerId);
+
+    if (voteRepository.isEnd(roomId, gameSession.getPhaseCount())) {
+      return new HashMap<String, Boolean>();
+    }
+
+    if (gameSession.getPhase() != GamePhase.NIGHT_VOTE || !player.isAlive()) {
+      return voteRepository.getConfirm(roomId, playerId);
+    } else {
+      return voteRepository.getNightConfirm(roomId, playerId, player.getRole());
+    }
+  }
+
+  @Override
+  public Map<String, String> getVoteResult(String roomId, GameSessionVoteReq req) {
+    return voteRepository.getVoteResult(roomId);
+  }
+
   private void publishRedis(String roomId, Map<String, String> vote) {
     GameSession gameSession = gameSessionService.findById(roomId);
 
@@ -124,11 +145,6 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
           new NightVoteMessage(roomId, getNightVoteResult(gameSession, vote));
       redisPublisher.publish(topicNightVoteFin, nightVoteMessage);
     }
-  }
-
-  @Override
-  public Map<String, String> getVoteResult(String roomId, GameSessionVoteReq req) {
-    return voteRepository.getVoteResult(roomId);
   }
 
   private List<String> getSuspiciousList(GameSession gameSession, Map<String, String> voteResult) {
