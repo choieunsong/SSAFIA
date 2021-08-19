@@ -87,7 +87,7 @@ public class DayDiscussionFinSubscriber {
         });
 
         gameSessionVoteService.startVote(roomId, gameSession.getPhaseCount(),
-            gameSession.getPhase(), gameSession.getTimer(), players);
+            GamePhase.DAY_ELIMINATION, gameSession.getTimer(), players);
 
       } finally {
         lock.unlock();

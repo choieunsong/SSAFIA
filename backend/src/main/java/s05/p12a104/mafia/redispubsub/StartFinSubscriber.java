@@ -74,7 +74,7 @@ public class StartFinSubscriber {
         });
 
         gameSessionVoteService.startVote(roomId, gameSession.getPhaseCount(),
-            gameSession.getPhase(), gameSession.getTimer(), players);
+            GamePhase.DAY_DISCUSSION, gameSession.getTimer(), players);
 
       } finally {
         lock.unlock();

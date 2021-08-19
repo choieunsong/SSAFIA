@@ -79,7 +79,7 @@ public class DayToNightFinSubscriber {
         lock.unlock();
       }
 
-      gameSessionVoteService.startVote(roomId, gameSession.getPhaseCount(), gameSession.getPhase(),
+      gameSessionVoteService.startVote(roomId, gameSession.getPhaseCount(), GamePhase.NIGHT_VOTE,
           gameSession.getTimer(), players);
     } catch (JsonProcessingException e) {
       e.printStackTrace();
