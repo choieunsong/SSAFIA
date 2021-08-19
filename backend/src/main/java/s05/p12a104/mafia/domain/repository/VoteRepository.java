@@ -83,6 +83,7 @@ public class VoteRepository {
   public void endVote(String roomId, GamePhase phase) {
     voteRedisRepository.endVote(getVoters(roomId), phase);
     voteInfosMap.remove(roomId);
+    log.info("Room {} Phase {} Vote Del Complete", roomId, phase);
   }
 
   private List<String> getVoters(String roomId) {
