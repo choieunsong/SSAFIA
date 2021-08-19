@@ -61,8 +61,8 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     } else {
       Map<String, String> vote = voteRepository.getVoteResult(roomId);
       log.info("Room {} end Vote for {}", roomId, phase);
-      publishRedis(roomId, vote);
       voteRepository.endVote(roomId, phase);
+      publishRedis(roomId, vote);
     }
   }
 
@@ -72,7 +72,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     if (!voteRepository.isValid(playerId, req.getPhase())) {
       return null;
     }
-
+    log.info("Room {} Player {} Voted At {}", roomId, playerId, req.getPhase());
     return voteRepository.vote(roomId, playerId, req.getVote());
   }
 
