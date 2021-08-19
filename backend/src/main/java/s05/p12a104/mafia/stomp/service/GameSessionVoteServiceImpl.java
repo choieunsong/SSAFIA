@@ -72,7 +72,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     if (!voteRepository.isValid(playerId, req.getPhase())) {
       return null;
     }
-    log.info("Room {} Player {} Voted At ", roomId, playerId, req.getPhase());
+    log.info("Room {} Player {} Voted At {}", roomId, playerId, req.getPhase());
     return voteRepository.vote(roomId, playerId, req.getVote());
   }
 
