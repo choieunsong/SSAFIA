@@ -1463,6 +1463,7 @@ export default {
       state.playersGameInfo = localPlayersGameInfo;
       console.log("setup state.playersGameInfo");
       console.log(state.playersGameInfo);
+      state.playerNum = state.subscribers.length
       for (let i; i < state.subscribers.length; i++) {
         state.removeList.push(i);
       }
