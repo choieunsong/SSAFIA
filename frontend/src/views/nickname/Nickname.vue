@@ -43,7 +43,12 @@
                         @keyup.enter="redirectToGame"
                     ></el-input>
                 </el-form-item>
-                <el-button type="success" size="small" @click="redirectToGame">
+                <el-button
+                    type="success"
+                    size="small"
+                    @click="redirectToGame"
+                    :disabled="state.isClick"
+                >
                     <span class="font-jua">입장</span>
                 </el-button>
             </el-form>
@@ -86,6 +91,7 @@ export default {
         const state = reactive({
             isError: false,
             errorMessage: "",
+            isClick: false,
             form: {
                 nickname: "",
             },
@@ -171,6 +177,7 @@ export default {
             // nickname validation
             nickname.value.validate((valid) => {
                 if (valid) {
+                    state.isClick = true;
                     console.log("nickname:", state.form.nickname);
                     axios({
                         method: "POST",
@@ -187,7 +194,7 @@ export default {
                                 store.dispatch("token/setPlayerId", data.data.playerId);
                                 store.dispatch("token/setOpenviduToken", data.data.token);
                                 store.dispatch("ingame/setIsREJOIN", false);
-                                store.dispatch("ingame/setColor", data.data.color)
+                                store.dispatch("ingame/setColor", data.data.color);
                                 store
                                     .dispatch("token/setNickname", state.form.nickname)
                                     .then(() => {
