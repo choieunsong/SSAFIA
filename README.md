@@ -74,7 +74,8 @@
 ### 회원가입 없이 구글 로그인으로 방 생성
 > SSAFIA는 회원가입을 따로 하지 않아도 기존 구글 아이디로 로그인하면 바로 방을 만드실 수 있습니다.
 
-![login](https://user-images.githubusercontent.com/24693833/130020081-1ef5865e-8a2e-4435-b660-2709e88a9dbf.gif)
+![login](https://user-images.githubusercontent.com/24693833/130022798-22acb98e-9ebe-4562-b822-4195be7aadee.gif)
+
 
 * 게임 모드를 선택하고, 닉네임을 입력하면 방을 생성할 수 있습니다
 * 방장은 url을 통해 친구를 초대할 수 있습니다.
