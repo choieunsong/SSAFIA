@@ -110,7 +110,7 @@ public class VoteController {
           ConfirmResultRes.of(forObserver));
 
       // 투표 확정 인원 확인
-      int confirmCnt = confirmResult.entrySet().stream().filter(e -> e.getValue() == true)
+      int confirmCnt = forObserver.entrySet().stream().filter(e -> e.getValue() == true)
           .collect(Collectors.toList()).size();
       int notCivilainCnt = gameSession.getAliveNotCivilian();
       log.info("Room {} Phase {} Confirm {} : Needed {}", roomId, req.getPhase(), confirmCnt,
