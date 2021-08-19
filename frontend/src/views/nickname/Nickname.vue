@@ -175,9 +175,9 @@ export default {
 
         const redirectToGame = (formName) => {
             // nickname validation
+            state.isClick = true;
             nickname.value.validate((valid) => {
                 if (valid) {
-                    state.isClick = true;
                     console.log("nickname:", state.form.nickname);
                     axios({
                         method: "POST",
@@ -210,7 +210,7 @@ export default {
                             } else {
                                 console.log(response);
                             }
-                            state.isClick = true;
+                            state.isClick = false;
                         });
                 }
             });
