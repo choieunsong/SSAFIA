@@ -76,12 +76,12 @@ export default defineComponent({
                         store.dispatch("token/setRoomId", data.data.id);
                         router.push({ name: "Nickname", params: { roomId: data.data.id } });
                     } else if (data.code === "fail") {
-                        ElMessage.error("방 생성 개수를 초과했습니다.(1시간 2개까지 가능)");
+                        ElMessage.error("개인별 최대 방 생성 개수를 초과하였습니다.");
                     }
                 })
                 .catch(({ response }) => {
                     if (response.status === 500) {
-                        ElMessage.error("방 생성 개수를 초과했습니다.(1시간 2개까지 가능)");
+                        ElMessage.error("개인별 최대 방 생성 개수를 초과하였습니다.");
                     } else if (response.status === 401) {
                         ElMessage.error("지원되지 않는 방 생성 조건입니다.");
                     } else {
