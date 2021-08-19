@@ -42,9 +42,9 @@
 
 - 투표 규칙
   - 투표의 종류는 크게 3가지
-    - <span style="background-color: orange; color:black">낮 투표</span>: 살아있는 모든 사람이 참가할 수 있는 투표로 여기서 최다득표자는 최종투표 후보가 됨
-    - <span style="background-color: orange; color:black">최종 투표</span>: 최종투표 후보자를 제거할지 아닐지를 정하는 투표
-    - <span style="background-color: orange; color:black">밤 투표</span>: 시민의 제외한 마피아, 경찰, 의사가 하는 투표로 각각의 직업마다 다른 효과를 지님
+    - `낮 투표`: 살아있는 모든 사람이 참가할 수 있는 투표로 여기서 최다득표자는 최종투표 후보가 됨
+    - `최종 투표`: 최종투표 후보자를 제거할지 아닐지를 정하는 투표
+    - `밤 투표`: 시민의 제외한 마피아, 경찰, 의사가 하는 투표로 각각의 직업마다 다른 효과를 지님
       - 마피아: 동료끼리 소통해 시민을 제거할 수 있음
       - 경찰: 투표한 사람의 직업을 알 수 있음
       - 의사: 투표한 사람은 이번 밤 투표에서 살릴 수 있음
@@ -59,14 +59,14 @@
       - 밤투표와 최종투표의 경우 동률이 나오면 투표결과를 무효로 처리하고 진행한다.
 
 ### 게임 FLOW
-1. <span style="background-color: pink; color: black;">시작</span>: 각 플레이어는 자신의 직업이 무엇인지 받아보게 됩니다.
-2. <span style="background-color: pink; color: black;">낮 투표</span>: 각 플레이어는 의심스러운 사람을 투표 할 수 있습니다.
-3. <span style="background-color: pink; color: black;">최종 투표</span>: 최종 변론자는 주어진 시간 동안 변론하게 됩니다. 나머지 플레이어는 최종 변론자에게 <strong>KILL/SAVE</strong> 투표합니다. 낮 투표가 무효처리될 경우 스킵됩니다.
-4. <span style="background-color: pink; color: black;">최종 투표 결과 발표</span>: 최종 투표 결과를 확인합니다.
-5. <span style="background-color: pink; color: black;">밤 투표</span>: 의사, 마피아, 경찰은 각각 투표를 진행하게 됩니다.
-6. <span style="background-color: pink; color: black;">밤 투표 결과 발표</span>: 의사, 마피아, 경찰의 투표 결과를 확인합니다.
-7. <span style="background-color: pink; color: black;">사망 시</span>: 사망시 <strong>관전자 모드</strong>가 되어 오디오와 비디오가 강제로 꺼집니다. 관전자는 모든 플레이어의 오디오와 비디오를 볼 수 있으며 직업 또한 알 수 있습니다.
-8. <span style="background-color: pink; color: black;">종료</span>: 어느측이 승리했는지를 발표하게 되며, 대기 상태로 다시 돌아가게 됩니다.
+1. `시작`: 각 플레이어는 자신의 직업이 무엇인지 받아보게 됩니다.
+2. `낮 투표`: 각 플레이어는 의심스러운 사람을 투표 할 수 있습니다.
+3. `최종 투표`: 최종 변론자는 주어진 시간 동안 변론하게 됩니다. 나머지 플레이어는 최종 변론자에게 <strong>KILL/SAVE</strong> 투표합니다. 낮 투표가 무효처리될 경우 스킵됩니다.
+4. `최종 투표 결과 발표`: 최종 투표 결과를 확인합니다.
+5. `밤 투표`: 의사, 마피아, 경찰은 각각 투표를 진행하게 됩니다.
+6. `밤 투표 결과 발표`: 의사, 마피아, 경찰의 투표 결과를 확인합니다.
+7. `사망 시`: 사망시 <strong>관전자 모드</strong>가 되어 오디오와 비디오가 강제로 꺼집니다. 관전자는 모든 플레이어의 오디오와 비디오를 볼 수 있으며 직업 또한 알 수 있습니다.
+8. `종료`: 어느측이 승리했는지를 발표하게 되며, 대기 상태로 다시 돌아가게 됩니다.
 
 <br>
 
