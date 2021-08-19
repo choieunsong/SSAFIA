@@ -134,7 +134,7 @@ local에서는 mysql 또는 mariadb를 사용하면 되고, schema는 `mafia` �
 
 
 
-## :heavy_exclamation_mark: known error
+## :exclamation: known error
 
 ### 방에 입장했을 때 openvidu session 연결이 안 되는 경우
 openvidu 서버가 self signed 인증으로 되어 있기 때문에 broswer 입장에서 openvidu 서버의 주소가 안전하지 않다고 판단하여 접근을 막는다.  
