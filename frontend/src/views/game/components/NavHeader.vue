@@ -34,7 +34,7 @@
             <!-- playerNum가 4 이상 됐을 때 활성화 되기 -->
             <button
                 v-if="
-                    (this.currentPlayerNum < 1 || !this.isHost) && this.gameStatus.phase == 'READY'
+                    (this.currentPlayerNum < 4 || !this.isHost) && this.gameStatus.phase == 'READY'
                 "
                 class="font-jua"
                 id="start-button-inactive"

@@ -101,16 +101,9 @@ export default {
         role: String,
         playerMe: Boolean,
     },
-    // mounted() {
-    //     if (this.playersGameInfo.color == "") {
-    //         this.playersGameInfo.color = "SKYBLUE";
-    //     }
-    // },
     computed: {
         getColor() {
-            console.log("getColor", this.playersGameInfo.color);
             if (this.playersGameInfo != null && this.playersGameInfo.color == "") {
-                console.log("players Game Info Color undefined", this.playersGameInfo.color);
                 return colorCode["SKYBLUE"];
             }
             let color = colorCode[this.playersGameInfo.color];
