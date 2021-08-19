@@ -31,8 +31,7 @@ public class VoteRepository {
       Map<String, GameRole> players) {
     VoteInfo voteInfo = VoteInfo.builder(phaseCount, players);
     voteInfosMap.put(roomId, voteInfo);
-    log.info("Room {} VoteInfo Updated for {}", roomId, phase);
-    log.info("Room {} VoteInfo Updated for {}", roomId, voteInfo);
+    log.info("Room {} VoteInfo {} Updated for {}", roomId, voteInfo.toString(), phase);
     voteRedisRepository.startVote(getVoters(roomId), phase);
   }
 
