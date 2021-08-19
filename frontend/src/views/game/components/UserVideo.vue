@@ -103,6 +103,9 @@ export default {
 
     computed: {
         getColor() {
+            if (this.playersGameInfo != null && this.playersGameInfo.color == "") {
+                return colorCode["SKYBLUE"];
+            }
             let color = colorCode[this.playersGameInfo.color];
             return color;
         },
