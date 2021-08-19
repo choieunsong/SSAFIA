@@ -121,7 +121,7 @@ public class GameSessionServiceImpl implements GameSessionService {
       Player player = gameSession.getPlayerMap().get(playerId);
       if (player == null) {
         validateToBePossibleToJoin(gameSession);
-        return new GameSessionJoinRes(PlayerJoinRoomState.JOINABLE, null, null);
+        return new GameSessionJoinRes(PlayerJoinRoomState.JOINABLE, null, null, null, null);
       }
 
       if (!player.isLeft()) {
@@ -133,7 +133,7 @@ public class GameSessionServiceImpl implements GameSessionService {
       player.setLeft(false);
       player.setLeftPhaseCount(null);
       update(gameSession);
-      return new GameSessionJoinRes(PlayerJoinRoomState.REJOIN, token, playerId);
+      return new GameSessionJoinRes(PlayerJoinRoomState.REJOIN, player);
 
     } finally {
       lock.unlock();
@@ -193,7 +193,7 @@ public class GameSessionServiceImpl implements GameSessionService {
       }
       update(gameSession);
 
-      return new GameSessionJoinRes(PlayerJoinRoomState.JOIN, token, playerId);
+      return new GameSessionJoinRes(PlayerJoinRoomState.JOIN, player);
 
     } finally {
       lock.unlock();
@@ -462,6 +462,7 @@ public class GameSessionServiceImpl implements GameSessionService {
       gameSession.setDay(0);
       gameSession.setAliveMafia(0);
       gameSession.setFinishedTime(LocalDateTime.now());
+      gameSession.getPlayerMap().forEach((playerId, player)-> player.setRole(GameRole.CIVILIAN));
 
       update(gameSession);
       log.info("Set in the first state: the room id - {}", gameSession.getRoomId());

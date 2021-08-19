@@ -282,7 +282,7 @@ export default {
                         suspicious: false,
                         voters: [],
                         isMafia: null,
-                        color: "",
+                        color: tmp[2],
                         isHost: false,
                         role: null,
                         confirm: false,
@@ -386,7 +386,7 @@ export default {
 
             state.session
                 .connect(state.openviduToken, {
-                    clientData: `${state.myUserName},${state.playerId}`,
+                    clientData: `${state.myUserName},${state.playerId},${store.getters['ingame/getColor']}`,
                 })
                 .then(() => {
                     // --- Get your own camera stream with the desired properties ---
@@ -413,7 +413,7 @@ export default {
                         alive: true,
                         suspicious: false,
                         voters: [],
-                        color: "red",
+                        color: store.getters['ingame/getColor'],
                         isMafia: null,
                         isHost: false,
                         isTalking: false,
@@ -669,6 +669,7 @@ export default {
                                 isHost: false,
                                 isTalking: false,
                                 role: null,
+                                confirm: false,
                             };
                             localSubscribers.push(tmpSubscriber);
                             localPlayersGameInfo.push(tmpPlayerGameInfo);
@@ -903,12 +904,6 @@ export default {
                         audio.play();
                         // 초기화
                         state.role = undefined;
-                        state.gameStatus = {
-                            date: 0,
-                            phase: "READY",
-                            timer: 0,
-                            aliveMafia: 0,
-                        };
                         if (state.jobClient) {
                             state.jobClient.unsubscribe();
                         }
@@ -927,11 +922,9 @@ export default {
                         infoUpdater("suspicious", null);
                         infoUpdater("voters", null);
                         infoUpdater("isMafia", null);
-                        infoUpdater("isHost", message);
                         infoUpdater("confirm", false);
                         state.vote = null;
                         state.isConfirm = false;
-                        store.dispatch("ingame/setPhase", state.gameStatus.phase);
                         if (message.gameStatus.turnOver === true) {
                             state.message = `게임이 종료되었습니다 <br> 15턴이 지나 자동으로 <span style="font-size: 25px; color:${state.civilColor}">시민측 진영</span>이 승리하였습니다. `;
                         } else {
@@ -954,6 +947,9 @@ export default {
                             }
                         }
                         state.removeList = [];
+                        state.gameStatus = message.gameStatus;
+                        infoUpdater("isHost", message);
+                        store.dispatch("ingame/setPhase", state.gameStatus.phase);
                         break;
                     }
                 }
@@ -1044,7 +1040,7 @@ export default {
                 if (Object.keys(message.playerMap).includes(playerId)) {
                     state.playerMe.confirm = message.playerMap[playerId].confirm;
                     if (state.playerMe.confirm === true) {
-                        state.isConfirm = true
+                        state.isConfirm = true;
                     }
                 }
                 for (let i = 0; i < state.playersGameInfo.length; i++) {
@@ -1070,7 +1066,7 @@ export default {
                     infoUpdater("isMafia", null);
                 } else {
                     for (let i = 0; i < state.playersGameInfo.length; i++) {
-                        if (state.mafia.includes(state.playersGameInfo[i].playerId)) {
+                        if (state.mafias.includes(state.playersGameInfo[i].playerId)) {
                             state.playersGameInfo[i].isMafia = true;
                         } else {
                             state.playersGameInfo[i].isMafia = false;
@@ -1082,7 +1078,6 @@ export default {
                     onJobMessageReceived
                 );
                 if (state.role === "OBSERVER") {
-                    state.message = ``;
                     state.stompClient.send(`/pub/${state.mySessionId}/${state.role}`);
                 }
                 switch (message.gameStatus.phase) {
@@ -1295,6 +1290,7 @@ export default {
                                 state.message = `게임이 종료되었습니다. <br> <span style="font-size:25px; color:${state.victimColor}">${victims}</span>가 사망하며 마피아를 모두 제거하였기 때문에 <span style="font-size: 25px; color:${state.civilColor}">시민측 진영</span>이 승리하였습니다.`;
                             }
                         }
+                        state.gameStatus = message.gameStatus;
                         break;
                     }
                 }
@@ -1324,6 +1320,17 @@ export default {
             } else if (message.type === "DEAD") {
                 state.newSubscriberOn = true;
                 infoUpdater("role", message);
+            } else if (message.type === "CONFIRM") {
+                let playerId = state.playerMe.playerId;
+                if (Object.keys(message.playerMap).includes(playerId)) {
+                    state.playerMe.confirm = message.playerMap[playerId].confirm;
+                }
+                for (let i = 0; i < state.playersGameInfo.length; i++) {
+                    let playerId = state.playersGameInfo[i].playerId;
+                    if (Object.keys(message.playerMap).includes(playerId)) {
+                        state.playersGameInfo[i].confirm = message.playerMap[playerId].confirm;
+                    }
+                }
             }
         }
 

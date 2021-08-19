@@ -12,6 +12,7 @@ const TOKEN = {
 const INGAME = {
     SET_PHASE: 'SET_PHASE',
     SET_ISREJOIN: 'SET_ISREJOIN',
+    SET_COLOR: 'SET_COLOR',
 }
 
 export {

@@ -14,12 +14,12 @@
 
 .sun-logo-deactive {
     animation: flip 1s, fadeout 1s;
-    animation-fill-mode: forwards;
+    /* animation-fill-mode: forwards; */
 }
 
 .sun-logo-active {
     animation: flip 1s, fadein 1s;
-    animation-fill-mode: forwards;
+    /* animation-fill-mode: forwards; */
 }
 
 #sun-logo-title {
@@ -40,13 +40,13 @@
 .moon-logo-active {
     animation-delay: 1s;
     animation: flip 1s, fadein 1s;
-    animation-fill-mode: forwards;
+    /* animation-fill-mode: forwards; */
 }
 
 .moon-logo-deactive {
     animation-delay: 1s;
     animation: flip 1s, fadeout 1s;
-    animation-fill-mode: forwards;
+    /* animation-fill-mode: forwards; */
 }
 
 #alive-mafia-num {

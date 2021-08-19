@@ -59,7 +59,7 @@
                 id="confirm-button"
                 ref="confirm"
             >
-                <span>{{ getConfirmTitle }}</span>
+                {{ getConfirmTitle }}
             </button>
 
             <span id="timer" class="font-jua">{{ this.time }}</span>
@@ -113,6 +113,12 @@ export default {
             handler() {
                 if (this.gameStatus.phase == "START") {
                     this.startCountDown();
+                } else if (this.gameStatus.phase == "READY") {
+                    if (this.interval) {
+                        clearInterval(this.interval);
+                    }
+                    this.time = this.gameStatus.timer; // 시간 초기화
+                    this.leftTime = 0;
                 } else if (this.gameStatus.phase == "DAY_DISCUSSION") {
                     if (this.getAlive) {
                         this.$refs.confirm.classList.remove("unhover");
@@ -253,9 +259,10 @@ export default {
                     this.gameStatus.phase == "DAY_ELIMINATION" ||
                     (this.gameStatus.phase == "NIGHT_VOTE" && this.playerMe.role != "CIVILIAN"))
             ) {
-                this.$emit("emitConfirmDataUpdate");
+                console.log("click confirm");
                 this.$refs.confirm.classList.add("unhover");
                 this.$refs.confirm.classList.remove("confirm-button-active");
+                this.$emit("emitConfirmDataUpdate");
             }
         },
     },

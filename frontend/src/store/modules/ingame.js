@@ -3,6 +3,7 @@ import { INGAME } from "../mutation-types";
 const state = {
   phase: "READY",
   isREJOIN: false,
+  color: "",
 };
 
 const getters = {
@@ -12,6 +13,9 @@ const getters = {
   getIsREJOIN: (state) => {
     return state.isREJOIN
   },
+  getColor: (state) => {
+    return state.color
+  }
 };
 
 const actions = {
@@ -31,6 +35,14 @@ const actions = {
       }, 0);
     });
   },
+  setColor({ commit }, color) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        commit(INGAME.SET_COLOR, color);
+        resolve();
+      }, 0);
+    });
+  }
 };
 
 const mutations = {
@@ -40,6 +52,9 @@ const mutations = {
   [INGAME.SET_ISREJOIN](state, isREJOIN) {
     state.isREJOIN = isREJOIN;
   },
+  [INGAME.SET_COLOR](state, color) {
+    state.color = color
+  }
 };
 
 export default {

@@ -118,13 +118,13 @@ public class NightVoteFinSubscriber {
   private List<String> setNightToDay(GameSession gameSession, String deadPlayerId,
       String protectedPlayerId) {
     // 나간 사람 체크 및 기본 세팅
-    List<String> victims = gameSession.changePhase(GamePhase.NIGHT_TO_DAY, 15);
+    List<String> victims = gameSession.changePhase(GamePhase.NIGHT_TO_DAY, 7);
 
     if (deadPlayerId != null) {
       gameSession.eliminatePlayer(deadPlayerId);
       victims.add(gameSession.getPlayerMap().get(deadPlayerId).getNickname());
     }
-    log.info("Room {} ElimainationVote deadPlayer: {}", gameSession.getRoomId(), deadPlayerId);
+    log.info("Room {} NightVote deadPlayer: {}", gameSession.getRoomId(), deadPlayerId);
 
     gameSessionService.update(gameSession);
 

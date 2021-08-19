@@ -1,7 +1,7 @@
 # Frontend
 
 > 최초 생성: 2021.07.22
-> 최종 수정: 2021.08.17
+> 최종 수정: 2021.08.18
 >
 > 팀장: 유태규
 > 팀원: 김영주, 최은송
@@ -52,6 +52,13 @@ npm run build_dev
 ```
 npm run build_prod
 ```
+
+- [run-backend.sh](./script/run-backend.sh)을 실행하여 docker-compose를 통한 backend 실행
+	- 단, docker-compose를 실행하기 위해서 `local.env` 파일이 project의 root 위치에 있어야 하는데, `local.env` 파일의 내용은 다음과 같다
+	```env
+	# backend
+	GOOGLE_CLIENT_SECRET=4r3e2w1q4r3e2w1q
+	```
 
 <br>
 

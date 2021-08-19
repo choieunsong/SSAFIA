@@ -20,7 +20,7 @@ public class GameResult {
 
   public static GameResult of(GameSession gameSession, List<String> victims) {
     GameResult gameResult = new GameResult();
-    gameResult.timer = 15;
+    gameResult.timer = 7;
     
     int aliveMafia = gameSession.getAliveMafia();
     int aliveCivilian = gameSession.getAlivePlayer() - aliveMafia;
