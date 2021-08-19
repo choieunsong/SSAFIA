@@ -40,7 +40,10 @@ public class RoomController {
 
   @MessageMapping("/{roomId}/join")
   public void joinGameSession(@DestinationVariable String roomId) {
+    log.info("req STOMP /ws/gamesession/{}/join", roomId);
     GameSessionStompJoinRes res = GameSessionStompJoinRes.of(gameSessionService.findById(roomId));
+
+    log.info("res STOMP /ws/gamesession/{}/join - res : {}", roomId, res);
     simpMessagingTemplate.convertAndSend("/sub/" + roomId, res);
   }
 
@@ -48,9 +51,11 @@ public class RoomController {
   public void leaveGameSession(SimpMessageHeaderAccessor accessor,
       @DestinationVariable String roomId) {
     String playerId = accessor.getUser().getName();
+    log.info("req STOMP /ws/gamesession/{}/leave - playerId : {}", roomId, playerId);
 
     GameSession gameSession = gameSessionService.removeUser(roomId, playerId);
     GameSessionStompLeaveRes res = new GameSessionStompLeaveRes(gameSession.getHostId(), playerId);
+    log.info("res STOMP /ws/gamesession/{}/leave - res : {}", roomId, res);
     simpMessagingTemplate.convertAndSend("/sub/" + roomId, res);
   }
 
@@ -58,6 +63,7 @@ public class RoomController {
   public void rejoinGameSession(SimpMessageHeaderAccessor accessor,
       @DestinationVariable String roomId) {
     String playerId = accessor.getUser().getName();
+    log.info("req STOMP /ws/gamesession/{}/rejoin - playerId : {}", roomId, playerId);
     GameSession gameSession = gameSessionService.findById(roomId);
     if (gameSession.getState() != GameState.STARTED) {
       joinGameSession(roomId);
@@ -73,6 +79,11 @@ public class RoomController {
     StompRejoinPlayer resForExistingPlayer =
         StompRejoinPlayer.of(gameSession.getPlayerMap().get(playerId));
     simpMessagingTemplate.convertAndSend("/sub/" + roomId, resForExistingPlayer);
+
+    log.info("req STOMP /ws/gamesession/{}/rejoin - resForRejoningPlayer : {}", roomId,
+        resForRejoningPlayer);
+    log.info("req STOMP /ws/gamesession/{}/rejoin - resForExistingPlayer : {}", roomId,
+        resForExistingPlayer);
   }
 
   @MessageMapping("/{roomId}/start")
@@ -91,7 +102,6 @@ public class RoomController {
     StartFinTimerTask task = new StartFinTimerTask(redisPublisher, topicStartFin);
     task.setRoomId(roomId);
     timer.schedule(task, TimeUtils.convertToDate(gameSession.getTimer()));
-
 
     log.info("Room {} start game", gameSession.getRoomId());
 
@@ -113,6 +123,7 @@ public class RoomController {
   @MessageMapping("/{roomId}/OBSERVER")
   public void observerJoin(SimpMessageHeaderAccessor accessor, @DestinationVariable String roomId) {
     String playerId = accessor.getUser().getName();
+    log.info("req STOMP /ws/gamesession/{}/OBSERVER - playerId : {}", roomId, playerId);
 
     Map<String, GameRole> playerRole = gameSessionService.addObserver(roomId, playerId);
     simpMessagingTemplate.convertAndSend("/sub/" + roomId + "/" + GameRole.OBSERVER,
