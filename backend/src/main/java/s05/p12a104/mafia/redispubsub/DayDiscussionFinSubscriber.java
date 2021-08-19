@@ -18,6 +18,7 @@ import s05.p12a104.mafia.common.exception.RedissonLockNotAcquiredException;
 import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.entity.Player;
 import s05.p12a104.mafia.domain.enums.GamePhase;
+import s05.p12a104.mafia.domain.enums.GameRole;
 import s05.p12a104.mafia.redispubsub.message.DayDiscussionMessage;
 import s05.p12a104.mafia.redispubsub.message.DayEliminationMessage;
 import s05.p12a104.mafia.stomp.response.GameStatusRes;
@@ -55,7 +56,6 @@ public class DayDiscussionFinSubscriber {
       }
 
       GameSession gameSession = null;
-      Map<String, String> players = new HashMap<>();
       try {
         gameSession = gameSessionService.findById(roomId);
         List<String> suspiciousList = dayDisscusionMessage.getSuspiciousList();
@@ -78,17 +78,21 @@ public class DayDiscussionFinSubscriber {
 
         template.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));
 
+        Map<String, GameRole> players = new HashMap<>();
+
         gameSession.getPlayerMap().forEach((playerId, player) -> {
           if (player.isAlive()) {
-            players.put(playerId, null);
+            players.put(playerId, player.getRole());
           }
         });
+
+        gameSessionVoteService.startVote(roomId, gameSession.getPhaseCount(),
+            gameSession.getPhase(), gameSession.getTimer(), players);
+
       } finally {
         lock.unlock();
       }
 
-      gameSessionVoteService.startVote(roomId, gameSession.getPhaseCount(), gameSession.getPhase(),
-          gameSession.getTimer(), players);
     } catch (JsonProcessingException e) {
       e.printStackTrace();
     }

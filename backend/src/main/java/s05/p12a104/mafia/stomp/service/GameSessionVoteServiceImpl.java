@@ -42,7 +42,8 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
 
   @Override
   public void startVote(String roomId, int phaseCount, GamePhase phase, LocalDateTime time,
-      Map players) {
+      Map<String, GameRole> players) {
+    log.info("Room {} start Vote for {}", roomId, phase);
     voteRepository.startVote(roomId, phaseCount, phase, players);
     Timer timer = new Timer();
     VoteFinTimerTask task = new VoteFinTimerTask(this);
@@ -50,7 +51,6 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     task.setPhaseCount(phaseCount);
     task.setPhase(phase);
     timer.schedule(task, TimeUtils.convertToDate(time));
-    log.info("Room {} start Vote for {}", roomId, phase);
   }
 
 
@@ -73,7 +73,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
       return null;
     }
 
-    return voteRepository.vote(roomId, req.getPhase(), playerId, req.getVote());
+    return voteRepository.vote(roomId, playerId, req.getVote());
   }
 
   @Override
@@ -84,7 +84,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
       return null;
     }
 
-    return voteRepository.nightVote(roomId, req.getPhase(), playerId, req.getVote(), roleName);
+    return voteRepository.nightVote(roomId, playerId, req.getVote(), roleName);
   }
 
   @Override
@@ -105,7 +105,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
       return new HashMap<String, Boolean>();
     }
 
-    return voteRepository.getNightConfirm(roomId, playerId, roleName);
+    return voteRepository.getNightConfirm(roomId, roleName);
   }
 
   @Override
@@ -120,7 +120,7 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
     if (gameSession.getPhase() != GamePhase.NIGHT_VOTE || !player.isAlive()) {
       return voteRepository.getConfirm(roomId, playerId);
     } else {
-      return voteRepository.getNightConfirm(roomId, playerId, player.getRole());
+      return voteRepository.getNightConfirm(roomId, player.getRole());
     }
   }
 
@@ -212,19 +212,20 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
           .max((entry1, entry2) -> entry1.getValue() > entry2.getValue() ? 1 : -1).get().getValue();
 
       // 최다 득표한 Player List
-      List deadList = voteNum.entrySet().stream().filter(entry -> entry.getValue() == max)
+      List<String> deadList = voteNum.entrySet().stream().filter(entry -> entry.getValue() == max)
           .map(Map.Entry::getKey).collect(Collectors.toList());
 
       // 한명일 경우
       if (deadList.size() == 1) {
-        deadPlayerId = deadList.get(0).toString();
+        deadPlayerId = deadList.get(0);
       }
     }
     return deadPlayerId;
   }
 
-  private Map getNightVoteResult(GameSession gameSession, Map<String, String> voteResult) {
-    Map<GameRole, String> result = new HashMap();
+  private Map<GameRole, String> getNightVoteResult(GameSession gameSession,
+      Map<String, String> voteResult) {
+    Map<GameRole, String> result = new HashMap<GameRole, String>();
 
     Map<String, Player> playerMap = gameSession.getPlayerMap();
 
@@ -249,12 +250,13 @@ public class GameSessionVoteServiceImpl implements GameSessionVoteService {
           .get().getValue().size();
 
       // 최다 득표한 Player List
-      List deadList = mafiaVote.entrySet().stream().filter(entry -> entry.getValue().size() == max)
-          .map(Map.Entry::getKey).collect(Collectors.toList());
+      List<String> deadList =
+          mafiaVote.entrySet().stream().filter(entry -> entry.getValue().size() == max)
+              .map(Map.Entry::getKey).collect(Collectors.toList());
 
       // 한명일 경우
       if (deadList.size() == 1) {
-        result.put(GameRole.MAFIA, deadList.get(0).toString());
+        result.put(GameRole.MAFIA, deadList.get(0));
       }
     }
 

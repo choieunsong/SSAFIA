@@ -65,7 +65,7 @@ public class StartFinSubscriber {
 
         template.convertAndSend("/sub/" + roomId, GameStatusRes.of(gameSession));
 
-        Map<String, GameRole> players = new HashMap();
+        Map<String, GameRole> players = new HashMap<String, GameRole>();
 
         gameSession.getPlayerMap().forEach((playerId, player) -> {
           if (player.isAlive()) {

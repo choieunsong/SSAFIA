@@ -13,7 +13,7 @@ public class ConfirmResultRes {
   public static ConfirmResultRes of(Map<String, Boolean> confirmResult) {
     ConfirmResultRes confirmResultRes = new ConfirmResultRes();
     confirmResultRes.type = StompMessageType.CONFIRM;
-    confirmResultRes.playerMap = new HashMap();
+    confirmResultRes.playerMap = new HashMap<String, Confirm>();
     confirmResult.forEach((playerId, confirm) -> {
       confirmResultRes.playerMap.put(playerId, new Confirm(confirm));
     });

@@ -49,7 +49,7 @@ public class DayToNightFinSubscriber {
       }
 
       GameSession gameSession = null;
-      Map<String, GameRole> players = new HashMap();
+      Map<String, GameRole> players = new HashMap<String, GameRole>();
       try {
         gameSession = gameSessionService.findById(roomId);
         // 나간 사람 체크 및 기본 세팅
