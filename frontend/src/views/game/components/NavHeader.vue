@@ -59,7 +59,7 @@
                 id="confirm-button"
                 ref="confirm"
             >
-                <span>{{ getConfirmTitle }}</span>
+                {{ getConfirmTitle }}
             </button>
 
             <span id="timer" class="font-jua">{{ this.time }}</span>
@@ -259,9 +259,10 @@ export default {
                     this.gameStatus.phase == "DAY_ELIMINATION" ||
                     (this.gameStatus.phase == "NIGHT_VOTE" && this.playerMe.role != "CIVILIAN"))
             ) {
-                this.$emit("emitConfirmDataUpdate");
+                console.log("click confirm");
                 this.$refs.confirm.classList.add("unhover");
                 this.$refs.confirm.classList.remove("confirm-button-active");
+                this.$emit("emitConfirmDataUpdate");
             }
         },
     },
