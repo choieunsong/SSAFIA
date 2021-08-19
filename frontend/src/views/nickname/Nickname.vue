@@ -210,6 +210,7 @@ export default {
                             } else {
                                 console.log(response);
                             }
+                            state.isClick = true;
                         });
                 }
             });
