@@ -413,7 +413,7 @@ export default {
                         alive: true,
                         suspicious: false,
                         voters: [],
-                        color: "red",
+                        color: "",
                         isMafia: null,
                         isHost: false,
                         isTalking: false,

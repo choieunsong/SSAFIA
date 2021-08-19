@@ -84,6 +84,7 @@ var colorCode = {
     AQUAMARINE: "#00CED1",
     BLUE: "#0000CD",
     GRAY: "#778899",
+    SKYBLUE: "#89CFF0",
 };
 export default {
     name: "UserVideo",
@@ -100,7 +101,6 @@ export default {
         role: String,
         playerMe: Boolean,
     },
-
     computed: {
         getColor() {
             if (this.playersGameInfo != null && this.playersGameInfo.color == "") {
