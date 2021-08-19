@@ -25,7 +25,6 @@ public class EndSubscriber {
   private final ObjectMapper objectMapper;
   private final SimpMessagingTemplate template;
   private final GameSessionService gameSessionService;
-  private final GameSessionVoteService gameSessionVoteService;
   private final RedissonClient redissonClient;
 
   public void sendMessage(String message) {
