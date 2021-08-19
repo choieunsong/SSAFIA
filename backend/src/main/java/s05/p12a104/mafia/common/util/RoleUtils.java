@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Random;
 import s05.p12a104.mafia.domain.entity.GameSession;
 import s05.p12a104.mafia.domain.entity.Player;
 import s05.p12a104.mafia.domain.enums.GameRole;
@@ -45,17 +45,25 @@ public class RoleUtils {
 
     List<String> mafias = new ArrayList<>();
 
-    players.forEach((playerId, player) -> {
-      GameRole role = GameRole.getRandomRole();
-      while (roleNum.get(role) == 0) {
-        role = GameRole.getRandomRole();
-      }
+    List<String> playerList = new ArrayList<>(players.keySet());
+    boolean[] isRole = new boolean[playerList.size()];
 
-      player.setRole(role);
-      roleNum.put(role, roleNum.get(role) - 1);
+    Random random = new Random();
+    roleNum.forEach((role, num) -> {
+      while (num-- > 0) {
+        int idx = -1;
+        do{
+           idx = (int) (random.nextInt(playerList.size() * 100) % playerList.size());
+        }while(isRole[idx]);
 
-      if (role == GameRole.MAFIA) {
-        mafias.add(player.getId());
+        Player player = players.get(playerList.get(idx));
+        isRole[idx] = true;
+
+        player.setRole(role);
+
+        if (role == GameRole.MAFIA) {
+          mafias.add(player.getId());
+        }
       }
     });
 
