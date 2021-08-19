@@ -386,7 +386,7 @@ export default {
 
             state.session
                 .connect(state.openviduToken, {
-                    clientData: `${state.myUserName},${state.playerId},${store.getters['ingame/getColor']}`,
+                    clientData: `${state.myUserName},${state.playerId},${store.getters["ingame/getColor"]}`,
                 })
                 .then(() => {
                     // --- Get your own camera stream with the desired properties ---
@@ -413,7 +413,7 @@ export default {
                         alive: true,
                         suspicious: false,
                         voters: [],
-                        color: store.getters['ingame/getColor'],
+                        color: store.getters["ingame/getColor"],
                         isMafia: null,
                         isHost: false,
                         isTalking: false,
@@ -1401,6 +1401,7 @@ export default {
                 ) {
                     sendMessageConfirm();
                 } else if (state.gameStatus.phase === "NIGHT_VOTE") {
+                    console.log("night vote confirm");
                     sendMessageNightConfirm();
                 }
             }

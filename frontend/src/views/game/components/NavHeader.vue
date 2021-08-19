@@ -257,7 +257,7 @@ export default {
                 this.playerMe.alive &&
                 (this.gameStatus.phase == "DAY_DISCUSSION" ||
                     this.gameStatus.phase == "DAY_ELIMINATION" ||
-                    (this.gameStatus.phase == "NIGHT_VOTE" && this.playerMe.role != "CIVILIAN"))
+                    (this.gameStatus.phase == "NIGHT_VOTE" && this.role != "CIVILIAN"))
             ) {
                 console.log("click confirm");
                 this.$refs.confirm.classList.add("unhover");
