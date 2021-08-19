@@ -34,7 +34,7 @@
             <!-- playerNum가 4 이상 됐을 때 활성화 되기 -->
             <button
                 v-if="
-                    (this.currentPlayerNum < 4 || !this.isHost) && this.gameStatus.phase == 'READY'
+                    (this.currentPlayerNum < 1 || !this.isHost) && this.gameStatus.phase == 'READY'
                 "
                 class="font-jua"
                 id="start-button-inactive"
@@ -113,6 +113,12 @@ export default {
             handler() {
                 if (this.gameStatus.phase == "START") {
                     this.startCountDown();
+                } else if (this.gameStatus.phase == "READY") {
+                    if (this.interval) {
+                        clearInterval(this.interval);
+                    }
+                    this.time = this.gameStatus.timer; // 시간 초기화
+                    this.leftTime = 0;
                 } else if (this.gameStatus.phase == "DAY_DISCUSSION") {
                     if (this.getAlive) {
                         this.$refs.confirm.classList.remove("unhover");
