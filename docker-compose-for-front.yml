@@ -23,26 +23,32 @@ services:
       - ./redis/redis-data:/data
     ports:
       - "32001:6379"
-  kurento:
-    image: kurento/kurento-media-server:latest
+
+  openvidu:
+    image: openvidu/openvidu-server-kms:2.19.0
     restart: always
     ports:
-      - "8888:8888"
+      - "4443:4443"
     environment:
-      TZ: "Asia/Seoul"
+      OPENVIDU_SECRET: MY_SECRET
+
   backend:
     build:
       dockerfile: Dockerfile
       context: ./backend
+      target: local
+    env_file: local.env
     environment:
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       TZ: "Asia/Seoul"
       SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/mafia?useUnicode=yes&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true"
       SPRING_DATASOURCE_USERNAME: a104
       SPRING_DATASOURCE_PASSWORD: a1041234
+      SPRING_REDIS_HOST: "redis"
+      OPENVIDU_URL: "https://openvidu:4443/"
     ports:
       - "8080:8080"
     depends_on:
       - mysql
       - redis
+      - openvidu
 

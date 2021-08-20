@@ -57,9 +57,21 @@ router.beforeEach((to, from, next) => {
     } else if (vuex.token.isLogin === false) {
       next({ name: "Home" });
     } else {
-      next();
+      next()
     }
+  } else if (to.name === "Game") {
+      if (from.name === "Nickname") {
+        if (from.params.roomId === to.params.roomId) {
+          next()
+        } else {
+          next({ name: "Nickname", params:{ roomId: to.params.roomId }})
+        }
+      } else if (from.name === "Game") {
+          next({ name: "Nickname", params:{ roomId: to.params.roomId }})
+      } else {
+        next({ name: "Nickname", params:{ roomId: to.params.roomId }})
+      }
   } else {
-    next();
+    next()
   }
 });

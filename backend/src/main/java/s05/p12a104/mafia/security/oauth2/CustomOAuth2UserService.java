@@ -10,14 +10,16 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import s05.p12a104.mafia.common.exception.OAuth2AuthenticationProcessingException;
-import s05.p12a104.mafia.domain.entity.AuthProvider;
+import s05.p12a104.mafia.domain.enums.AuthProvider;
 import s05.p12a104.mafia.domain.entity.User;
 import s05.p12a104.mafia.domain.repository.UserRepository;
 import s05.p12a104.mafia.security.UserPrincipal;
 import s05.p12a104.mafia.security.oauth2.user.OAuth2UserInfo;
 import s05.p12a104.mafia.security.oauth2.user.OAuth2UserInfoFactory;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
@@ -66,6 +68,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
   }
 
   private User registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
+    log.info("Register new user {}", oAuth2UserInfo.getEmail());
+    
     User user = new User();
 
     user.setProvider(
@@ -78,6 +82,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
   }
 
   private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {
+    log.info("update user {}", oAuth2UserInfo.getEmail());
+    
     existingUser.setName(oAuth2UserInfo.getName());
     existingUser.setImageUrl(oAuth2UserInfo.getImageUrl());
     return userRepository.save(existingUser);

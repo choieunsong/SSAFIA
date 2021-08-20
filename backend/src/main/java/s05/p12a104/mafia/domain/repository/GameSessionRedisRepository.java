@@ -3,9 +3,12 @@ package s05.p12a104.mafia.domain.repository;
 import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import s05.p12a104.mafia.domain.entity.GameSession;
+import s05.p12a104.mafia.domain.dao.GameSessionDao;
 
 @Repository
-public interface GameSessionRedisRepository extends CrudRepository<GameSession, String> {
-  List<GameSession> findByCreatorEmail(String email);
+public interface GameSessionRedisRepository extends CrudRepository<GameSessionDao, String> {
+  List<GameSessionDao> findByCreatorEmail(String email);
+
+  @Override
+  List<GameSessionDao> findAll();
 }
