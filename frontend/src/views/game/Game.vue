@@ -790,7 +790,7 @@ export default {
                   if (victimJob) {
                     state.message = `낮의 투표 결과로 인해, <span style="font-size:25px; color:${state.victimColor}">${victimNickname}</span>님이 제거되었습니다.<br/> ${victimNickname}님의 직업은 <span style="font-size:25px; color:${state.victimColor}">마피아이었습니다</span>  곧 밤으로 넘어갑니다.`;
                   } else {
-                    state.message = `낮의 투표 결과로 인해, <span style="font-size:25px; color:${state.victimColor}">${victimNickname}</span>님이 제거되었습니다.<br/> ${victimNickname}님의 직업은 <span style="font-size:25px; color:${state.victimColor}">마파아가 아니었습니다</span>  곧 밤으로 넘어갑니다.`;
+                    state.message = `낮의 투표 결과로 인해, <span style="font-size:25px; color:${state.victimColor}">${victimNickname}</span>님이 제거되었습니다.<br/> ${victimNickname}님의 직업은 <span style="font-size:25px; color:${state.victimColor}">마피아가 아니었습니다</span>  곧 밤으로 넘어갑니다.`;
                   }
 
                   // 죽는 애니메이션
@@ -898,7 +898,7 @@ export default {
               if (victimJob) {
                 state.message = `낮의 투표 결과로 인해, <span style="font-size:25px; color:${state.victimColor}">${victimNickname}</span>님이 제거되었습니다.<br/> ${victimNickname}님의 직업은 <span style="font-size:25px; color:${state.victimColor}">마피아이었습니다</span>  곧 밤으로 넘어갑니다.`;
               } else {
-                state.message = `낮의 투표 결과로 인해, <span style="font-size:25px; color:${state.victimColor}">${victimNickname}</span>님이 제거되었습니다.<br/> ${victimNickname}님의 직업은 <span style="font-size:25px; color:${state.victimColor}">마파아가 아니었습니다</span>  곧 밤으로 넘어갑니다.`;
+                state.message = `낮의 투표 결과로 인해, <span style="font-size:25px; color:${state.victimColor}">${victimNickname}</span>님이 제거되었습니다.<br/> ${victimNickname}님의 직업은 <span style="font-size:25px; color:${state.victimColor}">마피아가 아니었습니다</span>  곧 밤으로 넘어갑니다.`;
               }
             } else {
               state.message = "밤의 투표 결과, 아무도 죽지 않았습니다.";
@@ -1189,7 +1189,7 @@ export default {
                   if (victimJob) {
                     state.message = `낮의 투표 결과로 인해, <span style="font-size:25px; color:${state.victimColor}">${victimNickname}</span>님이 제거되었습니다.<br/> ${victimNickname}님의 직업은 <span style="font-size:25px; color:${state.victimColor}">마피아이었습니다</span>  곧 밤으로 넘어갑니다.`;
                   } else {
-                    state.message = `낮의 투표 결과로 인해, <span style="font-size:25px; color:${state.victimColor}">${victimNickname}</span>님이 제거되었습니다.<br/> ${victimNickname}님의 직업은 <span style="font-size:25px; color:${state.victimColor}">마파아가 아니었습니다</span>  곧 밤으로 넘어갑니다.`;
+                    state.message = `낮의 투표 결과로 인해, <span style="font-size:25px; color:${state.victimColor}">${victimNickname}</span>님이 제거되었습니다.<br/> ${victimNickname}님의 직업은 <span style="font-size:25px; color:${state.victimColor}">마피아가 아니었습니다</span>  곧 밤으로 넘어갑니다.`;
                   }
                 }
               } else {
@@ -1287,7 +1287,7 @@ export default {
               if (victimJob) {
                 state.message = `낮의 투표 결과로 인해, <span style="font-size:25px; color:${state.victimColor}">${victimNickname}</span>님이 제거되었습니다.<br/> ${victimNickname}님의 직업은 <span style="font-size:25px; color:${state.victimColor}">마피아이었습니다</span>  곧 밤으로 넘어갑니다.`;
               } else {
-                state.message = `낮의 투표 결과로 인해, <span style="font-size:25px; color:${state.victimColor}">${victimNickname}</span>님이 제거되었습니다.<br/> ${victimNickname}님의 직업은 <span style="font-size:25px; color:${state.victimColor}">마파아가 아니었습니다</span>  곧 밤으로 넘어갑니다.`;
+                state.message = `낮의 투표 결과로 인해, <span style="font-size:25px; color:${state.victimColor}">${victimNickname}</span>님이 제거되었습니다.<br/> ${victimNickname}님의 직업은 <span style="font-size:25px; color:${state.victimColor}">마피아가 아니었습니다</span>  곧 밤으로 넘어갑니다.`;
               }
             } else {
               state.message = "밤의 투표 결과, 아무도 죽지 않았습니다.";
