@@ -56,6 +56,14 @@
 
 
 
+### 투표 정보 저장
+
+- playerId를 key 값으로 redis에 저장
+- redis의 동시성 문제를 해결하기 위해 개인의 투표를 따로 저장함
+- server에서 방의 투표자 목록을 별도로 관리
+
+
+
 ### 게임 정보 전달
 
 - 실시간 메시징 서비스를 구현하기 위해 SockJS와 Stomp 사용
@@ -119,6 +127,8 @@ local에서는 mysql 또는 mariadb를 사용하면 되고, schema는 `mafia` �
     hgetall "GameSession:V1234" # GameSession V1234의 모든 field 조회
     hget "GameSession:V1234" hostId # GameSession V1234의 hostId field 조회
     del "GameSession:V1234:idx" # GameSession V1234의 idx 제거 (단, 해당 key만 제거)
+    hgetall "Vote" # 모든 플레이어들의 투표 상태 조회
+    hget "Vote" playerId # playerId의 투표 상태 조회
     flushall # 모든 key 제거
     ```
 
