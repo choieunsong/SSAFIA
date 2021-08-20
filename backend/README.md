@@ -19,10 +19,14 @@
 ## :pray: Code Style
 
 - google code style
-  - indentation이 2 spaces라는 특징
-  - [eclipse 적용](https://github.com/google/styleguide/blob/gh-pages/eclipse-java-google-style.xml)
-  - [intellij 적용](https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml)
-  - [check style config xml](https://github.com/checkstyle/checkstyle/blob/master/src/main/resources/google_checks.xml)
+  - 특징
+	- indentation : 2 spaces
+	- colmun limit : 100
+  - IDE 적용 방법
+    - [eclipse 적용](https://github.com/google/styleguide/blob/gh-pages/eclipse-java-google-style.xml)
+    - [intellij 적용](https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml)
+  - check style plugin 활용
+    - [check style config xml](config/checkstyle/google_checks.xml) ([reference](https://github.com/checkstyle/checkstyle/blob/master/src/main/resources/google_checks.xml)에서 일부 수정하여 프로젝트에 적용) 
 
 
 
@@ -75,14 +79,14 @@
 ### client-secret 적용
 client-secret 적용 방법에는 2가지가 있다.
 
-- IDE VM argument 설정
+- IDE VM argument 설정(STS)
 
   1. run -> Run Configurations
 
   2. Spring Boot App -> mafia -> Arguments -> VM arguments에 아래와 같이 작성 -> Apply
 
      ```
-     -Dspring.security.oauth2.client.registration.google.client-secret=<GOOLE_CLIENT_SECRET>
+     -Dspring.security.oauth2.client.registration.google.client-secret=4r3e2w1q4r3e2w1q
      ```
 
      <img src="../img/set_client_secret.png" alt="set_client_secret" style="zoom: 80%;" />
@@ -130,13 +134,19 @@ local에서는 mysql 또는 mariadb를 사용하면 되고, schema는 `mafia` �
 
 
 
-## :heavy_exclamation_mark: known error
+## :exclamation: known error
 
 ### 방에 입장했을 때 openvidu session 연결이 안 되는 경우
 openvidu 서버가 self signed 인증으로 되어 있기 때문에 broswer 입장에서 openvidu 서버의 주소가 안전하지 않다고 판단하여 접근을 막는다.  
 따라서, openvidu 서버의 주소인 https://localhost:4443/dashboard에 browser로 접속하여 다음과 같은 경고가 뜨더라도 계속 진행한다.
 
 ![](../img/your-connection-is-not-private.png)
+
+ID와 PW를 입력하여 로그인을 한다.
+
+![](../img/openvidu-dashboard-login-window.png)
+- default ID : OPENVIDUAPP
+- default PW : MY_SECRET
 
 다음과 같이 'Test' 버튼을 클릭한다.
 

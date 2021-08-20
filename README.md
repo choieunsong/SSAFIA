@@ -4,7 +4,7 @@
 <br>
 
 ## 👩‍👩‍👧‍👦 팀원 소개
-#### 🧑‍💻 <srong>유태규</strong> - 팀장, FE
+#### 🧑‍💻 <strong>유태규</strong> - 팀장, FE
 #### 🧑‍💻 <strong>김지훈</strong> - BE
 #### 🧑‍💻 <strong>김용훈</strong> - BE
 #### 🧑‍💻 <strong>이현정</strong> - BE
@@ -120,7 +120,7 @@
 
 ## ⚙️ 기술 스택 
 
-<img src="https://user-images.githubusercontent.com/24693833/130017956-dafae86f-42b1-4c92-b294-d13b9366799b.png" width="640">
+<img src="./img/tech-stack-and-service-architecture.png" width="640">
 
 
 - frontend
@@ -171,8 +171,9 @@
 <br>
 
 ## 🌐 배포 방법
+[frontend/src/constant/prod.js](./frontend/src/constant/prod.js)에서 올바른 도메인 이름으로 변경합니다.
 
-WebRTC를 사용하기 때문에 STUN과 TURN 서버가 필요합니다.
+WebRTC를 사용하기 때문에 STUN/TURN 서버가 필요합니다.
 
 오픈 소스 프로젝트인 [coturn](https://github.com/coturn/coturn)을 설치하는 방법은 다음과 같습니다
 ```sh
@@ -209,13 +210,15 @@ sudo service coturn restart
 sudo systemctl status coturn
 ```
 
+배포를 하기 위해서는 서버에 docker와 docker-compose가 설치되어 있어야 합니다.  
+docker는 [공식 웹페이지에 나와 있는 debian에서의 설치 방법](https://docs.docker.com/engine/install/debian/#install-using-the-repository)으로 설치하면 되고, docker-compose는 apt-get 명령어를 통해 설치가 가능합니다.
 
 프로젝트의 root 위치에서 docker-compose를 실행하면 빌드 및 배포까지 자동으로 이루어집니다.
 ```sh
 docker-compose up -d
 ```
 
-단, docker-compose를 실행하기 위해서는 `prod.env` 파일이 필요합니다. `prod.env`는 다음과 같습니다.
+단, docker-compose를 실행하기 위해서는 `prod.env` 파일이 필요합니다. `prod.env`의 내용은 다음과 같습니다.
 ```env
 # backend
 GOOGLE_CLIENT_ID=1q2w3e4r-1q2w3e4r.apps.googleusercontent.com
@@ -245,6 +248,9 @@ MYSQL_ROOT_PASSWORD=a1041234
 ### 첫 배포시 주의 사항
 첫 배포시에는 [init-letsencrypt.sh](./init-letsencrypt.sh)을 실행시켜 certbot에 의해 SSL/TLS 인증서를 생성하도록 해야 합니다.
 
+init-letsencrypt.sh 내용에서 `domains`와 `data_path`, `email`을 알맞게 수정한 뒤 실행시키면 됩니다.
+
+
 ### 배포시 주의 사항
-redis/redis-data와 mysql/mysql-data는 각각 redis container와 mysql(mariadb) container의 데이터 저장 direcotory를 mount하고 있으니 각별히 주의해야 합니다.
+redis/redis-data와 mysql/mysql-data는 각각 redis container와 mysql(mariadb) container의 데이터 저장 directory를 mount하고 있으니 각별히 주의해야 합니다.
 
