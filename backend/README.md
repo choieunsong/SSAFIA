@@ -58,7 +58,7 @@
 
 ### 투표 정보 저장
 
-- playerId를 key 값으로 redis에 저장
+- player 투표를 redis에 저장
 - redis의 동시성 문제를 해결하기 위해 개인의 투표를 따로 저장함
 - server에서 방의 투표자 목록을 별도로 관리
 
