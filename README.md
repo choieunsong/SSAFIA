@@ -1,6 +1,6 @@
 # <img src="https://user-images.githubusercontent.com/24693833/129665846-234af092-1003-47aa-82f0-edff976605ed.png" width="50" height="50"> SSAFIA
 화상으로 즐기는 마피아 게임
-
+https://ssafia.r-e.kr/home
 <br>
 
 ## 👩‍👩‍👧‍👦 팀원 소개
